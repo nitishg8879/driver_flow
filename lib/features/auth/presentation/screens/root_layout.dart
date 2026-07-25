@@ -9,9 +9,11 @@ class RootLayout extends StatelessWidget {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/dashboard')) return 0;
-    if (location.startsWith('/drivers')) return 1;
-    if (location.startsWith('/map')) return 2;
-    if (location.startsWith('/reports')) return 3;
+    if (location.startsWith('/students')) return 1;
+    if (location.startsWith('/instructors')) return 2;
+    if (location.startsWith('/vehicles')) return 3;
+    if (location.startsWith('/vehicle-types')) return 4;
+    if (location.startsWith('/schedule')) return 5;
     return 0; // Default fallback
   }
 
@@ -60,25 +62,41 @@ class RootLayout extends StatelessWidget {
                 _buildNavItem(
                   context: context,
                   icon: Icons.people_alt_rounded,
-                  title: 'Drivers',
-                  route: '/drivers',
+                  title: 'Students',
+                  route: '/students',
                   isSelected: selectedIndex == 1,
                 ),
                 const SizedBox(height: 8),
                 _buildNavItem(
                   context: context,
-                  icon: Icons.map_rounded,
-                  title: 'Map View',
-                  route: '/map',
+                  icon: Icons.badge_rounded,
+                  title: 'Instructors',
+                  route: '/instructors',
                   isSelected: selectedIndex == 2,
                 ),
                 const SizedBox(height: 8),
                 _buildNavItem(
                   context: context,
-                  icon: Icons.analytics_rounded,
-                  title: 'Reports',
-                  route: '/reports',
+                  icon: Icons.directions_car_rounded,
+                  title: 'Vehicles',
+                  route: '/vehicles',
                   isSelected: selectedIndex == 3,
+                ),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.two_wheeler_rounded,
+                  title: 'Vehicle Types',
+                  route: '/vehicle-types',
+                  isSelected: selectedIndex == 4,
+                ),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.calendar_month_rounded,
+                  title: 'Schedule',
+                  route: '/schedule',
+                  isSelected: selectedIndex == 5,
                 ),
               ],
             ),

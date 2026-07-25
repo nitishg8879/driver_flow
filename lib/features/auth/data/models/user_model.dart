@@ -10,9 +10,15 @@ class UserModel with _$UserModel {
     String? id,
     String? email,
     String? name,
+    String? nameLower,
     UserRole? role,
     String? phoneNumber,
     String? profileImageUrl,
+    // Student-specific fields
+    String? vehicleTypeId,
+    String? vehicleTypeName,
+    // Instructor-specific fields
+    String? licenseNumber,
     @Default(true) bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,

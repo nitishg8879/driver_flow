@@ -6,7 +6,8 @@ enum UserRole {
   manager,
   driver,
   viewer,
-  student;
+  student,
+  instructor;
 
   String get displayName {
     switch (this) {
@@ -20,9 +21,79 @@ enum UserRole {
         return 'Viewer';
       case UserRole.student:
         return 'Student';
+      case UserRole.instructor:
+        return 'Instructor';
     }
   }
 }
 
 /// Button style types
 enum ButtonType { elevated, outlined, text }
+
+/// Type of file stored in an attachment
+enum AttachmentFileType {
+  drivingLicense,
+  profilePhoto,
+  document,
+  other;
+
+  String get displayName {
+    switch (this) {
+      case AttachmentFileType.drivingLicense:
+        return 'Driving License';
+      case AttachmentFileType.profilePhoto:
+        return 'Profile Photo';
+      case AttachmentFileType.document:
+        return 'Document';
+      case AttachmentFileType.other:
+        return 'Other';
+    }
+  }
+}
+
+/// Feature/module that owns an attachment
+enum AttachmentSource {
+  student,
+  instructor,
+  vehicle;
+
+  String get displayName {
+    switch (this) {
+      case AttachmentSource.student:
+        return 'Student';
+      case AttachmentSource.instructor:
+        return 'Instructor';
+      case AttachmentSource.vehicle:
+        return 'Vehicle';
+    }
+  }
+}
+
+/// Status of a scheduled driving lesson slot
+enum ScheduleStatus {
+  scheduled,
+  completed,
+  cancelledByInstructor,
+  cancelledByStudent,
+  adminCancelled;
+
+  String get displayName {
+    switch (this) {
+      case ScheduleStatus.scheduled:
+        return 'Scheduled';
+      case ScheduleStatus.completed:
+        return 'Completed';
+      case ScheduleStatus.cancelledByInstructor:
+        return 'Cancelled by Instructor';
+      case ScheduleStatus.cancelledByStudent:
+        return 'Cancelled by Student';
+      case ScheduleStatus.adminCancelled:
+        return 'Cancelled by Admin';
+    }
+  }
+
+  bool get isCancelled =>
+      this == ScheduleStatus.cancelledByInstructor ||
+      this == ScheduleStatus.cancelledByStudent ||
+      this == ScheduleStatus.adminCancelled;
+}

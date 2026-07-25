@@ -19,12 +19,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(
-    text: kDebugMode ? 'nitish@gmail.com' : null,
-  );
-  final _passwordController = TextEditingController(
-    text: kDebugMode ? '123456' : null,
-  );
+  final _emailController = TextEditingController(text: 'nitish@gmail.com');
+  final _passwordController = TextEditingController(text: '123456');
   bool _obscurePassword = true;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -179,7 +175,9 @@ class _LoginScreenState extends State<LoginScreen>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withAlpha((0.1 * 255).round()),
+                              color: Colors.black.withAlpha(
+                                (0.1 * 255).round(),
+                              ),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -244,10 +242,10 @@ class _LoginScreenState extends State<LoginScreen>
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withAlpha((0.2 * 255).round()),
-              borderRadius: BorderRadius.circular(8),
-            ),
+          decoration: BoxDecoration(
+            color: Colors.white.withAlpha((0.2 * 255).round()),
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Icon(icon, color: Colors.white, size: 20),
         ),
         const SizedBox(width: 12),
@@ -255,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen>
           child: Text(
             text,
             style: context.textTheme.bodyLarge?.copyWith(
-                          color: Colors.white.withAlpha((0.95 * 255).round()),
+              color: Colors.white.withAlpha((0.95 * 255).round()),
             ),
           ),
         ),
@@ -269,10 +267,14 @@ class _LoginScreenState extends State<LoginScreen>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-            colors: [
+          colors: [
             context.colorScheme.surface,
-            context.colorScheme.primaryContainer.withAlpha((0.05 * 255).round()),
-            context.colorScheme.secondaryContainer.withAlpha((0.08 * 255).round()),
+            context.colorScheme.primaryContainer.withAlpha(
+              (0.05 * 255).round(),
+            ),
+            context.colorScheme.secondaryContainer.withAlpha(
+              (0.08 * 255).round(),
+            ),
           ],
         ),
       ),
@@ -288,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                    colors: [
+                  colors: [
                     context.colorScheme.primary.withAlpha((0.08 * 255).round()),
                     context.colorScheme.primary.withAlpha((0.02 * 255).round()),
                     Colors.transparent,
@@ -306,9 +308,13 @@ class _LoginScreenState extends State<LoginScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                    colors: [
-                    context.colorScheme.secondary.withAlpha((0.06 * 255).round()),
-                    context.colorScheme.secondary.withAlpha((0.02 * 255).round()),
+                  colors: [
+                    context.colorScheme.secondary.withAlpha(
+                      (0.06 * 255).round(),
+                    ),
+                    context.colorScheme.secondary.withAlpha(
+                      (0.02 * 255).round(),
+                    ),
                     Colors.transparent,
                   ],
                 ),
@@ -341,8 +347,9 @@ class _LoginScreenState extends State<LoginScreen>
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                    color: context.colorScheme.primary
-                                      .withAlpha((0.3 * 255).round()),
+                                  color: context.colorScheme.primary.withAlpha(
+                                    (0.3 * 255).round(),
+                                  ),
                                   blurRadius: 20,
                                   offset: const Offset(0, 8),
                                 ),
@@ -399,8 +406,9 @@ class _LoginScreenState extends State<LoginScreen>
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: context.colorScheme.primary
-                                      .withAlpha((0.1 * 255).round()),
+                                  color: context.colorScheme.primary.withAlpha(
+                                    (0.1 * 255).round(),
+                                  ),
                                   width: 1,
                                 ),
                               ),
@@ -466,8 +474,10 @@ class _LoginScreenState extends State<LoginScreen>
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                                color: context.colorScheme.primary
-                                                  .withAlpha((0.4 * 255).round()),
+                                              color: context.colorScheme.primary
+                                                  .withAlpha(
+                                                    (0.4 * 255).round(),
+                                                  ),
                                               blurRadius: 15,
                                               offset: const Offset(0, 8),
                                             ),
@@ -497,7 +507,7 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           decoration: BoxDecoration(
                             color: context.colorScheme.primaryContainer
-                              .withAlpha((0.3 * 255).round()),
+                                .withAlpha((0.3 * 255).round()),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: context.colorScheme.primary.withAlpha(
@@ -551,9 +561,13 @@ class _LoginScreenState extends State<LoginScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colorScheme.primaryContainer.withAlpha((0.1 * 255).round()),
+        color: context.colorScheme.primaryContainer.withAlpha(
+          (0.1 * 255).round(),
+        ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.colorScheme.primary.withAlpha((0.1 * 255).round())),
+        border: Border.all(
+          color: context.colorScheme.primary.withAlpha((0.1 * 255).round()),
+        ),
       ),
       child: TextFormField(
         controller: controller,
@@ -573,8 +587,10 @@ class _LoginScreenState extends State<LoginScreen>
             color: context.colorScheme.primary,
             fontWeight: FontWeight.w600,
           ),
-            hintStyle: TextStyle(
-            color: context.colorScheme.onSurfaceVariant.withAlpha((0.5 * 255).round()),
+          hintStyle: TextStyle(
+            color: context.colorScheme.onSurfaceVariant.withAlpha(
+              (0.5 * 255).round(),
+            ),
           ),
           prefixIcon: Container(
             margin: const EdgeInsets.all(8),

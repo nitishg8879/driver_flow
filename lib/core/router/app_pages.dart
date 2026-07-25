@@ -7,6 +7,7 @@ abstract class Routes {
   static const students = _Paths.students;
   static const instructors = _Paths.instructors;
   static const vehicles = _Paths.vehicles;
+  static const vehicleTypes = _Paths.vehicleTypes;
   static const schedule = _Paths.schedule;
 }
 
@@ -19,5 +20,6 @@ abstract class _Paths {
   static const students = '/students';
   static const instructors = '/instructors';
   static const vehicles = '/vehicles';
+  static const vehicleTypes = '/vehicle-types';
   static const schedule = '/schedule';
 }
