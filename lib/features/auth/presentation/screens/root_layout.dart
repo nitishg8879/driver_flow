@@ -1,367 +1,200 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:driver_flow_admin/core/router/app_pages.dart';
-import '../../../../utils/constants/app_constants.dart';
-import '../../../../utils/constants/app_strings.dart';
-import '../bloc/auth_bloc.dart';
 
-class RootLayout extends StatefulWidget {
+class RootLayout extends StatelessWidget {
   final Widget child;
 
-  const RootLayout({super.key, required this.child});
+  const RootLayout({Key? key, required this.child}) : super(key: key);
 
-  @override
-  State<RootLayout> createState() => _RootLayoutState();
-}
-
-class _RootLayoutState extends State<RootLayout> {
-  bool _collapsed = false;
+  int _calculateSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.path;
+    if (location.startsWith('/dashboard')) return 0;
+    if (location.startsWith('/drivers')) return 1;
+    if (location.startsWith('/map')) return 2;
+    if (location.startsWith('/reports')) return 3;
+    return 0; // Default fallback
+  }
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = _calculateSelectedIndex(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Colors.white, // Background for the main app area
       body: Row(
         children: [
-          // Sidebar
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            width: _collapsed ? 88 : AppConstants.sidebarWidth,
-            child: _buildSidebar(context),
-          ),
-          // Main Content
+          // 1. FIXED SIDEBAR ON THE LEFT
+          _buildFixedSidebar(context, selectedIndex),
+
+          // 2. MAIN CONTENT AREA ON THE RIGHT
           Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                bottomLeft: Radius.circular(24),
-              ),
-              child: widget.child,
-            ),
+            child: child, // go_router injects the active screen here
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSidebar(BuildContext context) {
-    final currentPath = GoRouterState.of(context).uri.path;
-    final colorScheme = Theme.of(context).colorScheme;
-
+  Widget _buildFixedSidebar(BuildContext context, int selectedIndex) {
     return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withAlpha((0.05 * 255).round()),
-            blurRadius: 20,
-            offset: const Offset(4, 0),
-          ),
-        ],
-      ),
+      width: 260, // Fixed width for the side menu
+      color: const Color(0xFFF4F5F7), // Sleek grey background
       child: Column(
         children: [
-          // Header with App Logo & Collapse Toggle
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-            child: Row(
-              mainAxisAlignment: _collapsed
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.spaceBetween,
-              children: [
-                if (!_collapsed) ...[
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.local_shipping_rounded,
-                      size: 22,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppConstants.appName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                        color: colorScheme.onSurface,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () => setState(() => _collapsed = !_collapsed),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest.withAlpha(
-                          (0.5 * 255).round(),
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        _collapsed
-                            ? Icons.menu_open_rounded
-                            : Icons.keyboard_double_arrow_left_rounded,
-                        size: 24,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // HEADER
+          _buildHeader(),
 
-          if (!_collapsed)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Divider(height: 32),
-            ),
-
-          if (_collapsed) const SizedBox(height: 16),
-
-          // Menu Items
+          // SCROLLABLE TABS
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               children: [
-                _buildMenuItem(
-                  context,
-                  icon: Icons.dashboard_outlined,
-                  selectedIcon: Icons.dashboard_rounded,
-                  label: AppStrings.dashboard,
-                  path: Routes.dashboard,
-                  isSelected: currentPath == Routes.dashboard,
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.dashboard_rounded,
+                  title: 'Dashboard',
+                  route: '/dashboard',
+                  isSelected: selectedIndex == 0,
                 ),
-                _buildMenuItem(
-                  context,
-                  icon: Icons.school_outlined,
-                  selectedIcon: Icons.school_rounded,
-                  label: AppStrings.students,
-                  path: Routes.students,
-                  isSelected: currentPath.startsWith(Routes.students),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.people_alt_rounded,
+                  title: 'Drivers',
+                  route: '/drivers',
+                  isSelected: selectedIndex == 1,
                 ),
-                _buildMenuItem(
-                  context,
-                  icon: Icons.person_outline_rounded,
-                  selectedIcon: Icons.person_rounded,
-                  label: AppStrings.instructors,
-                  path: Routes.instructors,
-                  isSelected: currentPath.startsWith(Routes.instructors),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.map_rounded,
+                  title: 'Map View',
+                  route: '/map',
+                  isSelected: selectedIndex == 2,
                 ),
-                _buildMenuItem(
-                  context,
-                  icon: Icons.local_shipping_outlined,
-                  selectedIcon: Icons.local_shipping_rounded,
-                  label: AppStrings.vehicles,
-                  path: Routes.vehicles,
-                  isSelected: currentPath.startsWith(Routes.vehicles),
-                ),
-                _buildMenuItem(
-                  context,
-                  icon: Icons.calendar_month_outlined,
-                  selectedIcon: Icons.calendar_month_rounded,
-                  label: AppStrings.schedule,
-                  path: Routes.schedule,
-                  isSelected: currentPath.startsWith(Routes.schedule),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.analytics_rounded,
+                  title: 'Reports',
+                  route: '/reports',
+                  isSelected: selectedIndex == 3,
                 ),
               ],
             ),
           ),
 
-          // User Profile & Logout (Footer)
+          // FOOTER
           _buildFooter(context),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(
-    BuildContext context, {
-    required IconData icon,
-    required IconData selectedIcon,
-    required String label,
-    required String path,
-    required bool isSelected,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Tooltip(
-        message: _collapsed ? label : '',
-        preferBelow: false,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => context.go(path),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: EdgeInsets.symmetric(
-                horizontal: _collapsed ? 0 : 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? colorScheme.primaryContainer.withAlpha(
-                        (0.6 * 255).round(),
-                      )
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected
-                      ? colorScheme.primary.withAlpha((0.2 * 255).round())
-                      : Colors.transparent,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: _collapsed
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    isSelected ? selectedIcon : icon,
-                    color: isSelected
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                    size: 24,
-                  ),
-                  if (!_collapsed) ...[
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        label,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: isSelected
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant,
-                          fontWeight: isSelected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    if (isSelected)
-                      Icon(
-                        Icons.chevron_right_rounded,
-                        color: colorScheme.primary,
-                        size: 18,
-                      ),
-                  ],
-                ],
-              ),
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.only(top: 40, bottom: 20, left: 24, right: 24),
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.local_shipping, color: Colors.white),
+          ),
+          const SizedBox(width: 12),
+          const Text(
+            'Driver Flow',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1E1E2C),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildFooter(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
-      margin: const EdgeInsets.all(12),
-      padding: EdgeInsets.all(_collapsed ? 8 : 12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withAlpha(
-          (0.3 * 255).round(),
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withAlpha((0.5 * 255).round()),
-        ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildNavItem(
+            context: context,
+            icon: Icons.settings_rounded,
+            title: 'Settings',
+            route: '/settings',
+            isSelected: false,
+          ),
+          const SizedBox(height: 8),
+          _buildNavItem(
+            context: context,
+            icon: Icons.logout_rounded,
+            title: 'Logout',
+            route:
+                '/login', // Route to login screen or trigger your logout logic
+            isSelected: false,
+            isDanger: true,
+          ),
+        ],
       ),
-      child: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          return state.maybeWhen(
-            authenticated: (user) {
-              final avatar = CircleAvatar(
-                radius: 20,
-                backgroundColor: colorScheme.primary,
-                child: Text(
-                  user.name?.isNotEmpty == true
-                      ? user.name![0].toUpperCase()
-                      : 'U',
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String route,
+    required bool isSelected,
+    bool isDanger = false,
+  }) {
+    final activeColor = Colors.blueAccent;
+    final defaultColor = const Color(
+      0xFF5A5C69,
+    ); // Dark grey text for unselected
+    final dangerColor = Colors.redAccent;
+
+    final itemColor = isSelected
+        ? activeColor
+        : (isDanger ? dangerColor : defaultColor);
+    final bgColor = isSelected
+        ? activeColor.withOpacity(0.12)
+        : Colors.transparent;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12), // Rounded selection effect
+        onTap: () => context.go(route),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(12), // Rounded tabs
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: itemColor, size: 22),
+              const SizedBox(width: 16),
+              Text(
+                title,
+                style: TextStyle(
+                  color: itemColor,
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 ),
-              );
-
-              if (_collapsed) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    avatar,
-                    const SizedBox(height: 12),
-                    IconButton(
-                      icon: const Icon(Icons.logout_rounded, size: 20),
-                      color: colorScheme.error,
-                      onPressed: () => context.read<AuthBloc>().add(
-                        const AuthEvent.logoutRequested(),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return Row(
-                children: [
-                  avatar,
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          user.name ?? 'N/A',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: colorScheme.onSurface,
-                              ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          user.email ?? 'N/A',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: colorScheme.onSurfaceVariant),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout_rounded, size: 20),
-                    color: colorScheme.onSurfaceVariant,
-                    hoverColor: colorScheme.errorContainer,
-                    onPressed: () => context.read<AuthBloc>().add(
-                      const AuthEvent.logoutRequested(),
-                    ),
-                  ),
-                ],
-              );
-            },
-            orElse: () => const SizedBox.shrink(),
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
