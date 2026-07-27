@@ -51,6 +51,10 @@ class VehicleRepositoryImpl implements VehicleRepository {
         query = query.startAfterDocument((cursor as FirestoreCursor).document);
       }
 
+      final countQuery = _collection.where('isActive', isEqualTo: activeOnly);
+      final countSnapshot = await countQuery.count().get();
+      final totalCount = countSnapshot.count ?? 0;
+
       final snapshot = await query.get();
       final vehicles = snapshot.docs
           .map((doc) => VehicleModel.fromJson({'id': doc.id, ...doc.data()}))
@@ -62,6 +66,7 @@ class VehicleRepositoryImpl implements VehicleRepository {
             ? FirestoreCursor(snapshot.docs.last)
             : null,
         hasMore: snapshot.docs.length == pageSize,
+        totalCount: totalCount,
       );
     } catch (e, stackTrace) {
       _logger.error('Failed to fetch vehicles', e, stackTrace);

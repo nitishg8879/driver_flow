@@ -16,10 +16,12 @@ class PaginatedResult<T> {
   final List<T> items;
   final PaginationCursor? cursor;
   final bool hasMore;
+  final int totalCount;
 
   PaginatedResult({
     required this.items,
     required this.cursor,
     required this.hasMore,
+    required this.totalCount,
   });
 }

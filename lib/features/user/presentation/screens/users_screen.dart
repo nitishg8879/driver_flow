@@ -3,54 +3,55 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../utils/components/paginated_list_view.dart';
 import '../../../../utils/extensions/context_extensions.dart';
-import '../../../auth/data/models/user_model.dart';
-import '../cubit/student_cubit.dart';
-import '../widgets/student_form_dialog.dart';
+import '../../../../utils/constants/app_enums.dart';
+import '../../data/models/user_model.dart';
+import '../cubit/user_cubit.dart';
+import '../widgets/user_form_dialog.dart';
 
-class StudentsScreen extends StatefulWidget {
-  const StudentsScreen({super.key});
+class UsersScreen extends StatefulWidget {
+  const UsersScreen({super.key});
 
   @override
-  State<StudentsScreen> createState() => _StudentsScreenState();
+  State<UsersScreen> createState() => _UsersScreenState();
 }
 
-class _StudentsScreenState extends State<StudentsScreen> {
+class _UsersScreenState extends State<UsersScreen> {
   bool _showActive = true;
 
   @override
   void initState() {
     super.initState();
-    context.read<StudentCubit>().load(activeOnly: _showActive);
+    context.read<UserCubit>().load(activeOnly: _showActive);
   }
 
   void _onFilterChanged(bool showActive) {
     setState(() => _showActive = showActive);
-    context.read<StudentCubit>().load(activeOnly: showActive);
+    context.read<UserCubit>().load(activeOnly: showActive);
   }
 
   Future<void> _openForm({UserModel? existing}) async {
-    final cubit = context.read<StudentCubit>();
+    final cubit = context.read<UserCubit>();
     final result = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => BlocProvider.value(
         value: cubit,
-        child: StudentFormDialog(existing: existing),
+        child: UserFormDialog(existing: existing),
       ),
     );
 
     if (result == true && mounted) {
-      context.showSuccessSnackBar('Student saved successfully');
+      context.showSuccessSnackBar('User saved successfully');
     }
   }
 
-  Future<void> _toggleActive(UserModel student) async {
-    final newStatus = !student.isActive;
+  Future<void> _toggleActive(UserModel user) async {
+    final newStatus = !user.isActive;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(newStatus ? 'Activate Student' : 'Deactivate Student'),
+        title: Text(newStatus ? 'Activate User' : 'Deactivate User'),
         content: Text(
-          'Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} "${student.name}"?',
+          'Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} "${user.name}"?',
         ),
         actions: [
           TextButton(
@@ -66,10 +67,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
     );
 
     if (confirmed == true && mounted) {
-      await context.read<StudentCubit>().setActiveStatus(
-        student.id!,
-        newStatus,
-      );
+      await context.read<UserCubit>().setActiveStatus(user.id!, newStatus);
     }
   }
 
@@ -84,7 +82,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
             Row(
               children: [
                 Text(
-                  'Students',
+                  'Users',
                   style: context.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -93,7 +91,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                 FilledButton.icon(
                   onPressed: () => _openForm(),
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Student'),
+                  label: const Text('Add User'),
                 ),
               ],
             ),
@@ -110,33 +108,51 @@ class _StudentsScreenState extends State<StudentsScreen> {
             const SizedBox(height: 16),
             Expanded(
               child: PaginatedListView<UserModel>(
-                cubit: context.read<StudentCubit>(),
-                emptyMessage: 'No active students found',
-                emptyMessageInactive: 'No inactive students found',
-                itemBuilder: (context, student) {
+                cubit: context.read<UserCubit>(),
+                emptyMessage: 'No active users found',
+                emptyMessageInactive: 'No inactive users found',
+                itemBuilder: (context, user) {
+                  final subtitleParts = <String>[];
+                  if (user.role != null) {
+                    subtitleParts.add(user.role!.displayName);
+                  }
+                  if (user.phoneNumber != null) {
+                    subtitleParts.add(user.phoneNumber!);
+                  }
+                  if (user.role == UserRole.student &&
+                      user.vehicleTypeName != null) {
+                    subtitleParts.add(user.vehicleTypeName!);
+                  }
+                  if (user.role == UserRole.instructor &&
+                      user.licenseNumber != null) {
+                    subtitleParts.add(user.licenseNumber!);
+                  }
+
                   return ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.person_outline),
+                    leading: CircleAvatar(
+                      child: Icon(
+                        user.role == UserRole.instructor
+                            ? Icons.badge_outlined
+                            : Icons.person_outline,
+                      ),
                     ),
-                    title: Text(student.name ?? '-'),
-                    subtitle: Text(
-                      '${student.phoneNumber} • ${student.vehicleTypeName ?? '-'}',
-                    ),
+                    title: Text(user.name ?? '-'),
+                    subtitle: Text(subtitleParts.join(' • ')),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit_outlined),
-                          onPressed: () => _openForm(existing: student),
+                          onPressed: () => _openForm(existing: user),
                         ),
                         IconButton(
                           icon: Icon(
-                            student.isActive
+                            user.isActive
                                 ? Icons.person_remove_outlined
                                 : Icons.person_add_outlined,
                           ),
-                          tooltip: student.isActive ? 'Deactivate' : 'Activate',
-                          onPressed: () => _toggleActive(student),
+                          tooltip: user.isActive ? 'Deactivate' : 'Activate',
+                          onPressed: () => _toggleActive(user),
                         ),
                       ],
                     ),

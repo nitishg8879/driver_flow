@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:driver_flow_admin/features/user/data/models/user_model.dart';
 
 import '../../../../core/models/firestore_cursor.dart';
 import '../../../../core/models/paginated_result.dart';
@@ -7,13 +6,11 @@ import '../../../../core/models/pagination_cursor.dart';
 import '../../../../utils/constants/app_constants.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
+import '../models/user_model.dart';
 
 /// Shared repository for the `users` collection. Students and instructors
-/// are just users with `role == UserRole.student` /
-/// `UserRole.instructor` — there is no separate `students`/`instructors`
-/// collection. Feature-specific cubits (StudentCubit, InstructorCubit)
-/// call these role-scoped methods instead of maintaining their own
-/// repositories.
+/// are just users with `role == UserRole.student` / `UserRole.instructor`
+/// — there is no separate `students`/`instructors` collection.
 abstract class UserRepository {
   Future<PaginatedResult<UserModel>> getUsersByRole({
     required UserRole role,
@@ -39,7 +36,7 @@ abstract class UserRepository {
 
   /// Searches active users with [role] by name prefix (case-insensitive),
   /// returning at most [limit] results. Used by dropdowns backed by large
-  /// collections (e.g. Students) instead of full pagination.
+  /// collections instead of full pagination.
   Future<List<UserModel>> searchActiveByRole({
     required UserRole role,
     required String query,

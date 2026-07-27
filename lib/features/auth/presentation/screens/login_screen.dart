@@ -212,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen>
                       _buildFeatureItem(
                         context,
                         Icons.people_outline,
-                        'Manage Students & Instructors',
+                        'Manage Users',
                       ),
                       const SizedBox(height: 16),
                       _buildFeatureItem(

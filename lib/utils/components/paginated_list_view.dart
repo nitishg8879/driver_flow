@@ -58,7 +58,7 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
           initial: () => const SizedBox.shrink(),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (message) => Center(child: Text('Error: $message')),
-          loaded: (items, hasMore, activeOnly, isLoadingMore) {
+          loaded: (items, hasMore, activeOnly, totalCount, isLoadingMore) {
             if (items.isEmpty) {
               return Center(
                 child: Text(
@@ -68,19 +68,44 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
                 ),
               );
             }
-            return ListView.separated(
-              controller: _scrollController,
-              itemCount: items.length + (hasMore ? 1 : 0),
-              separatorBuilder: (_, _) => const Divider(),
-              itemBuilder: (context, index) {
-                if (index >= items.length) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                return widget.itemBuilder(context, items[index]);
-              },
+            final countText =
+                totalCount > 0 ? '${items.length} of $totalCount records' :
+                '${items.length} fetched';
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Text(
+                    countText,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    itemCount: items.length + (hasMore ? 1 : 0),
+                    separatorBuilder: (_, _) => const Divider(),
+                    itemBuilder: (context, index) {
+                      if (index >= items.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      return widget.itemBuilder(context, items[index]);
+                    },
+                  ),
+                ),
+              ],
             );
           },
         );

@@ -12,33 +12,32 @@ import '../../../../utils/components/custom_text_field.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
 import '../../../../utils/helpers/validators.dart';
-import '../../../auth/data/models/user_model.dart';
+import '../../data/models/user_model.dart';
 import '../../../vehicle_type/data/models/vehicle_type_model.dart';
 import '../../../vehicle_type/data/repositories/vehicle_type_repository.dart';
-import '../cubit/student_cubit.dart';
+import '../cubit/user_cubit.dart';
 
-/// Dialog used both for creating and editing a student (a [UserModel]
-/// with `role == UserRole.student`).
-/// Pass [existing] to pre-fill the form for edit mode.
-class StudentFormDialog extends StatefulWidget {
+class UserFormDialog extends StatefulWidget {
   final UserModel? existing;
 
-  const StudentFormDialog({super.key, this.existing});
+  const UserFormDialog({super.key, this.existing});
 
   @override
-  State<StudentFormDialog> createState() => _StudentFormDialogState();
+  State<UserFormDialog> createState() => _UserFormDialogState();
 }
 
-class _StudentFormDialogState extends State<StudentFormDialog> {
+class _UserFormDialogState extends State<UserFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
+  late final TextEditingController _licenseController;
   VehicleTypeModel? _selectedVehicleType;
+  UserRole? _selectedRole;
   List<AttachmentModel> _initialAttachments = [];
   List<AttachmentModel> _existingAttachments = [];
   List<PendingAttachment> _pendingAttachments = [];
   bool _isSaving = false;
-  final _logger = AppLogger('StudentFormDialog');
+  final _logger = AppLogger('UserFormDialog');
 
   bool get _isEditMode => widget.existing != null;
 
@@ -49,9 +48,14 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
     _phoneController = TextEditingController(
       text: widget.existing?.phoneNumber,
     );
+    _licenseController = TextEditingController(
+      text: widget.existing?.licenseNumber,
+    );
+    _selectedRole = widget.existing?.role ?? UserRole.student;
 
-    if (_isEditMode) {
+    if (_selectedRole == UserRole.student && _isEditMode) {
       _loadExistingAttachments();
+      _loadExistingVehicleType();
     }
   }
 
@@ -68,7 +72,26 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
         });
       }
     } catch (e, stackTrace) {
-      _logger.error('Failed to load student attachments', e, stackTrace);
+      _logger.error('Failed to load user attachments', e, stackTrace);
+    }
+  }
+
+  Future<void> _loadExistingVehicleType() async {
+    if (widget.existing?.vehicleTypeId == null) return;
+    try {
+      final types = await sl<VehicleTypeRepository>().getVehicleTypes();
+      VehicleTypeModel? match;
+      for (final type in types) {
+        if (type.id == widget.existing?.vehicleTypeId) {
+          match = type;
+          break;
+        }
+      }
+      if (mounted && match != null) {
+        setState(() => _selectedVehicleType = match);
+      }
+    } catch (e, stackTrace) {
+      _logger.error('Failed to load selected vehicle type', e, stackTrace);
     }
   }
 
@@ -76,12 +99,14 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _licenseController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedVehicleType == null) {
+    if (_selectedRole == null) return;
+    if (_selectedRole == UserRole.student && _selectedVehicleType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a vehicle type')),
       );
@@ -89,8 +114,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
     }
 
     setState(() => _isSaving = true);
-
-    final cubit = context.read<StudentCubit>();
+    final cubit = context.read<UserCubit>();
     final authState = context.read<AuthBloc>().state;
     final currentUserId = authState.maybeWhen(
       authenticated: (user) => user.id,
@@ -100,22 +124,31 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
     final model = (widget.existing ?? const UserModel()).copyWith(
       name: _nameController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
-      vehicleTypeId: _selectedVehicleType!.id,
-      vehicleTypeName: _selectedVehicleType!.name,
+      role: _selectedRole,
+      vehicleTypeId: _selectedRole == UserRole.student
+          ? _selectedVehicleType?.id
+          : null,
+      vehicleTypeName: _selectedRole == UserRole.student
+          ? _selectedVehicleType?.name
+          : null,
+      licenseNumber: _selectedRole == UserRole.instructor
+          ? _licenseController.text.trim().isEmpty
+                ? null
+                : _licenseController.text.trim()
+          : null,
     );
 
-    final savedStudent = _isEditMode
-        ? await cubit.updateStudent(model)
-        : await cubit.createStudent(model);
+    final savedUser = _isEditMode
+        ? await cubit.updateUser(model)
+        : await cubit.createUser(model);
 
-    if (savedStudent == null) {
+    if (savedUser == null) {
       if (mounted) setState(() => _isSaving = false);
       return;
     }
 
-    final studentId = savedStudent.id!;
-
-    if (currentUserId != null) {
+    final userId = savedUser.id!;
+    if (_selectedRole == UserRole.student && currentUserId != null) {
       final attachmentService = sl<AttachmentService>();
 
       for (final pending in _pendingAttachments) {
@@ -125,16 +158,14 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
             fileName: pending.fileName,
             fileType: pending.fileType,
             source: AttachmentSource.student,
-            ownerId: studentId,
+            ownerId: userId,
             uploadedBy: currentUserId,
           );
         } catch (e, stackTrace) {
-          _logger.error('Failed to upload student attachment', e, stackTrace);
+          _logger.error('Failed to upload user attachment', e, stackTrace);
         }
       }
 
-      // Delete attachments that were present initially but removed by the
-      // user from the picker before saving.
       final removed = _initialAttachments.where(
         (initial) => !_existingAttachments.any((a) => a.id == initial.id),
       );
@@ -142,7 +173,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
         try {
           await attachmentService.deleteAttachment(attachment);
         } catch (e, stackTrace) {
-          _logger.error('Failed to delete student attachment', e, stackTrace);
+          _logger.error('Failed to delete user attachment', e, stackTrace);
         }
       }
     }
@@ -155,7 +186,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(_isEditMode ? 'Edit Student' : 'Add Student'),
+      title: Text(_isEditMode ? 'Edit User' : 'Add User'),
       content: SizedBox(
         width: 480,
         child: SingleChildScrollView(
@@ -181,23 +212,59 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                   validator: Validators.validatePhoneNumber,
                 ),
                 const SizedBox(height: 16),
-                AsyncDropdown<VehicleTypeModel>(
-                  labelText: 'Vehicle Type',
-                  value: _selectedVehicleType,
-                  fetchItems: () =>
-                      sl<VehicleTypeRepository>().getVehicleTypes(),
-                  itemLabelBuilder: (item) => item.name,
-                  onChanged: (value) =>
-                      setState(() => _selectedVehicleType = value),
+                DropdownButtonFormField<UserRole>(
+                  value: _selectedRole,
+                  decoration: const InputDecoration(
+                    labelText: 'Role',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: UserRole.values
+                      .where((role) => role != UserRole.admin)
+                      .map(
+                        (role) => DropdownMenuItem<UserRole>(
+                          value: role,
+                          child: Text(role.displayName),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedRole = value;
+                      if (_selectedRole != UserRole.student) {
+                        _selectedVehicleType = null;
+                      }
+                    });
+                  },
+                  validator: (value) =>
+                      value == null ? 'Please select a role' : null,
                 ),
                 const SizedBox(height: 16),
-                AttachmentPickerField(
-                  initialAttachments: _existingAttachments,
-                  onChanged: (existing, pending) {
-                    _existingAttachments = existing;
-                    _pendingAttachments = pending;
-                  },
-                ),
+                if (_selectedRole == UserRole.student) ...[
+                  AsyncDropdown<VehicleTypeModel>(
+                    labelText: 'Vehicle Type',
+                    value: _selectedVehicleType,
+                    fetchItems: () =>
+                        sl<VehicleTypeRepository>().getVehicleTypes(),
+                    itemLabelBuilder: (item) => item.name,
+                    onChanged: (value) =>
+                        setState(() => _selectedVehicleType = value),
+                  ),
+                  const SizedBox(height: 16),
+                  AttachmentPickerField(
+                    initialAttachments: _existingAttachments,
+                    onChanged: (existing, pending) {
+                      _existingAttachments = existing;
+                      _pendingAttachments = pending;
+                    },
+                  ),
+                ],
+                if (_selectedRole == UserRole.instructor) ...[
+                  CustomTextField(
+                    controller: _licenseController,
+                    labelText: 'License Number (optional)',
+                    hintText: 'Enter license number',
+                  ),
+                ],
               ],
             ),
           ),

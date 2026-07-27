@@ -37,6 +37,7 @@ class PaginatedCubit<T> extends Cubit<PaginatedState<T>> {
           items: page.items,
           hasMore: page.hasMore,
           activeOnly: activeOnly,
+          totalCount: page.totalCount,
         ),
       );
     } catch (e, stackTrace) {
@@ -67,6 +68,7 @@ class PaginatedCubit<T> extends Cubit<PaginatedState<T>> {
           items: [...currentState.items, ...page.items],
           hasMore: page.hasMore,
           isLoadingMore: false,
+          totalCount: page.totalCount,
         ),
       );
     } catch (e, stackTrace) {

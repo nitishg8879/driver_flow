@@ -3,12 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import '../../features/auth/data/repositories/auth_repository.dart';
-import '../../features/auth/data/repositories/user_repository.dart';
+import '../../features/user/data/repositories/user_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../features/instructors/presentation/cubit/instructor_cubit.dart';
 import '../../features/schedule/data/repositories/schedule_repository.dart';
 import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
-import '../../features/students/presentation/cubit/student_cubit.dart';
+import '../../features/user/presentation/cubit/user_cubit.dart';
 import '../../features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/vehicles/data/repositories/vehicle_repository.dart';
@@ -57,8 +56,7 @@ Future<void> setupServiceLocator() async {
   // Blocs / Cubits
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
   sl.registerFactory(() => VehicleTypeCubit(repository: sl()));
-  sl.registerFactory(() => StudentCubit(userRepository: sl()));
+  sl.registerFactory(() => UserCubit(userRepository: sl()));
   sl.registerFactory(() => VehicleCubit(repository: sl()));
-  sl.registerFactory(() => InstructorCubit(userRepository: sl()));
   sl.registerFactory(() => ScheduleCubit(repository: sl()));
 }

@@ -25,6 +25,7 @@ mixin _$PaginatedState<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )
     loaded,
@@ -38,6 +39,7 @@ mixin _$PaginatedState<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -51,6 +53,7 @@ mixin _$PaginatedState<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -153,6 +156,7 @@ class _$PaginatedInitialImpl<T> implements PaginatedInitial<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )
     loaded,
@@ -170,6 +174,7 @@ class _$PaginatedInitialImpl<T> implements PaginatedInitial<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -187,6 +192,7 @@ class _$PaginatedInitialImpl<T> implements PaginatedInitial<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -291,6 +297,7 @@ class _$PaginatedLoadingImpl<T> implements PaginatedLoading<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )
     loaded,
@@ -308,6 +315,7 @@ class _$PaginatedLoadingImpl<T> implements PaginatedLoading<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -325,6 +333,7 @@ class _$PaginatedLoadingImpl<T> implements PaginatedLoading<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -386,7 +395,13 @@ abstract class _$$PaginatedLoadedImplCopyWith<T, $Res> {
     $Res Function(_$PaginatedLoadedImpl<T>) then,
   ) = __$$PaginatedLoadedImplCopyWithImpl<T, $Res>;
   @useResult
-  $Res call({List<T> items, bool hasMore, bool activeOnly, bool isLoadingMore});
+  $Res call({
+    List<T> items,
+    bool hasMore,
+    bool activeOnly,
+    int totalCount,
+    bool isLoadingMore,
+  });
 }
 
 /// @nodoc
@@ -406,6 +421,7 @@ class __$$PaginatedLoadedImplCopyWithImpl<T, $Res>
     Object? items = null,
     Object? hasMore = null,
     Object? activeOnly = null,
+    Object? totalCount = null,
     Object? isLoadingMore = null,
   }) {
     return _then(
@@ -422,6 +438,10 @@ class __$$PaginatedLoadedImplCopyWithImpl<T, $Res>
             ? _value.activeOnly
             : activeOnly // ignore: cast_nullable_to_non_nullable
                   as bool,
+        totalCount: null == totalCount
+            ? _value.totalCount
+            : totalCount // ignore: cast_nullable_to_non_nullable
+                  as int,
         isLoadingMore: null == isLoadingMore
             ? _value.isLoadingMore
             : isLoadingMore // ignore: cast_nullable_to_non_nullable
@@ -438,6 +458,7 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
     required final List<T> items,
     required this.hasMore,
     required this.activeOnly,
+    required this.totalCount,
     this.isLoadingMore = false,
   }) : _items = items;
 
@@ -454,12 +475,14 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
   @override
   final bool activeOnly;
   @override
+  final int totalCount;
+  @override
   @JsonKey()
   final bool isLoadingMore;
 
   @override
   String toString() {
-    return 'PaginatedState<$T>.loaded(items: $items, hasMore: $hasMore, activeOnly: $activeOnly, isLoadingMore: $isLoadingMore)';
+    return 'PaginatedState<$T>.loaded(items: $items, hasMore: $hasMore, activeOnly: $activeOnly, totalCount: $totalCount, isLoadingMore: $isLoadingMore)';
   }
 
   @override
@@ -471,6 +494,8 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
             (identical(other.activeOnly, activeOnly) ||
                 other.activeOnly == activeOnly) &&
+            (identical(other.totalCount, totalCount) ||
+                other.totalCount == totalCount) &&
             (identical(other.isLoadingMore, isLoadingMore) ||
                 other.isLoadingMore == isLoadingMore));
   }
@@ -481,6 +506,7 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
     const DeepCollectionEquality().hash(_items),
     hasMore,
     activeOnly,
+    totalCount,
     isLoadingMore,
   );
 
@@ -504,12 +530,13 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )
     loaded,
     required TResult Function(String message) error,
   }) {
-    return loaded(items, hasMore, activeOnly, isLoadingMore);
+    return loaded(items, hasMore, activeOnly, totalCount, isLoadingMore);
   }
 
   @override
@@ -521,12 +548,13 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
     TResult? Function(String message)? error,
   }) {
-    return loaded?.call(items, hasMore, activeOnly, isLoadingMore);
+    return loaded?.call(items, hasMore, activeOnly, totalCount, isLoadingMore);
   }
 
   @override
@@ -538,6 +566,7 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -545,7 +574,7 @@ class _$PaginatedLoadedImpl<T> implements PaginatedLoaded<T> {
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(items, hasMore, activeOnly, isLoadingMore);
+      return loaded(items, hasMore, activeOnly, totalCount, isLoadingMore);
     }
     return orElse();
   }
@@ -593,12 +622,14 @@ abstract class PaginatedLoaded<T> implements PaginatedState<T> {
     required final List<T> items,
     required final bool hasMore,
     required final bool activeOnly,
+    required final int totalCount,
     final bool isLoadingMore,
   }) = _$PaginatedLoadedImpl<T>;
 
   List<T> get items;
   bool get hasMore;
   bool get activeOnly;
+  int get totalCount;
   bool get isLoadingMore;
 
   /// Create a copy of PaginatedState
@@ -687,6 +718,7 @@ class _$PaginatedErrorImpl<T> implements PaginatedError<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )
     loaded,
@@ -704,6 +736,7 @@ class _$PaginatedErrorImpl<T> implements PaginatedError<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,
@@ -721,6 +754,7 @@ class _$PaginatedErrorImpl<T> implements PaginatedError<T> {
       List<T> items,
       bool hasMore,
       bool activeOnly,
+      int totalCount,
       bool isLoadingMore,
     )?
     loaded,

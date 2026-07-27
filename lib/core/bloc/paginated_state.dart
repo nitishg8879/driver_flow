@@ -11,6 +11,7 @@ class PaginatedState<T> with _$PaginatedState<T> {
     required List<T> items,
     required bool hasMore,
     required bool activeOnly,
+    required int totalCount,
     @Default(false) bool isLoadingMore,
   }) = PaginatedLoaded<T>;
   const factory PaginatedState.error(String message) = PaginatedError<T>;

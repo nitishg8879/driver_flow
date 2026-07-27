@@ -9,11 +9,10 @@ class RootLayout extends StatelessWidget {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/dashboard')) return 0;
-    if (location.startsWith('/students')) return 1;
-    if (location.startsWith('/instructors')) return 2;
-    if (location.startsWith('/vehicles')) return 3;
-    if (location.startsWith('/vehicle-types')) return 4;
-    if (location.startsWith('/schedule')) return 5;
+    if (location.startsWith('/users')) return 1;
+    if (location.startsWith('/vehicles')) return 2;
+    if (location.startsWith('/vehicle-types')) return 3;
+    if (location.startsWith('/schedule')) return 4;
     return 0; // Default fallback
   }
 
@@ -62,17 +61,9 @@ class RootLayout extends StatelessWidget {
                 _buildNavItem(
                   context: context,
                   icon: Icons.people_alt_rounded,
-                  title: 'Students',
-                  route: '/students',
+                  title: 'Users',
+                  route: '/users',
                   isSelected: selectedIndex == 1,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.badge_rounded,
-                  title: 'Instructors',
-                  route: '/instructors',
-                  isSelected: selectedIndex == 2,
                 ),
                 const SizedBox(height: 8),
                 _buildNavItem(
@@ -80,7 +71,7 @@ class RootLayout extends StatelessWidget {
                   icon: Icons.directions_car_rounded,
                   title: 'Vehicles',
                   route: '/vehicles',
-                  isSelected: selectedIndex == 3,
+                  isSelected: selectedIndex == 2,
                 ),
                 const SizedBox(height: 8),
                 _buildNavItem(
@@ -88,7 +79,7 @@ class RootLayout extends StatelessWidget {
                   icon: Icons.two_wheeler_rounded,
                   title: 'Vehicle Types',
                   route: '/vehicle-types',
-                  isSelected: selectedIndex == 4,
+                  isSelected: selectedIndex == 3,
                 ),
                 const SizedBox(height: 8),
                 _buildNavItem(
@@ -96,7 +87,7 @@ class RootLayout extends StatelessWidget {
                   icon: Icons.calendar_month_rounded,
                   title: 'Schedule',
                   route: '/schedule',
-                  isSelected: selectedIndex == 5,
+                  isSelected: selectedIndex == 4,
                 ),
               ],
             ),
