@@ -12,6 +12,10 @@ import '../../features/vehicle_type/data/repositories/vehicle_type_repository.da
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/vehicles/data/repositories/vehicle_repository.dart';
 import '../../features/vehicles/presentation/cubit/vehicle_cubit.dart';
+import '../../features/tags/data/repositories/tag_repository.dart';
+import '../../features/tags/presentation/cubit/tags_cubit.dart';
+import '../../features/payment/data/repositories/payment_repository.dart';
+import '../../features/payment/presentation/cubit/payment_cubit.dart';
 import '../services/attachment_service.dart';
 import '../services/storage_service.dart';
 
@@ -52,6 +56,12 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<ScheduleRepository>(
     () => ScheduleRepositoryImpl(firestore: sl()),
   );
+  sl.registerLazySingleton<TagRepository>(
+    () => TagRepositoryImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<PaymentRepository>(
+    () => PaymentRepositoryImpl(firestore: sl(), storage: sl()),
+  );
 
   // Blocs / Cubits
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
@@ -59,4 +69,6 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => UserCubit(userRepository: sl()));
   sl.registerFactory(() => VehicleCubit(repository: sl()));
   sl.registerFactory(() => ScheduleCubit(repository: sl()));
+  sl.registerFactory(() => TagsCubit(repository: sl()));
+  sl.registerFactory(() => PaymentCubit(repository: sl()));
 }

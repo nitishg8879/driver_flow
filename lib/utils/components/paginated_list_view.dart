@@ -68,9 +68,9 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
                 ),
               );
             }
-            final countText =
-                totalCount > 0 ? '${items.length} of $totalCount records' :
-                '${items.length} fetched';
+            final countText = totalCount > 0
+                ? '${items.length} of $totalCount records'
+                : '${items.length} fetched';
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

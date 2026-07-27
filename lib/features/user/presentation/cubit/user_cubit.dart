@@ -1,7 +1,9 @@
 import '../../../../core/bloc/paginated_cubit.dart';
 import '../../../../core/bloc/paginated_repository.dart';
+import '../../../../core/bloc/paginated_state.dart';
 import '../../../../core/models/paginated_result.dart';
 import '../../../../core/models/pagination_cursor.dart';
+import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/user_repository.dart';
@@ -18,6 +20,34 @@ class UserCubit extends PaginatedCubit<UserModel> {
   UserCubit({required UserRepository userRepository})
     : _userRepository = userRepository,
       super(repository: AllUsersRepository(userRepository: userRepository));
+
+  /// Load users with optional filters for search query and role
+  Future<void> loadFiltered({
+    bool activeOnly = true,
+    String searchQuery = '',
+    UserRole? role,
+  }) async {
+    emit(const PaginatedState.loading());
+    try {
+      final page = await _userRepository.getUsers(
+        activeOnly: activeOnly,
+        pageSize: pageSize,
+        searchQuery: searchQuery,
+        role: role,
+      );
+      emit(
+        PaginatedState.loaded(
+          items: page.items,
+          hasMore: page.hasMore,
+          activeOnly: activeOnly,
+          totalCount: page.totalCount,
+        ),
+      );
+    } catch (e, stackTrace) {
+      _logger.error('Failed to load users', e, stackTrace);
+      emit(PaginatedState.error(e.toString()));
+    }
+  }
 
   Future<UserModel?> createUser(UserModel user) async {
     try {

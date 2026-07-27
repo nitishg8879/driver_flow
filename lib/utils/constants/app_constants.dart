@@ -13,6 +13,8 @@ class AppConstants {
   static const String shiftChangeRequestsCollection = 'shift_change_requests';
   static const String progressRecordsCollection = 'progress_records';
   static const String documentsCollection = 'documents';
+  static const String tagsCollection = 'tags';
+  static const String paymentsCollection = 'payments';
 
   // Shared Preferences Keys
   static const String isLoggedInKey = 'isLoggedIn';

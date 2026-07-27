@@ -15,6 +15,10 @@ import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/vehicle_type/presentation/screens/vehicle_type_screen.dart';
 import '../../features/vehicles/presentation/cubit/vehicle_cubit.dart';
 import '../../features/vehicles/presentation/screens/vehicles_screen.dart';
+import '../../features/tags/presentation/cubit/tags_cubit.dart';
+import '../../features/tags/presentation/screens/tags_screen.dart';
+import '../../features/payment/presentation/cubit/payment_cubit.dart';
+import '../../features/payment/presentation/screens/payment_list_screen.dart';
 import '../di/service_locator.dart';
 import '../services/storage_service.dart';
 
@@ -94,6 +98,30 @@ class AppRouter {
                 child: BlocProvider(
                   create: (context) => sl<ScheduleCubit>(),
                   child: const ScheduleScreen(),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.tags,
+            name: 'tags',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: BlocProvider(
+                  create: (context) => sl<TagsCubit>(),
+                  child: const TagsScreen(),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.payments,
+            name: 'payments',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: BlocProvider(
+                  create: (context) => sl<PaymentCubit>(),
+                  child: const PaymentListScreen(),
                 ),
               );
             },

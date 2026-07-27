@@ -55,6 +55,7 @@ enum AttachmentFileType {
 enum AttachmentSource {
   student,
   instructor,
+  payment,
   vehicle;
 
   String get displayName {
@@ -65,6 +66,8 @@ enum AttachmentSource {
         return 'Instructor';
       case AttachmentSource.vehicle:
         return 'Vehicle';
+      case AttachmentSource.payment:
+        return 'Payment';
     }
   }
 }
@@ -96,4 +99,19 @@ enum ScheduleStatus {
       this == ScheduleStatus.cancelledByInstructor ||
       this == ScheduleStatus.cancelledByStudent ||
       this == ScheduleStatus.adminCancelled;
+}
+
+/// Transaction type for payment transactions
+enum TransactionType {
+  credit,
+  debit;
+
+  String get displayName {
+    switch (this) {
+      case TransactionType.credit:
+        return 'Credit';
+      case TransactionType.debit:
+        return 'Debit';
+    }
+  }
 }

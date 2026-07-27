@@ -17,16 +17,36 @@ class UsersScreen extends StatefulWidget {
 
 class _UsersScreenState extends State<UsersScreen> {
   bool _showActive = true;
+  String _searchQuery = '';
+  UserRole? _selectedRole;
 
   @override
   void initState() {
     super.initState();
-    context.read<UserCubit>().load(activeOnly: _showActive);
+    _loadUsers();
+  }
+
+  void _loadUsers() {
+    context.read<UserCubit>().loadFiltered(
+      activeOnly: _showActive,
+      searchQuery: _searchQuery,
+      role: _selectedRole,
+    );
   }
 
   void _onFilterChanged(bool showActive) {
     setState(() => _showActive = showActive);
-    context.read<UserCubit>().load(activeOnly: showActive);
+    _loadUsers();
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() => _searchQuery = query);
+    _loadUsers();
+  }
+
+  void _onRoleFilterChanged(UserRole? role) {
+    setState(() => _selectedRole = role);
+    _loadUsers();
   }
 
   Future<void> _openForm({UserModel? existing}) async {
@@ -92,6 +112,48 @@ class _UsersScreenState extends State<UsersScreen> {
                   onPressed: () => _openForm(),
                   icon: const Icon(Icons.add),
                   label: const Text('Add User'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    onChanged: _onSearchChanged,
+                    decoration: InputDecoration(
+                      hintText: 'Search by name...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: DropdownMenu<UserRole?>(
+                    initialSelection: _selectedRole,
+                    onSelected: _onRoleFilterChanged,
+                    dropdownMenuEntries: [
+                      const DropdownMenuEntry<UserRole?>(
+                        value: null,
+                        label: 'All Roles',
+                      ),
+                      ...UserRole.values.map(
+                        (role) => DropdownMenuEntry<UserRole?>(
+                          value: role,
+                          label: role.displayName,
+                        ),
+                      ),
+                    ],
+                    label: const Text('Role'),
+                  ),
                 ),
               ],
             ),

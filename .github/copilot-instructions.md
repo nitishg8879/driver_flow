@@ -71,6 +71,7 @@ enum UserRole {
 **Current Enums:**
 - `UserRole`: admin, manager, driver, viewer
 - `ButtonType`: elevated, outlined, text
+- `TransactionType`: credit, debit
 
 ### Data Models
 - Use `freezed` for immutable data classes
@@ -114,6 +115,57 @@ class ModelName with _$ModelName {
 - Create reusable widgets in `lib/utils/components/`
 - Only create common widgets when truly reusable across features
 - Feature-specific widgets go in feature's `widgets/` folder
+
+### File Attachments Pattern
+**For any feature that needs file upload/download functionality, use the standardized pattern:**
+
+1. **UI Component:** Use `AttachmentPickerField` from `lib/utils/components/attachment_picker_field.dart`
+   - Manages picking files locally (both new and existing)
+   - Returns `List<AttachmentModel>` (existing) and `List<PendingAttachment>` (new to upload)
+   - User controls picking/removing, NOT uploading
+
+2. **Upload Service:** Use `AttachmentService` from `lib/core/services/attachment_service.dart`
+   - Handles Firebase Storage uploads
+   - Creates Firestore documents in `documents` collection
+   - Auto-generates IDs, paths, and download URLs
+   - Already registered in DI: `sl<AttachmentService>()`
+
+3. **Integration Pattern (in form dialogs):**
+   ```dart
+   // Capture changes from AttachmentPickerField
+   List<AttachmentModel> _existingAttachments = [];
+   List<PendingAttachment> _pendingAttachments = [];
+   
+   AttachmentPickerField(
+     initialAttachments: _existingAttachments,
+     onChanged: (existing, pending) {
+       setState(() {
+         _existingAttachments = existing;
+         _pendingAttachments = pending;
+       });
+     },
+   )
+   
+   // On form submit, upload pending attachments
+   final attachmentService = sl<AttachmentService>();
+   for (final pending in _pendingAttachments) {
+     final uploaded = await attachmentService.uploadAttachment(
+       bytes: pending.bytes,
+       fileName: pending.fileName,
+       fileType: pending.fileType,
+       source: AttachmentSource.yourFeature, // credit, student, etc.
+       ownerId: targetId,
+       uploadedBy: currentUserId,
+     );
+     allUrls.add(uploaded.url);
+   }
+   
+   // Save model with all attachment URLs
+   model = model.copyWith(attachments: allUrls);
+   ```
+
+4. **Feature Enum:** Add source type to `AttachmentSource` enum in `app_enums.dart`
+   - Example: `AttachmentSource.payment`, `AttachmentSource.student`
 
 ### Constants
 - **Strings:** `lib/utils/constants/app_strings.dart`
@@ -256,6 +308,68 @@ Main overview screen displaying key metrics and statistics.
 - Statistics cards for Total Students, Active Instructors, Total Vehicles, Today's Schedule
 - Grid layout with color-coded cards
 - Real-time data updates (planned)
+
+### 3. Tags (`features/tags/`)
+Reusable tag management system for organizing and filtering data across features.
+
+**Model:** `TagModel` with fields:
+- `id` (String, nullable)
+- `name` (String, required)
+- `color` (String, optional - for UI customization)
+- `isActive` (bool, default true)
+- `createdAt` / `updatedAt` (DateTime, auto-managed)
+
+**Features:**
+- Full CRUD operations (Create, Read, Update, Delete)
+- Toggle active/inactive status
+- Used by Payment feature for transaction categorization
+- Extensible for future use across other features
+
+**Firestore Collection:** `tags`
+
+### 4. Payment (`features/payment/`)
+Transaction management system for tracking student payments and fees.
+
+**Model:** `PaymentModel` with fields:
+- `id` (String, Firestore document ID)
+- `txnId` (String, auto-generated unique identifier)
+- `studentId` (String, references UserModel with role "student")
+- `studentName` (String, denormalized for display)
+- `amount` (double)
+- `txnType` (TransactionType enum: credit/debit)
+- `txnDate` (DateTime, user-selected)
+- `tags` (List<String>, tag IDs for categorization)
+- `attachments` (List<String>, Firebase Storage URLs)
+- `isActive` (bool, default true)
+- `createdAt` / `updatedAt` (DateTime, auto-managed)
+
+**Features:**
+- List all transactions for current month with pagination
+- Filter by:
+  - Transaction ID (search)
+  - Student name (search with dropdown)
+  - Transaction type (credit/debit)
+  - Tags (multi-select)
+  - Month (date picker)
+- Create new payment with auto-generated transaction ID
+- Edit existing payment (reuses same dialog)
+- Delete payments with attachment cleanup
+- File attachments (PDF, images, docs)
+
+**Firestore Collection:** `payments`
+**Storage Path:** `payments/{paymentId}/{fileName}`
+
+**UI Components:**
+- `PaymentListScreen`: Main list with filters and pagination
+- `PaymentFormDialog`: Unified create/edit dialog with:
+  - Auto-generated txnId (read-only in edit mode)
+  - Student selection (SearchableAsyncDropdown)
+  - Amount input
+  - Transaction type dropdown (AsyncDropdown)
+  - Transaction date picker
+  - Multi-select tags (filter chips from TagsCubit)
+  - File attachments with preview/remove
+  - Read-only createdAt display in edit mode
 
 ## Firebase Setup
 

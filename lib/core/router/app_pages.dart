@@ -8,6 +8,8 @@ abstract class Routes {
   static const vehicles = _Paths.vehicles;
   static const vehicleTypes = _Paths.vehicleTypes;
   static const schedule = _Paths.schedule;
+  static const tags = _Paths.tags;
+  static const payments = _Paths.payments;
 }
 
 abstract class _Paths {
@@ -20,4 +22,6 @@ abstract class _Paths {
   static const vehicles = '/vehicles';
   static const vehicleTypes = '/vehicle-types';
   static const schedule = '/schedule';
+  static const tags = '/tags';
+  static const payments = '/payments';
 }

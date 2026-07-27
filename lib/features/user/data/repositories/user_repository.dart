@@ -23,6 +23,8 @@ abstract class UserRepository {
     required bool activeOnly,
     required int pageSize,
     PaginationCursor? cursor,
+    String searchQuery = '',
+    UserRole? role,
   });
 
   Future<UserModel> createUser(UserModel user);
@@ -139,16 +141,41 @@ class UserRepositoryImpl implements UserRepository {
     required bool activeOnly,
     required int pageSize,
     PaginationCursor? cursor,
+    String searchQuery = '',
+    UserRole? role,
   }) async {
     try {
-      final countQuery = _collection.where('isActive', isEqualTo: activeOnly);
-      final countSnapshot = await countQuery.count().get();
+      Query<Map<String, dynamic>> countBaseQuery = _collection.where(
+        'isActive',
+        isEqualTo: activeOnly,
+      );
+
+      if (role != null) {
+        countBaseQuery = countBaseQuery.where('role', isEqualTo: role.name);
+      }
+
+      final countSnapshot = await countBaseQuery.count().get();
       final totalCount = countSnapshot.count ?? 0;
 
-      Query<Map<String, dynamic>> query = _collection
-          .where('isActive', isEqualTo: activeOnly)
-          .orderBy('createdAt', descending: true)
-          .limit(pageSize);
+      Query<Map<String, dynamic>> query = _collection.where(
+        'isActive',
+        isEqualTo: activeOnly,
+      );
+
+      if (role != null) {
+        query = query.where('role', isEqualTo: role.name);
+      }
+
+      final lowerQuery = searchQuery.trim().toLowerCase();
+      if (lowerQuery.isNotEmpty) {
+        query = query.orderBy('nameLower').startAt([lowerQuery]).endAt([
+          '$lowerQuery\uf8ff',
+        ]);
+      } else {
+        query = query.orderBy('createdAt', descending: true);
+      }
+
+      query = query.limit(pageSize);
 
       if (cursor != null) {
         query = query.startAfterDocument((cursor as FirestoreCursor).document);

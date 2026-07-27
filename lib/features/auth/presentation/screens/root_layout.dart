@@ -13,6 +13,8 @@ class RootLayout extends StatelessWidget {
     if (location.startsWith('/vehicles')) return 2;
     if (location.startsWith('/vehicle-types')) return 3;
     if (location.startsWith('/schedule')) return 4;
+    if (location.startsWith('/tags')) return 5;
+    if (location.startsWith('/payments')) return 6;
     return 0; // Default fallback
   }
 
@@ -43,7 +45,7 @@ class RootLayout extends StatelessWidget {
       child: Column(
         children: [
           // HEADER
-          _buildHeader(),
+          // _buildHeader(),
 
           // SCROLLABLE TABS
           Expanded(
@@ -88,6 +90,22 @@ class RootLayout extends StatelessWidget {
                   title: 'Schedule',
                   route: '/schedule',
                   isSelected: selectedIndex == 4,
+                ),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.label_rounded,
+                  title: 'Tags',
+                  route: '/tags',
+                  isSelected: selectedIndex == 5,
+                ),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.payment_rounded,
+                  title: 'Payments',
+                  route: '/payments',
+                  isSelected: selectedIndex == 6,
                 ),
               ],
             ),
