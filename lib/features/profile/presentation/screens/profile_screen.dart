@@ -1,5 +1,6 @@
 import 'package:driver_flow_admin/features/profile/data/models/holiday_model.dart';
 import 'package:driver_flow_admin/features/profile/data/models/organization_profile_model.dart';
+import 'package:driver_flow_admin/utils/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,82 +27,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          ProfileCubit(repository: sl<ProfileRepository>())..loadProfile(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Organization Profile'),
-          actions: [
-            ElevatedButton.icon(
-              onPressed: _showProfileDialog,
-              icon: const Icon(Icons.edit),
-              label: const Text('Edit Profile'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Organization Profile'),
+        actions: [
+          ElevatedButton.icon(
+            onPressed: () => _showProfileDialog(
+              context.read<ProfileCubit>().state.maybeWhen(
+                loaded: (profile, _) => profile,
+                orElse: () => null,
+              ),
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: BlocBuilder<ProfileCubit, ProfileState>(
-            bloc: context.read<ProfileCubit>(),
-            builder: (context, state) {
-              return state.maybeWhen(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                loaded: (profile, holidays) {
-                  if (profile == null) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'No profile created yet',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: _showProfileDialog,
-                            icon: const Icon(Icons.add),
-                            label: const Text('Create Profile'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProfileCard(profile),
-                      const SizedBox(height: 32),
-                      _buildTodayStatus(profile),
-                      const SizedBox(height: 32),
-                      _buildHolidaysList(context, holidays),
-                    ],
-                  );
-                },
-                error: (message) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error, color: Colors.red, size: 48),
-                      const SizedBox(height: 16),
-                      Text(message),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () =>
-                            context.read<ProfileCubit>().loadProfile(),
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                ),
-                orElse: () => const Center(child: CircularProgressIndicator()),
-              );
-            },
+            icon: const Icon(Icons.edit),
+            label: const Text('Edit Profile'),
           ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: BlocBuilder<ProfileCubit, ProfileState>(
+          bloc: context.read<ProfileCubit>(),
+          builder: (context, state) {
+            return state.maybeWhen(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              loaded: (profile, holidays) {
+                if (profile == null) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'No profile created yet',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: _showProfileDialog,
+                          icon: const Icon(Icons.add),
+                          label: const Text('Create Profile'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildProfileCard(profile),
+                    const SizedBox(height: 32),
+                    _buildHolidaysList(context, holidays),
+                  ],
+                );
+              },
+              error: (message) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error, color: Colors.red, size: 48),
+                    const SizedBox(height: 16),
+                    Text(message),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          context.read<ProfileCubit>().loadProfile(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+              orElse: () => const Center(child: CircularProgressIndicator()),
+            );
+          },
         ),
       ),
     );
@@ -175,50 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTodayStatus(OrganizationProfileModel profile) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Today Status', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CheckboxListTile(
-                    title: const Text('Holiday'),
-                    value: profile.isHolidayToday ?? false,
-                    onChanged: (value) {
-                      context.read<ProfileCubit>().markTodayAsHoliday(
-                        value ?? false,
-                        profile.isHalfDayToday ?? false,
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: CheckboxListTile(
-                    title: const Text('Half Day'),
-                    value: profile.isHalfDayToday ?? false,
-                    onChanged: (value) {
-                      context.read<ProfileCubit>().markTodayAsHoliday(
-                        profile.isHolidayToday ?? false,
-                        value ?? false,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHolidaysList(BuildContext context, List holidays) {
+  Widget _buildHolidaysList(BuildContext context, List<HolidayModel> holidays) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -254,12 +211,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  title: Text(holiday.label),
-                  subtitle: Text(
-                    '${holiday.date.year}-${holiday.date.month.toString().padLeft(2, '0')}-${holiday.date.day.toString().padLeft(2, '0')}${holiday.isHalfDay ? ' (Half Day)' : ''}',
-                  ),
+                  title: Text(holiday.label ?? 'N/A'),
+                  subtitle: Text(holiday.date.toFormattedDate),
                   trailing: PopupMenuButton(
-                    itemBuilder: (context) => [
+                    itemBuilder: (_) => [
                       PopupMenuItem(
                         child: const Text('Edit'),
                         onTap: () => _showHolidayDialog(holiday),
@@ -282,18 +237,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showProfileDialog() {
+  void _showProfileDialog([OrganizationProfileModel? profile]) {
     showDialog(
       context: context,
-      builder: (context) => ProfileFormDialog(cubit: sl<ProfileCubit>()),
+      builder: (_) => BlocProvider.value(
+        value: context.read<ProfileCubit>(),
+        child: ProfileFormDialog(existing: profile),
+      ),
     );
   }
 
   void _showHolidayDialog([HolidayModel? holiday]) {
     showDialog(
       context: context,
-      builder: (context) =>
-          HolidayDialog(existing: holiday, cubit: context.read<ProfileCubit>()),
+      builder: (_) => BlocProvider.value(
+        value: context.read<ProfileCubit>(),
+        child: HolidayDialog(existing: holiday),
+      ),
     );
   }
 }

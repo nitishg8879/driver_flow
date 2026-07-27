@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+extension DateTimeExtensions on DateTime? {
+  String get toFormattedDate {
+    return this == null
+        ? "N/A"
+        : DateFormat('dd-MMM-yyyy').format(this ?? DateTime.now());
+  }
+}
 
 extension ContextExtensions on BuildContext {
   // Theme

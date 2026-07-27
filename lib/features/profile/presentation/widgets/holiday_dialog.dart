@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
@@ -8,9 +9,8 @@ import '../cubit/profile_cubit.dart';
 
 class HolidayDialog extends StatefulWidget {
   final HolidayModel? existing;
-  final ProfileCubit cubit;
 
-  const HolidayDialog({super.key, this.existing, required this.cubit});
+  const HolidayDialog({super.key, this.existing});
 
   @override
   State<HolidayDialog> createState() => _HolidayDialogState();
@@ -67,9 +67,9 @@ class _HolidayDialogState extends State<HolidayDialog> {
       if (!mounted) return;
 
       if (_isEditMode) {
-        widget.cubit.updateHoliday(holiday);
+        context.read<ProfileCubit>().updateHoliday(holiday);
       } else {
-        widget.cubit.addHoliday(holiday);
+        context.read<ProfileCubit>().addHoliday(holiday);
       }
 
       if (mounted) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
@@ -18,9 +19,8 @@ const _workingDays = [
 
 class ProfileFormDialog extends StatefulWidget {
   final OrganizationProfileModel? existing;
-  final ProfileCubit cubit;
 
-  const ProfileFormDialog({super.key, this.existing, required this.cubit});
+  const ProfileFormDialog({super.key, this.existing});
 
   @override
   State<ProfileFormDialog> createState() => _ProfileFormDialogState();
@@ -92,7 +92,7 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
       );
 
       if (!mounted) return;
-      widget.cubit.updateProfile(model);
+      context.read<ProfileCubit>().updateProfile(model);
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
