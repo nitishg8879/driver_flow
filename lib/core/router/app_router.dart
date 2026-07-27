@@ -19,6 +19,8 @@ import '../../features/tags/presentation/cubit/tags_cubit.dart';
 import '../../features/tags/presentation/screens/tags_screen.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
 import '../../features/payment/presentation/screens/payment_list_screen.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../di/service_locator.dart';
 import '../services/storage_service.dart';
 
@@ -122,6 +124,18 @@ class AppRouter {
                 child: BlocProvider(
                   create: (context) => sl<PaymentCubit>(),
                   child: const PaymentListScreen(),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.profile,
+            name: 'profile',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: BlocProvider(
+                  create: (context) => sl<ProfileCubit>(),
+                  child: const ProfileScreen(),
                 ),
               );
             },

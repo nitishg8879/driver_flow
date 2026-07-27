@@ -15,6 +15,8 @@ class AppConstants {
   static const String documentsCollection = 'documents';
   static const String tagsCollection = 'tags';
   static const String paymentsCollection = 'payments';
+  static const String organizationCollection = 'organization';
+  static const String holidaysSubcollection = 'holidays';
 
   // Shared Preferences Keys
   static const String isLoggedInKey = 'isLoggedIn';

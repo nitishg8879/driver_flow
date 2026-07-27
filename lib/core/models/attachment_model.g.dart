@@ -46,5 +46,6 @@ const _$AttachmentFileTypeEnumMap = {
 const _$AttachmentSourceEnumMap = {
   AttachmentSource.student: 'student',
   AttachmentSource.instructor: 'instructor',
+  AttachmentSource.payment: 'payment',
   AttachmentSource.vehicle: 'vehicle',
 };

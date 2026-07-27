@@ -10,6 +10,7 @@ abstract class Routes {
   static const schedule = _Paths.schedule;
   static const tags = _Paths.tags;
   static const payments = _Paths.payments;
+  static const profile = _Paths.profile;
 }
 
 abstract class _Paths {
@@ -24,4 +25,5 @@ abstract class _Paths {
   static const schedule = '/schedule';
   static const tags = '/tags';
   static const payments = '/payments';
+  static const profile = '/profile';
 }

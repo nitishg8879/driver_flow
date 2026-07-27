@@ -15,6 +15,7 @@ class RootLayout extends StatelessWidget {
     if (location.startsWith('/schedule')) return 4;
     if (location.startsWith('/tags')) return 5;
     if (location.startsWith('/payments')) return 6;
+    if (location.startsWith('/profile')) return 7;
     return 0; // Default fallback
   }
 
@@ -106,6 +107,14 @@ class RootLayout extends StatelessWidget {
                   title: 'Payments',
                   route: '/payments',
                   isSelected: selectedIndex == 6,
+                ),
+                const SizedBox(height: 8),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.business_rounded,
+                  title: 'Profile',
+                  route: '/profile',
+                  isSelected: selectedIndex == 7,
                 ),
               ],
             ),

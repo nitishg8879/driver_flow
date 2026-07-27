@@ -16,6 +16,8 @@ import '../../features/tags/data/repositories/tag_repository.dart';
 import '../../features/tags/presentation/cubit/tags_cubit.dart';
 import '../../features/payment/data/repositories/payment_repository.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
+import '../../features/profile/data/repositories/profile_repository.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../services/attachment_service.dart';
 import '../services/storage_service.dart';
 
@@ -62,6 +64,9 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<PaymentRepository>(
     () => PaymentRepositoryImpl(firestore: sl(), storage: sl()),
   );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(firestore: sl()),
+  );
 
   // Blocs / Cubits
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
@@ -71,4 +76,5 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => ScheduleCubit(repository: sl()));
   sl.registerFactory(() => TagsCubit(repository: sl()));
   sl.registerFactory(() => PaymentCubit(repository: sl()));
+  sl.registerFactory(() => ProfileCubit(repository: sl()));
 }

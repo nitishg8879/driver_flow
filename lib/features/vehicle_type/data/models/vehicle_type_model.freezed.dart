@@ -24,6 +24,8 @@ mixin _$VehicleTypeModel {
   String? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
+  int get numberOfSessions => throw _privateConstructorUsedError;
+  int get sessionDurationMinutes => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
@@ -49,6 +51,8 @@ abstract class $VehicleTypeModelCopyWith<$Res> {
     String? id,
     String name,
     String? imageUrl,
+    int numberOfSessions,
+    int sessionDurationMinutes,
     bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -73,6 +77,8 @@ class _$VehicleTypeModelCopyWithImpl<$Res, $Val extends VehicleTypeModel>
     Object? id = freezed,
     Object? name = null,
     Object? imageUrl = freezed,
+    Object? numberOfSessions = null,
+    Object? sessionDurationMinutes = null,
     Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -91,6 +97,14 @@ class _$VehicleTypeModelCopyWithImpl<$Res, $Val extends VehicleTypeModel>
                 ? _value.imageUrl
                 : imageUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
+            numberOfSessions: null == numberOfSessions
+                ? _value.numberOfSessions
+                : numberOfSessions // ignore: cast_nullable_to_non_nullable
+                      as int,
+            sessionDurationMinutes: null == sessionDurationMinutes
+                ? _value.sessionDurationMinutes
+                : sessionDurationMinutes // ignore: cast_nullable_to_non_nullable
+                      as int,
             isActive: null == isActive
                 ? _value.isActive
                 : isActive // ignore: cast_nullable_to_non_nullable
@@ -122,6 +136,8 @@ abstract class _$$VehicleTypeModelImplCopyWith<$Res>
     String? id,
     String name,
     String? imageUrl,
+    int numberOfSessions,
+    int sessionDurationMinutes,
     bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -145,6 +161,8 @@ class __$$VehicleTypeModelImplCopyWithImpl<$Res>
     Object? id = freezed,
     Object? name = null,
     Object? imageUrl = freezed,
+    Object? numberOfSessions = null,
+    Object? sessionDurationMinutes = null,
     Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -163,6 +181,14 @@ class __$$VehicleTypeModelImplCopyWithImpl<$Res>
             ? _value.imageUrl
             : imageUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
+        numberOfSessions: null == numberOfSessions
+            ? _value.numberOfSessions
+            : numberOfSessions // ignore: cast_nullable_to_non_nullable
+                  as int,
+        sessionDurationMinutes: null == sessionDurationMinutes
+            ? _value.sessionDurationMinutes
+            : sessionDurationMinutes // ignore: cast_nullable_to_non_nullable
+                  as int,
         isActive: null == isActive
             ? _value.isActive
             : isActive // ignore: cast_nullable_to_non_nullable
@@ -187,6 +213,8 @@ class _$VehicleTypeModelImpl implements _VehicleTypeModel {
     this.id,
     required this.name,
     this.imageUrl,
+    this.numberOfSessions = 0,
+    this.sessionDurationMinutes = 0,
     this.isActive = true,
     this.createdAt,
     this.updatedAt,
@@ -203,6 +231,12 @@ class _$VehicleTypeModelImpl implements _VehicleTypeModel {
   final String? imageUrl;
   @override
   @JsonKey()
+  final int numberOfSessions;
+  @override
+  @JsonKey()
+  final int sessionDurationMinutes;
+  @override
+  @JsonKey()
   final bool isActive;
   @override
   final DateTime? createdAt;
@@ -211,7 +245,7 @@ class _$VehicleTypeModelImpl implements _VehicleTypeModel {
 
   @override
   String toString() {
-    return 'VehicleTypeModel(id: $id, name: $name, imageUrl: $imageUrl, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'VehicleTypeModel(id: $id, name: $name, imageUrl: $imageUrl, numberOfSessions: $numberOfSessions, sessionDurationMinutes: $sessionDurationMinutes, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -223,6 +257,10 @@ class _$VehicleTypeModelImpl implements _VehicleTypeModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
+            (identical(other.numberOfSessions, numberOfSessions) ||
+                other.numberOfSessions == numberOfSessions) &&
+            (identical(other.sessionDurationMinutes, sessionDurationMinutes) ||
+                other.sessionDurationMinutes == sessionDurationMinutes) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
             (identical(other.createdAt, createdAt) ||
@@ -238,6 +276,8 @@ class _$VehicleTypeModelImpl implements _VehicleTypeModel {
     id,
     name,
     imageUrl,
+    numberOfSessions,
+    sessionDurationMinutes,
     isActive,
     createdAt,
     updatedAt,
@@ -265,6 +305,8 @@ abstract class _VehicleTypeModel implements VehicleTypeModel {
     final String? id,
     required final String name,
     final String? imageUrl,
+    final int numberOfSessions,
+    final int sessionDurationMinutes,
     final bool isActive,
     final DateTime? createdAt,
     final DateTime? updatedAt,
@@ -279,6 +321,10 @@ abstract class _VehicleTypeModel implements VehicleTypeModel {
   String get name;
   @override
   String? get imageUrl;
+  @override
+  int get numberOfSessions;
+  @override
+  int get sessionDurationMinutes;
   @override
   bool get isActive;
   @override

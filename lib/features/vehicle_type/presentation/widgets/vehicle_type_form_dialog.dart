@@ -24,6 +24,8 @@ class VehicleTypeFormDialog extends StatefulWidget {
 class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
+  late final TextEditingController _sessionsController;
+  late final TextEditingController _durationController;
   Uint8List? _imageBytes;
   String? _imageFileName;
   bool _isSaving = false;
@@ -34,11 +36,19 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.existing?.name);
+    _sessionsController = TextEditingController(
+      text: widget.existing?.numberOfSessions.toString() ?? '',
+    );
+    _durationController = TextEditingController(
+      text: widget.existing?.sessionDurationMinutes.toString() ?? '',
+    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _sessionsController.dispose();
+    _durationController.dispose();
     super.dispose();
   }
 
@@ -62,9 +72,16 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
 
     setState(() => _isSaving = true);
 
+    final numberOfSessions = int.tryParse(_sessionsController.text.trim()) ?? 0;
+    final sessionDuration = int.tryParse(_durationController.text.trim()) ?? 0;
+
     final cubit = context.read<VehicleTypeCubit>();
     final model = (widget.existing ?? const VehicleTypeModel(name: ''))
-        .copyWith(name: _nameController.text.trim());
+        .copyWith(
+          name: _nameController.text.trim(),
+          numberOfSessions: numberOfSessions,
+          sessionDurationMinutes: sessionDuration,
+        );
 
     final success = _isEditMode
         ? await cubit.updateVehicleType(
@@ -105,6 +122,42 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
                 hintText: 'e.g. Two Wheeler - Gear',
                 validator: (value) =>
                     Validators.validateRequired(value, 'Name'),
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _sessionsController,
+                labelText: 'Number of Sessions Required',
+                hintText: 'e.g. 20',
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: false,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Sessions required';
+                  }
+                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                    return 'Enter a valid number';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _durationController,
+                labelText: 'Session Duration (minutes)',
+                hintText: 'e.g. 60',
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: false,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Duration required';
+                  }
+                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                    return 'Enter a valid duration';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               Row(
