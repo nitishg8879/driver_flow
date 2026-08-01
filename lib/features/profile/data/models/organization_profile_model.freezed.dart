@@ -24,6 +24,7 @@ OrganizationProfileModel _$OrganizationProfileModelFromJson(
 /// @nodoc
 mixin _$OrganizationProfileModel {
   String? get id => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
   String? get organizationName => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
   List<String>? get websiteUrls => throw _privateConstructorUsedError;
@@ -55,6 +56,7 @@ abstract class $OrganizationProfileModelCopyWith<$Res> {
   @useResult
   $Res call({
     String? id,
+    String? email,
     String? organizationName,
     String? phoneNumber,
     List<String>? websiteUrls,
@@ -86,6 +88,7 @@ class _$OrganizationProfileModelCopyWithImpl<
   @override
   $Res call({
     Object? id = freezed,
+    Object? email = freezed,
     Object? organizationName = freezed,
     Object? phoneNumber = freezed,
     Object? websiteUrls = freezed,
@@ -101,6 +104,10 @@ class _$OrganizationProfileModelCopyWithImpl<
             id: freezed == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
                       as String?,
             organizationName: freezed == organizationName
                 ? _value.organizationName
@@ -155,6 +162,7 @@ abstract class _$$OrganizationProfileModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String? id,
+    String? email,
     String? organizationName,
     String? phoneNumber,
     List<String>? websiteUrls,
@@ -186,6 +194,7 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
+    Object? email = freezed,
     Object? organizationName = freezed,
     Object? phoneNumber = freezed,
     Object? websiteUrls = freezed,
@@ -201,6 +210,10 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
         id: freezed == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
                   as String?,
         organizationName: freezed == organizationName
             ? _value.organizationName
@@ -248,6 +261,7 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
 class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
   const _$OrganizationProfileModelImpl({
     this.id,
+    this.email,
     this.organizationName,
     this.phoneNumber,
     final List<String>? websiteUrls = const [],
@@ -265,6 +279,8 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
 
   @override
   final String? id;
+  @override
+  final String? email;
   @override
   final String? organizationName;
   @override
@@ -308,7 +324,7 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
 
   @override
   String toString() {
-    return 'OrganizationProfileModel(id: $id, organizationName: $organizationName, phoneNumber: $phoneNumber, websiteUrls: $websiteUrls, aboutUs: $aboutUs, workingDays: $workingDays, isHolidayToday: $isHolidayToday, isHalfDayToday: $isHalfDayToday, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'OrganizationProfileModel(id: $id, email: $email, organizationName: $organizationName, phoneNumber: $phoneNumber, websiteUrls: $websiteUrls, aboutUs: $aboutUs, workingDays: $workingDays, isHolidayToday: $isHolidayToday, isHalfDayToday: $isHalfDayToday, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -317,6 +333,7 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
         (other.runtimeType == runtimeType &&
             other is _$OrganizationProfileModelImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.email, email) || other.email == email) &&
             (identical(other.organizationName, organizationName) ||
                 other.organizationName == organizationName) &&
             (identical(other.phoneNumber, phoneNumber) ||
@@ -345,6 +362,7 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    email,
     organizationName,
     phoneNumber,
     const DeepCollectionEquality().hash(_websiteUrls),
@@ -376,6 +394,7 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
 abstract class _OrganizationProfileModel implements OrganizationProfileModel {
   const factory _OrganizationProfileModel({
     final String? id,
+    final String? email,
     final String? organizationName,
     final String? phoneNumber,
     final List<String>? websiteUrls,
@@ -392,6 +411,8 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
 
   @override
   String? get id;
+  @override
+  String? get email;
   @override
   String? get organizationName;
   @override

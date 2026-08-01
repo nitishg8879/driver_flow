@@ -1,6 +1,7 @@
 import 'package:driver_flow_admin/features/profile/data/models/holiday_model.dart';
 import 'package:driver_flow_admin/features/profile/data/models/organization_profile_model.dart';
 import 'package:driver_flow_admin/utils/extensions/context_extensions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -238,11 +239,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showProfileDialog([OrganizationProfileModel? profile]) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final profileWithEmail = profile ?? OrganizationProfileModel(
+      email: currentUser?.email,
+    );
     showDialog(
       context: context,
       builder: (_) => BlocProvider.value(
         value: context.read<ProfileCubit>(),
-        child: ProfileFormDialog(existing: profile),
+        child: ProfileFormDialog(existing: profileWithEmail),
       ),
     );
   }

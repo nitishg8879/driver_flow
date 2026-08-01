@@ -25,6 +25,7 @@ class _TimestampConverter implements JsonConverter<DateTime?, dynamic> {
 class OrganizationProfileModel with _$OrganizationProfileModel {
   const factory OrganizationProfileModel({
     String? id,
+    String? email,
     String? organizationName,
     String? phoneNumber,
     @Default([]) List<String>? websiteUrls,

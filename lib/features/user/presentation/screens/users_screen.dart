@@ -181,14 +181,6 @@ class _UsersScreenState extends State<UsersScreen> {
                   if (user.phoneNumber != null) {
                     subtitleParts.add(user.phoneNumber!);
                   }
-                  if (user.role == UserRole.student &&
-                      user.vehicleTypeName != null) {
-                    subtitleParts.add(user.vehicleTypeName!);
-                  }
-                  if (user.role == UserRole.instructor &&
-                      user.licenseNumber != null) {
-                    subtitleParts.add(user.licenseNumber!);
-                  }
 
                   return ListTile(
                     leading: CircleAvatar(

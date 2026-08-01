@@ -15,9 +15,6 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       role: $enumDecodeNullable(_$UserRoleEnumMap, json['role']),
       phoneNumber: json['phoneNumber'] as String?,
       profileImageUrl: json['profileImageUrl'] as String?,
-      vehicleTypeId: json['vehicleTypeId'] as String?,
-      vehicleTypeName: json['vehicleTypeName'] as String?,
-      licenseNumber: json['licenseNumber'] as String?,
       isActive: json['isActive'] as bool? ?? true,
       createdAt: json['createdAt'] == null
           ? null
@@ -36,9 +33,6 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'role': _$UserRoleEnumMap[instance.role],
       'phoneNumber': instance.phoneNumber,
       'profileImageUrl': instance.profileImageUrl,
-      'vehicleTypeId': instance.vehicleTypeId,
-      'vehicleTypeName': instance.vehicleTypeName,
-      'licenseNumber': instance.licenseNumber,
       'isActive': instance.isActive,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
@@ -47,7 +41,6 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
 const _$UserRoleEnumMap = {
   UserRole.admin: 'admin',
   UserRole.manager: 'manager',
-  UserRole.driver: 'driver',
   UserRole.viewer: 'viewer',
   UserRole.student: 'student',
   UserRole.instructor: 'instructor',

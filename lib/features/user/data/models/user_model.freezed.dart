@@ -29,10 +29,10 @@ mixin _$UserModel {
   String? get phoneNumber => throw _privateConstructorUsedError;
   String? get profileImageUrl =>
       throw _privateConstructorUsedError; // Student-specific fields
-  String? get vehicleTypeId => throw _privateConstructorUsedError;
-  String? get vehicleTypeName =>
-      throw _privateConstructorUsedError; // Instructor-specific fields
-  String? get licenseNumber => throw _privateConstructorUsedError;
+  // String? vehicleTypeId,
+  // String? vehicleTypeName,
+  // Instructor-specific fields
+  // String? licenseNumber,
   bool get isActive => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
@@ -60,9 +60,6 @@ abstract class $UserModelCopyWith<$Res> {
     UserRole? role,
     String? phoneNumber,
     String? profileImageUrl,
-    String? vehicleTypeId,
-    String? vehicleTypeName,
-    String? licenseNumber,
     bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -91,9 +88,6 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? role = freezed,
     Object? phoneNumber = freezed,
     Object? profileImageUrl = freezed,
-    Object? vehicleTypeId = freezed,
-    Object? vehicleTypeName = freezed,
-    Object? licenseNumber = freezed,
     Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -127,18 +121,6 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
             profileImageUrl: freezed == profileImageUrl
                 ? _value.profileImageUrl
                 : profileImageUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            vehicleTypeId: freezed == vehicleTypeId
-                ? _value.vehicleTypeId
-                : vehicleTypeId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            vehicleTypeName: freezed == vehicleTypeName
-                ? _value.vehicleTypeName
-                : vehicleTypeName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            licenseNumber: freezed == licenseNumber
-                ? _value.licenseNumber
-                : licenseNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
             isActive: null == isActive
                 ? _value.isActive
@@ -175,9 +157,6 @@ abstract class _$$UserModelImplCopyWith<$Res>
     UserRole? role,
     String? phoneNumber,
     String? profileImageUrl,
-    String? vehicleTypeId,
-    String? vehicleTypeName,
-    String? licenseNumber,
     bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -205,9 +184,6 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? role = freezed,
     Object? phoneNumber = freezed,
     Object? profileImageUrl = freezed,
-    Object? vehicleTypeId = freezed,
-    Object? vehicleTypeName = freezed,
-    Object? licenseNumber = freezed,
     Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -242,18 +218,6 @@ class __$$UserModelImplCopyWithImpl<$Res>
             ? _value.profileImageUrl
             : profileImageUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
-        vehicleTypeId: freezed == vehicleTypeId
-            ? _value.vehicleTypeId
-            : vehicleTypeId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        vehicleTypeName: freezed == vehicleTypeName
-            ? _value.vehicleTypeName
-            : vehicleTypeName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        licenseNumber: freezed == licenseNumber
-            ? _value.licenseNumber
-            : licenseNumber // ignore: cast_nullable_to_non_nullable
-                  as String?,
         isActive: null == isActive
             ? _value.isActive
             : isActive // ignore: cast_nullable_to_non_nullable
@@ -282,9 +246,6 @@ class _$UserModelImpl implements _UserModel {
     this.role,
     this.phoneNumber,
     this.profileImageUrl,
-    this.vehicleTypeId,
-    this.vehicleTypeName,
-    this.licenseNumber,
     this.isActive = true,
     this.createdAt,
     this.updatedAt,
@@ -308,13 +269,10 @@ class _$UserModelImpl implements _UserModel {
   @override
   final String? profileImageUrl;
   // Student-specific fields
-  @override
-  final String? vehicleTypeId;
-  @override
-  final String? vehicleTypeName;
+  // String? vehicleTypeId,
+  // String? vehicleTypeName,
   // Instructor-specific fields
-  @override
-  final String? licenseNumber;
+  // String? licenseNumber,
   @override
   @JsonKey()
   final bool isActive;
@@ -325,7 +283,7 @@ class _$UserModelImpl implements _UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name, nameLower: $nameLower, role: $role, phoneNumber: $phoneNumber, profileImageUrl: $profileImageUrl, vehicleTypeId: $vehicleTypeId, vehicleTypeName: $vehicleTypeName, licenseNumber: $licenseNumber, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserModel(id: $id, email: $email, name: $name, nameLower: $nameLower, role: $role, phoneNumber: $phoneNumber, profileImageUrl: $profileImageUrl, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -343,12 +301,6 @@ class _$UserModelImpl implements _UserModel {
                 other.phoneNumber == phoneNumber) &&
             (identical(other.profileImageUrl, profileImageUrl) ||
                 other.profileImageUrl == profileImageUrl) &&
-            (identical(other.vehicleTypeId, vehicleTypeId) ||
-                other.vehicleTypeId == vehicleTypeId) &&
-            (identical(other.vehicleTypeName, vehicleTypeName) ||
-                other.vehicleTypeName == vehicleTypeName) &&
-            (identical(other.licenseNumber, licenseNumber) ||
-                other.licenseNumber == licenseNumber) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
             (identical(other.createdAt, createdAt) ||
@@ -368,9 +320,6 @@ class _$UserModelImpl implements _UserModel {
     role,
     phoneNumber,
     profileImageUrl,
-    vehicleTypeId,
-    vehicleTypeName,
-    licenseNumber,
     isActive,
     createdAt,
     updatedAt,
@@ -399,9 +348,6 @@ abstract class _UserModel implements UserModel {
     final UserRole? role,
     final String? phoneNumber,
     final String? profileImageUrl,
-    final String? vehicleTypeId,
-    final String? vehicleTypeName,
-    final String? licenseNumber,
     final bool isActive,
     final DateTime? createdAt,
     final DateTime? updatedAt,
@@ -424,12 +370,10 @@ abstract class _UserModel implements UserModel {
   String? get phoneNumber;
   @override
   String? get profileImageUrl; // Student-specific fields
-  @override
-  String? get vehicleTypeId;
-  @override
-  String? get vehicleTypeName; // Instructor-specific fields
-  @override
-  String? get licenseNumber;
+  // String? vehicleTypeId,
+  // String? vehicleTypeName,
+  // Instructor-specific fields
+  // String? licenseNumber,
   @override
   bool get isActive;
   @override

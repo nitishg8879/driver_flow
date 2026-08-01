@@ -84,6 +84,7 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
 
     try {
       final model = OrganizationProfileModel(
+        email: widget.existing?.email,
         organizationName: _nameController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
         aboutUs: _aboutController.text.trim(),
@@ -124,6 +125,13 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
               key: _formKey,
               child: Column(
                 children: [
+                  CustomTextField(
+                    initialValue: widget.existing?.email,
+                    labelText: 'Email',
+                    enabled: false,
+                    readOnly: true,
+                  ),
+                  const SizedBox(height: 16),
                   CustomTextField(
                     controller: _nameController,
                     labelText: 'Organization Name',

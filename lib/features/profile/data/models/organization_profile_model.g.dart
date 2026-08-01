@@ -10,6 +10,7 @@ _$OrganizationProfileModelImpl _$$OrganizationProfileModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$OrganizationProfileModelImpl(
   id: json['id'] as String?,
+  email: json['email'] as String?,
   organizationName: json['organizationName'] as String?,
   phoneNumber: json['phoneNumber'] as String?,
   websiteUrls:
@@ -33,6 +34,7 @@ Map<String, dynamic> _$$OrganizationProfileModelImplToJson(
   _$OrganizationProfileModelImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
+  'email': instance.email,
   'organizationName': instance.organizationName,
   'phoneNumber': instance.phoneNumber,
   'websiteUrls': instance.websiteUrls,

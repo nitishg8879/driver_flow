@@ -5,7 +5,6 @@ import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/attachment_model.dart';
 import '../../../../core/services/attachment_service.dart';
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../../../utils/components/async_dropdown.dart';
 import '../../../../utils/components/attachment_picker_field.dart';
 import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
@@ -13,8 +12,6 @@ import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
 import '../../../../utils/helpers/validators.dart';
 import '../../data/models/user_model.dart';
-import '../../../vehicle_type/data/models/vehicle_type_model.dart';
-import '../../../vehicle_type/data/repositories/vehicle_type_repository.dart';
 import '../cubit/user_cubit.dart';
 
 class UserFormDialog extends StatefulWidget {
@@ -30,8 +27,8 @@ class _UserFormDialogState extends State<UserFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _licenseController;
-  VehicleTypeModel? _selectedVehicleType;
+  // late final TextEditingController _licenseController;
+  // VehicleTypeModel? _selectedVehicleType;
   UserRole? _selectedRole;
   List<AttachmentModel> _initialAttachments = [];
   List<AttachmentModel> _existingAttachments = [];
@@ -48,14 +45,10 @@ class _UserFormDialogState extends State<UserFormDialog> {
     _phoneController = TextEditingController(
       text: widget.existing?.phoneNumber,
     );
-    _licenseController = TextEditingController(
-      text: widget.existing?.licenseNumber,
-    );
     _selectedRole = widget.existing?.role ?? UserRole.student;
 
     if (_selectedRole == UserRole.student && _isEditMode) {
       _loadExistingAttachments();
-      _loadExistingVehicleType();
     }
   }
 
@@ -76,42 +69,16 @@ class _UserFormDialogState extends State<UserFormDialog> {
     }
   }
 
-  Future<void> _loadExistingVehicleType() async {
-    if (widget.existing?.vehicleTypeId == null) return;
-    try {
-      final types = await sl<VehicleTypeRepository>().getVehicleTypes();
-      VehicleTypeModel? match;
-      for (final type in types) {
-        if (type.id == widget.existing?.vehicleTypeId) {
-          match = type;
-          break;
-        }
-      }
-      if (mounted && match != null) {
-        setState(() => _selectedVehicleType = match);
-      }
-    } catch (e, stackTrace) {
-      _logger.error('Failed to load selected vehicle type', e, stackTrace);
-    }
-  }
-
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _licenseController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRole == null) return;
-    if (_selectedRole == UserRole.student && _selectedVehicleType == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a vehicle type')),
-      );
-      return;
-    }
 
     setState(() => _isSaving = true);
     final cubit = context.read<UserCubit>();
@@ -125,17 +92,6 @@ class _UserFormDialogState extends State<UserFormDialog> {
       name: _nameController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
       role: _selectedRole,
-      vehicleTypeId: _selectedRole == UserRole.student
-          ? _selectedVehicleType?.id
-          : null,
-      vehicleTypeName: _selectedRole == UserRole.student
-          ? _selectedVehicleType?.name
-          : null,
-      licenseNumber: _selectedRole == UserRole.instructor
-          ? _licenseController.text.trim().isEmpty
-                ? null
-                : _licenseController.text.trim()
-          : null,
     );
 
     final savedUser = _isEditMode
@@ -230,41 +186,20 @@ class _UserFormDialogState extends State<UserFormDialog> {
                   onChanged: (value) {
                     setState(() {
                       _selectedRole = value;
-                      if (_selectedRole != UserRole.student) {
-                        _selectedVehicleType = null;
-                      }
                     });
                   },
                   validator: (value) =>
                       value == null ? 'Please select a role' : null,
                 ),
+
                 const SizedBox(height: 16),
-                if (_selectedRole == UserRole.student) ...[
-                  AsyncDropdown<VehicleTypeModel>(
-                    labelText: 'Vehicle Type',
-                    value: _selectedVehicleType,
-                    fetchItems: () =>
-                        sl<VehicleTypeRepository>().getVehicleTypes(),
-                    itemLabelBuilder: (item) => item.name,
-                    onChanged: (value) =>
-                        setState(() => _selectedVehicleType = value),
-                  ),
-                  const SizedBox(height: 16),
-                  AttachmentPickerField(
-                    initialAttachments: _existingAttachments,
-                    onChanged: (existing, pending) {
-                      _existingAttachments = existing;
-                      _pendingAttachments = pending;
-                    },
-                  ),
-                ],
-                if (_selectedRole == UserRole.instructor) ...[
-                  CustomTextField(
-                    controller: _licenseController,
-                    labelText: 'License Number (optional)',
-                    hintText: 'Enter license number',
-                  ),
-                ],
+                AttachmentPickerField(
+                  initialAttachments: _existingAttachments,
+                  onChanged: (existing, pending) {
+                    _existingAttachments = existing;
+                    _pendingAttachments = pending;
+                  },
+                ),
               ],
             ),
           ),

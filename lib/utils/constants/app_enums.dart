@@ -4,7 +4,6 @@
 enum UserRole {
   admin,
   manager,
-  driver,
   viewer,
   student,
   instructor;
@@ -15,8 +14,6 @@ enum UserRole {
         return 'Admin';
       case UserRole.manager:
         return 'Manager';
-      case UserRole.driver:
-        return 'Driver';
       case UserRole.viewer:
         return 'Viewer';
       case UserRole.student:
