@@ -13,8 +13,6 @@ import '../../features/user/presentation/cubit/user_cubit.dart';
 import '../../features/user/presentation/screens/users_screen.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/vehicle_type/presentation/screens/vehicle_type_screen.dart';
-import '../../features/vehicles/presentation/cubit/vehicle_cubit.dart';
-import '../../features/vehicles/presentation/screens/vehicles_screen.dart';
 import '../../features/tags/presentation/cubit/tags_cubit.dart';
 import '../../features/tags/presentation/screens/tags_screen.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
@@ -68,18 +66,7 @@ class AppRouter {
               );
             },
           ),
-          GoRoute(
-            path: Routes.vehicles,
-            name: 'vehicles',
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                child: BlocProvider(
-                  create: (context) => sl<VehicleCubit>(),
-                  child: const VehiclesScreen(),
-                ),
-              );
-            },
-          ),
+          
           GoRoute(
             path: Routes.vehicleTypes,
             name: 'vehicleTypes',

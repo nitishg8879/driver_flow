@@ -21,6 +21,8 @@ class AsyncDropdown<T> extends StatefulWidget {
   final String labelText;
   final String? Function(T?)? validator;
   final bool enabled;
+  // When set, prepends a null "All" item with this label (e.g., "All Instructors")
+  final String? nullItemLabel;
 
   const AsyncDropdown({
     super.key,
@@ -31,6 +33,7 @@ class AsyncDropdown<T> extends StatefulWidget {
     this.value,
     this.validator,
     this.enabled = true,
+    this.nullItemLabel,
   });
 
   @override
@@ -97,21 +100,40 @@ class _AsyncDropdownState<T> extends State<AsyncDropdown<T>> {
 
         final items = snapshot.data ?? [];
 
-        return DropdownButtonFormField<T>(
-          initialValue: widget.value,
+        return DropdownButtonFormField<T?>(
+          value: widget.value,
           isExpanded: true,
           decoration: InputDecoration(
             labelText: widget.labelText,
-            border: const OutlineInputBorder(),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
-          items: items
-              .map(
-                (item) => DropdownMenuItem<T>(
-                  value: item,
-                  child: Text(widget.itemLabelBuilder(item)),
+          items: [
+            if (widget.nullItemLabel != null)
+              DropdownMenuItem<T?>(
+                value: null,
+                child: Text(
+                  widget.nullItemLabel!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-              )
-              .toList(),
+              ),
+            ...items.map(
+              (item) => DropdownMenuItem<T?>(
+                value: item,
+                child: Text(widget.itemLabelBuilder(item)),
+              ),
+            ),
+          ],
           onChanged: widget.enabled ? widget.onChanged : null,
           validator: widget.validator,
         );

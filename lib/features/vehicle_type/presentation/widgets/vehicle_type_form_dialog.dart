@@ -26,6 +26,7 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
   late final TextEditingController _nameController;
   late final TextEditingController _sessionsController;
   late final TextEditingController _durationController;
+  late final TextEditingController _priceController;
   Uint8List? _imageBytes;
   String? _imageFileName;
   bool _isSaving = false;
@@ -42,6 +43,9 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
     _durationController = TextEditingController(
       text: widget.existing?.sessionDurationMinutes.toString() ?? '',
     );
+    _priceController = TextEditingController(
+      text: widget.existing?.pricePerSession.toString() ?? '',
+    );
   }
 
   @override
@@ -49,6 +53,7 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
     _nameController.dispose();
     _sessionsController.dispose();
     _durationController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -74,6 +79,7 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
 
     final numberOfSessions = int.tryParse(_sessionsController.text.trim()) ?? 0;
     final sessionDuration = int.tryParse(_durationController.text.trim()) ?? 0;
+    final pricePerSession = num.tryParse(_priceController.text.trim()) ?? 0;
 
     final cubit = context.read<VehicleTypeCubit>();
     final model = (widget.existing ?? const VehicleTypeModel(name: ''))
@@ -81,6 +87,7 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
           name: _nameController.text.trim(),
           numberOfSessions: numberOfSessions,
           sessionDurationMinutes: sessionDuration,
+          pricePerSession: pricePerSession,
         );
 
     final success = _isEditMode
@@ -155,6 +162,24 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
                   }
                   if (int.tryParse(value) == null || int.parse(value) <= 0) {
                     return 'Enter a valid duration';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _priceController,
+                labelText: 'Price Per Session',
+                hintText: 'e.g. 60',
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Price required';
+                  }
+                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                    return 'Enter a valid price';
                   }
                   return null;
                 },

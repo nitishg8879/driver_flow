@@ -15,6 +15,7 @@ _$VehicleTypeModelImpl _$$VehicleTypeModelImplFromJson(
   numberOfSessions: (json['numberOfSessions'] as num?)?.toInt() ?? 0,
   sessionDurationMinutes:
       (json['sessionDurationMinutes'] as num?)?.toInt() ?? 0,
+  pricePerSession: json['pricePerSession'] as num? ?? 0,
   isActive: json['isActive'] as bool? ?? true,
   createdAt: json['createdAt'] == null
       ? null
@@ -32,6 +33,7 @@ Map<String, dynamic> _$$VehicleTypeModelImplToJson(
   'imageUrl': instance.imageUrl,
   'numberOfSessions': instance.numberOfSessions,
   'sessionDurationMinutes': instance.sessionDurationMinutes,
+  'pricePerSession': instance.pricePerSession,
   'isActive': instance.isActive,
   'createdAt': instance.createdAt?.toIso8601String(),
   'updatedAt': instance.updatedAt?.toIso8601String(),

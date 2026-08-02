@@ -11,6 +11,7 @@ class VehicleTypeModel with _$VehicleTypeModel {
     String? imageUrl,
     @Default(0) int numberOfSessions,
     @Default(0) int sessionDurationMinutes,
+    @Default(0) num pricePerSession,
     @Default(true) bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,

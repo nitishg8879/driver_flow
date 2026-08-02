@@ -1,17 +1,19 @@
+import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_student_form.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/widgets/schedule_data_source.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/widgets/students_sessions_calender_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../utils/components/async_dropdown.dart';
-import '../../../../utils/components/searchable_async_dropdown.dart';
+import '../../../../utils/components/capsule_tab_bar.dart';
+import '../../../../utils/components/date_range_picker_button.dart';
+import '../../../../utils/components/page_header.dart';
 import '../../../../utils/constants/app_enums.dart';
-import '../../../../utils/extensions/context_extensions.dart';
-import '../../../user/data/models/user_model.dart';
-import '../../../user/data/repositories/user_repository.dart';
 import '../../data/models/schedule_model.dart';
 import '../cubit/schedule_cubit.dart';
-import '../widgets/schedule_form_dialog.dart';
+import '../cubit/onboarding_cubit.dart';
+import '../widgets/schedule_stats_row.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -21,268 +23,207 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  DateTime _selectedDate = DateTime.now();
-  DateTime _focusedDate = DateTime.now();
-  bool _showCalendarPicker = false;
-  UserModel? _selectedInstructor;
-  UserModel? _selectedStudent;
+  int _tabIndex = 1;
+  ScheduleInstructorOption? _selectedInstructor;
+  ScheduleStudentOption? _selectedStudent;
+  ScheduleStatus? _selectedStatus;
+  DateTimeRange? _dateRange;
 
   @override
   void initState() {
     super.initState();
-    _loadSchedules();
+    context.read<ScheduleCubit>().loadAll();
   }
 
-  void _loadSchedules() {
-    context.read<ScheduleCubit>().loadSchedules(
-      date: _selectedDate,
+  void _applyFilters() {
+    context.read<ScheduleCubit>().applyFilters(
       instructorId: _selectedInstructor?.id,
       studentId: _selectedStudent?.id,
+      status: _selectedStatus,
+      dateRange: _dateRange,
     );
-  }
-
-  void _changeDate(DateTime date) {
-    setState(() {
-      _selectedDate = date;
-      _focusedDate = date;
-    });
-    _loadSchedules();
-  }
-
-  Future<void> _openAddForm({TimeOfDay? startTime, TimeOfDay? endTime}) async {
-    final cubit = context.read<ScheduleCubit>();
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: cubit,
-        child: ScheduleFormDialog(
-          prefillDate: _selectedDate,
-          prefillStartTime: startTime,
-          prefillEndTime: endTime,
-        ),
-      ),
-    );
-
-    if (result == true && mounted) {
-      context.showSuccessSnackBar('Schedule saved successfully');
-    }
-  }
-
-  Future<void> _openEditForm(ScheduleModel schedule) async {
-    final cubit = context.read<ScheduleCubit>();
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: cubit,
-        child: ScheduleFormDialog(existing: schedule),
-      ),
-    );
-
-    if (result == true && mounted) {
-      context.showSuccessSnackBar('Schedule saved successfully');
-    }
-  }
-
-  Future<void> _cancelSchedule(ScheduleModel schedule) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cancel Schedule'),
-        content: Text(
-          'Remove this schedule for "${schedule.studentName}" with "${schedule.instructorName}"?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes, Cancel'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      await context.read<ScheduleCubit>().cancelSchedule(schedule.id!, false);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Schedule',
-                  style: context.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: () => _changeDate(
-                    _selectedDate.subtract(const Duration(days: 1)),
-                  ),
-                ),
-                TextButton.icon(
-                  icon: const Icon(Icons.calendar_month, size: 18),
-                  label: Text(
-                    '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
-                  ),
-                  onPressed: () => setState(
-                    () => _showCalendarPicker = !_showCalendarPicker,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: () =>
-                      _changeDate(_selectedDate.add(const Duration(days: 1))),
-                ),
-                const SizedBox(width: 16),
-                FilledButton.icon(
-                  onPressed: () => _openAddForm(),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Schedule'),
-                ),
-              ],
+      backgroundColor: colorScheme.surface,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const PageHeader(
+            title: 'Schedule',
+            subtitle: 'Manage and coordinate driving lessons',
+          ),
+          Divider(height: 1, color: colorScheme.outlineVariant),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildFilterBar(context),
+                  const SizedBox(height: 24),
+                  const ScheduleStatsRow(),
+                  const SizedBox(height: 20),
+                  _buildContent(),
+                ],
+              ),
             ),
-            if (_showCalendarPicker)
-              Card(
-                margin: const EdgeInsets.only(top: 12),
-                child: TableCalendar(
-                  firstDay: DateTime(2020),
-                  lastDay: DateTime(2100),
-                  focusedDay: _focusedDate,
-                  selectedDayPredicate: (day) => isSameDay(day, _selectedDate),
-                  calendarFormat: CalendarFormat.month,
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() => _showCalendarPicker = false);
-                    _changeDate(selectedDay);
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterBar(BuildContext context) {
+    final cubit = context.read<ScheduleCubit>();
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        SizedBox(
+          width: 200,
+          child: AsyncDropdown<ScheduleInstructorOption>(
+            fetchItems: cubit.getInstructors,
+            itemLabelBuilder: (i) => i.name,
+            value: _selectedInstructor,
+            labelText: 'Instructor',
+            nullItemLabel: 'All Instructors',
+            onChanged: (val) {
+              setState(() => _selectedInstructor = val);
+              _applyFilters();
+            },
+          ),
+        ),
+        SizedBox(
+          width: 200,
+          child: AsyncDropdown<ScheduleStudentOption>(
+            fetchItems: cubit.getStudents,
+            itemLabelBuilder: (s) => s.name,
+            value: _selectedStudent,
+            labelText: 'Student',
+            nullItemLabel: 'All Students',
+            onChanged: (val) {
+              setState(() => _selectedStudent = val);
+              _applyFilters();
+            },
+          ),
+        ),
+        SizedBox(
+          width: 200,
+          child: AsyncDropdown<ScheduleStatus>(
+            fetchItems: () async => ScheduleStatus.values,
+            itemLabelBuilder: (s) => s.displayName,
+            value: _selectedStatus,
+            labelText: 'Status',
+            nullItemLabel: 'All Statuses',
+            onChanged: (val) {
+              setState(() => _selectedStatus = val);
+              _applyFilters();
+            },
+          ),
+        ),
+        DateRangePickerButton(
+          value: _dateRange,
+          onChanged: (val) {
+            setState(() => _dateRange = val);
+            _applyFilters();
+          },
+        ),
+        FilledButton.icon(
+          onPressed: () {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => BlocProvider(
+                create: (context) => sl<OnboardingCubit>(),
+                child: OnboardingStudentForm(
+                  onSuccess: () {
+                    context.read<ScheduleCubit>().loadAll();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Lesson booked successfully!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                   },
                 ),
               ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: AsyncDropdown<UserModel>(
-                    labelText: 'Filter by Instructor',
-                    value: _selectedInstructor,
-                    fetchItems: () => sl<UserRepository>().getAllActiveByRole(
-                      UserRole.instructor,
-                    ),
-                    itemLabelBuilder: (item) => item.name ?? '-',
-                    onChanged: (value) {
-                      setState(() => _selectedInstructor = value);
-                      _loadSchedules();
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: SearchableAsyncDropdown<UserModel>(
-                    labelText: 'Filter by Student',
-                    hintText: 'Type student name...',
-                    value: _selectedStudent,
-                    searchItems: (query) =>
-                        sl<UserRepository>().searchActiveByRole(
-                          role: UserRole.student,
-                          query: query,
-                          limit: 10,
-                        ),
-                    itemLabelBuilder: (item) => item.name ?? '-',
-                    onChanged: (value) {
-                      setState(() => _selectedStudent = value);
-                      _loadSchedules();
-                    },
-                  ),
-                ),
-                if (_selectedInstructor != null || _selectedStudent != null)
-                  IconButton(
-                    icon: const Icon(Icons.clear),
-                    tooltip: 'Clear filters',
-                    onPressed: () {
-                      setState(() {
-                        _selectedInstructor = null;
-                        _selectedStudent = null;
-                      });
-                      _loadSchedules();
-                    },
-                  ),
-              ],
+            );
+          },
+          icon: const Icon(Icons.add, size: 18),
+          label: const Text('Book Lesson'),
+          style: FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: BlocBuilder<ScheduleCubit, ScheduleState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const SizedBox.shrink(),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (message) => Center(child: Text('Error: $message')),
-                    loaded: (schedules, date, instructorId, studentId) {
-                      if (schedules.isEmpty) {
-                        return const Center(
-                          child: Text('No schedules for this day'),
-                        );
-                      }
-                      return ListView.separated(
-                        itemCount: schedules.length,
-                        separatorBuilder: (_, _) => const Divider(),
-                        itemBuilder: (context, index) {
-                          final schedule = schedules[index];
-                          final isCancelled = schedule.status.isCancelled;
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: isCancelled
-                                  ? context.colorScheme.errorContainer
-                                  : context.colorScheme.primaryContainer,
-                              child: Icon(
-                                isCancelled
-                                    ? Icons.event_busy
-                                    : Icons.event_available,
-                                size: 20,
-                              ),
-                            ),
-                            title: Text(
-                              '${TimeOfDay.fromDateTime(schedule.startTime).format(context)} - ${TimeOfDay.fromDateTime(schedule.endTime).format(context)}  •  ${schedule.studentName}',
-                            ),
-                            subtitle: Text(
-                              'Instructor: ${schedule.instructorName}  •  Vehicle: ${schedule.vehicleNumber}  •  ${schedule.status.displayName}'
-                              '${schedule.reason != null ? '  •  ${schedule.reason}' : ''}',
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit_outlined),
-                                  onPressed: () => _openEditForm(schedule),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline),
-                                  tooltip: 'Cancel',
-                                  onPressed: () => _cancelSchedule(schedule),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+          ),
         ),
+        Spacer(),
+        CapsuleTabBar(
+          tabs: const [
+            (icon: Icons.table_rows_outlined, label: 'Table'),
+            (icon: Icons.calendar_month_outlined, label: 'Calendar'),
+          ],
+          selectedIndex: _tabIndex,
+          onChanged: (i) => setState(() => _tabIndex = i),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent() {
+    return SizedBox(
+      height: 700,
+      child: BlocBuilder<ScheduleCubit, ScheduleState>(
+        builder: (context, state) {
+          if (state is ScheduleLoading) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(60),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          if (state is ScheduleError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(40),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(state.message),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () => context.read<ScheduleCubit>().loadAll(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (state is ScheduleLoaded) {
+            return _tabIndex == 0
+                ? Expanded(child: StudentsSessionTable())
+                : StudentsSessions(schedules: state.filtered, context: context);
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

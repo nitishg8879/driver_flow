@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driver_flow_admin/features/schedule/data/repositories/onboarding_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -10,14 +11,13 @@ import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
 import '../../features/user/presentation/cubit/user_cubit.dart';
 import '../../features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
-import '../../features/vehicles/data/repositories/vehicle_repository.dart';
-import '../../features/vehicles/presentation/cubit/vehicle_cubit.dart';
 import '../../features/tags/data/repositories/tag_repository.dart';
 import '../../features/tags/presentation/cubit/tags_cubit.dart';
 import '../../features/payment/data/repositories/payment_repository.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
 import '../../features/profile/data/repositories/profile_repository.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/schedule/presentation/cubit/onboarding_cubit.dart';
 import '../services/attachment_service.dart';
 import '../services/storage_service.dart';
 
@@ -52,11 +52,8 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(firestore: sl()),
   );
-  sl.registerLazySingleton<VehicleRepository>(
-    () => VehicleRepositoryImpl(firestore: sl()),
-  );
   sl.registerLazySingleton<ScheduleRepository>(
-    () => ScheduleRepositoryImpl(firestore: sl()),
+    () => ScheduleRepositoryImpl(),
   );
   sl.registerLazySingleton<TagRepository>(
     () => TagRepositoryImpl(firestore: sl()),
@@ -72,9 +69,12 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
   sl.registerFactory(() => VehicleTypeCubit(repository: sl()));
   sl.registerFactory(() => UserCubit(userRepository: sl()));
-  sl.registerFactory(() => VehicleCubit(repository: sl()));
   sl.registerFactory(() => ScheduleCubit(repository: sl()));
   sl.registerFactory(() => TagsCubit(repository: sl()));
   sl.registerFactory(() => PaymentCubit(repository: sl()));
   sl.registerFactory(() => ProfileCubit(repository: sl()));
+  sl.registerFactory(() => OnboardingCubit(repository: sl()));
+  sl.registerLazySingleton<OnboardingRepository>(
+    () => OnboardingRepositoryImpl(),
+  );
 }

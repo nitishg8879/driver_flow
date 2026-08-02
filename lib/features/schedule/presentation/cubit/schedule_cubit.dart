@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../utils/helpers/app_logger.dart';
+import '../../../../utils/constants/app_enums.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/repositories/schedule_repository.dart';
 
@@ -10,80 +11,61 @@ part 'schedule_cubit.freezed.dart';
 
 class ScheduleCubit extends Cubit<ScheduleState> {
   final ScheduleRepository _repository;
-  final _logger = AppLogger('ScheduleCubit');
 
-  ScheduleCubit({required ScheduleRepository repository})
-    : _repository = repository,
-      super(const ScheduleState.initial());
+  ScheduleCubit({required this._repository})
+    : super(const ScheduleState.initial());
 
-  Future<void> loadSchedules({
-    required DateTime date,
-    String? instructorId,
-    String? studentId,
-  }) async {
+  Future<void> loadAll() async {
     emit(const ScheduleState.loading());
     try {
-      final schedules = await _repository.getSchedulesForDate(
-        date: date,
-        instructorId: instructorId,
-        studentId: studentId,
-      );
+      final allSchedules = await _repository.getSchedules();
       emit(
         ScheduleState.loaded(
-          schedules: schedules,
-          date: date,
-          instructorId: instructorId,
-          studentId: studentId,
+          allSchedules: allSchedules,
+          filtered: allSchedules,
         ),
       );
-    } catch (e, stackTrace) {
-      _logger.error('Failed to load schedules', e, stackTrace);
+    } catch (e) {
       emit(ScheduleState.error(e.toString()));
     }
   }
 
-  Future<void> _refresh() async {
-    final currentState = state;
-    if (currentState is! ScheduleLoaded) return;
-    await loadSchedules(
-      date: currentState.date,
-      instructorId: currentState.instructorId,
-      studentId: currentState.studentId,
-    );
-  }
+  Future<void> applyFilters({
+    String? instructorId,
+    String? studentId,
+    ScheduleStatus? status,
+    DateTimeRange? dateRange,
+  }) async {
+    final current = state;
+    final allSchedules = current is ScheduleLoaded
+        ? current.allSchedules
+        : <ScheduleModel>[];
 
-  /// Returns null on success, or an error message on failure (e.g. a
-  /// [ScheduleConflictException]) so the dialog can show it inline.
-  Future<String?> createSchedule(ScheduleModel schedule) async {
     try {
-      await _repository.createSchedule(schedule);
-      await _refresh();
-      return null;
-    } catch (e, stackTrace) {
-      _logger.error('Failed to create schedule', e, stackTrace);
-      return e.toString();
+      final filtered = await _repository.getSchedules(
+        instructorId: instructorId,
+        studentId: studentId,
+        status: status,
+        dateRange: dateRange,
+      );
+      emit(
+        ScheduleState.loaded(
+          allSchedules: allSchedules,
+          filtered: filtered,
+          instructorId: instructorId,
+          studentId: studentId,
+          status: status,
+          dateRange: dateRange,
+        ),
+      );
+    } catch (e) {
+      emit(ScheduleState.error(e.toString()));
     }
   }
 
-  Future<String?> updateSchedule(ScheduleModel schedule) async {
-    try {
-      await _repository.updateSchedule(schedule);
-      await _refresh();
-      return null;
-    } catch (e, stackTrace) {
-      _logger.error('Failed to update schedule', e, stackTrace);
-      return e.toString();
-    }
-  }
+  Future<List<ScheduleInstructorOption>> getInstructors() =>
+      _repository.getInstructors();
 
-  Future<bool> cancelSchedule(String id, bool isActive) async {
-    try {
-      await _repository.setActiveStatus(id, isActive);
-      await _refresh();
-      return true;
-    } catch (e, stackTrace) {
-      _logger.error('Failed to update schedule status', e, stackTrace);
-      return false;
-    }
-  }
+  Future<List<ScheduleStudentOption>> getStudents() =>
+      _repository.getStudents();
 }

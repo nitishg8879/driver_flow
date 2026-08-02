@@ -8,27 +8,20 @@ part of 'schedule_model.dart';
 
 _$ScheduleModelImpl _$$ScheduleModelImplFromJson(Map<String, dynamic> json) =>
     _$ScheduleModelImpl(
-      id: json['id'] as String?,
+      id: json['id'] as String,
       studentId: json['studentId'] as String,
       studentName: json['studentName'] as String,
+      studentPermit: json['studentPermit'] as String,
       instructorId: json['instructorId'] as String,
       instructorName: json['instructorName'] as String,
       vehicleId: json['vehicleId'] as String,
-      vehicleNumber: json['vehicleNumber'] as String,
-      date: DateTime.parse(json['date'] as String),
+      vehicleName: json['vehicleName'] as String,
       startTime: DateTime.parse(json['startTime'] as String),
       endTime: DateTime.parse(json['endTime'] as String),
       status:
           $enumDecodeNullable(_$ScheduleStatusEnumMap, json['status']) ??
           ScheduleStatus.scheduled,
-      reason: json['reason'] as String?,
-      isActive: json['isActive'] as bool? ?? true,
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$$ScheduleModelImplToJson(_$ScheduleModelImpl instance) =>
@@ -36,18 +29,15 @@ Map<String, dynamic> _$$ScheduleModelImplToJson(_$ScheduleModelImpl instance) =>
       'id': instance.id,
       'studentId': instance.studentId,
       'studentName': instance.studentName,
+      'studentPermit': instance.studentPermit,
       'instructorId': instance.instructorId,
       'instructorName': instance.instructorName,
       'vehicleId': instance.vehicleId,
-      'vehicleNumber': instance.vehicleNumber,
-      'date': instance.date.toIso8601String(),
+      'vehicleName': instance.vehicleName,
       'startTime': instance.startTime.toIso8601String(),
       'endTime': instance.endTime.toIso8601String(),
       'status': _$ScheduleStatusEnumMap[instance.status]!,
-      'reason': instance.reason,
-      'isActive': instance.isActive,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'notes': instance.notes,
     };
 
 const _$ScheduleStatusEnumMap = {

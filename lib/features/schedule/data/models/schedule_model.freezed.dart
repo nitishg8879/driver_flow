@@ -21,21 +21,18 @@ ScheduleModel _$ScheduleModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ScheduleModel {
-  String? get id => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
   String get studentId => throw _privateConstructorUsedError;
   String get studentName => throw _privateConstructorUsedError;
+  String get studentPermit => throw _privateConstructorUsedError;
   String get instructorId => throw _privateConstructorUsedError;
   String get instructorName => throw _privateConstructorUsedError;
   String get vehicleId => throw _privateConstructorUsedError;
-  String get vehicleNumber => throw _privateConstructorUsedError;
-  DateTime get date => throw _privateConstructorUsedError;
+  String get vehicleName => throw _privateConstructorUsedError;
   DateTime get startTime => throw _privateConstructorUsedError;
   DateTime get endTime => throw _privateConstructorUsedError;
   ScheduleStatus get status => throw _privateConstructorUsedError;
-  String? get reason => throw _privateConstructorUsedError;
-  bool get isActive => throw _privateConstructorUsedError;
-  DateTime? get createdAt => throw _privateConstructorUsedError;
-  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
 
   /// Serializes this ScheduleModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,21 +52,18 @@ abstract class $ScheduleModelCopyWith<$Res> {
   ) = _$ScheduleModelCopyWithImpl<$Res, ScheduleModel>;
   @useResult
   $Res call({
-    String? id,
+    String id,
     String studentId,
     String studentName,
+    String studentPermit,
     String instructorId,
     String instructorName,
     String vehicleId,
-    String vehicleNumber,
-    DateTime date,
+    String vehicleName,
     DateTime startTime,
     DateTime endTime,
     ScheduleStatus status,
-    String? reason,
-    bool isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? notes,
   });
 }
 
@@ -88,28 +82,25 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
+    Object? id = null,
     Object? studentId = null,
     Object? studentName = null,
+    Object? studentPermit = null,
     Object? instructorId = null,
     Object? instructorName = null,
     Object? vehicleId = null,
-    Object? vehicleNumber = null,
-    Object? date = null,
+    Object? vehicleName = null,
     Object? startTime = null,
     Object? endTime = null,
     Object? status = null,
-    Object? reason = freezed,
-    Object? isActive = null,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
+    Object? notes = freezed,
   }) {
     return _then(
       _value.copyWith(
-            id: freezed == id
+            id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
-                      as String?,
+                      as String,
             studentId: null == studentId
                 ? _value.studentId
                 : studentId // ignore: cast_nullable_to_non_nullable
@@ -117,6 +108,10 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
             studentName: null == studentName
                 ? _value.studentName
                 : studentName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            studentPermit: null == studentPermit
+                ? _value.studentPermit
+                : studentPermit // ignore: cast_nullable_to_non_nullable
                       as String,
             instructorId: null == instructorId
                 ? _value.instructorId
@@ -130,14 +125,10 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
                 ? _value.vehicleId
                 : vehicleId // ignore: cast_nullable_to_non_nullable
                       as String,
-            vehicleNumber: null == vehicleNumber
-                ? _value.vehicleNumber
-                : vehicleNumber // ignore: cast_nullable_to_non_nullable
+            vehicleName: null == vehicleName
+                ? _value.vehicleName
+                : vehicleName // ignore: cast_nullable_to_non_nullable
                       as String,
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
             startTime: null == startTime
                 ? _value.startTime
                 : startTime // ignore: cast_nullable_to_non_nullable
@@ -150,22 +141,10 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as ScheduleStatus,
-            reason: freezed == reason
-                ? _value.reason
-                : reason // ignore: cast_nullable_to_non_nullable
+            notes: freezed == notes
+                ? _value.notes
+                : notes // ignore: cast_nullable_to_non_nullable
                       as String?,
-            isActive: null == isActive
-                ? _value.isActive
-                : isActive // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            updatedAt: freezed == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
           )
           as $Val,
     );
@@ -182,21 +161,18 @@ abstract class _$$ScheduleModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String? id,
+    String id,
     String studentId,
     String studentName,
+    String studentPermit,
     String instructorId,
     String instructorName,
     String vehicleId,
-    String vehicleNumber,
-    DateTime date,
+    String vehicleName,
     DateTime startTime,
     DateTime endTime,
     ScheduleStatus status,
-    String? reason,
-    bool isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? notes,
   });
 }
 
@@ -214,28 +190,25 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
+    Object? id = null,
     Object? studentId = null,
     Object? studentName = null,
+    Object? studentPermit = null,
     Object? instructorId = null,
     Object? instructorName = null,
     Object? vehicleId = null,
-    Object? vehicleNumber = null,
-    Object? date = null,
+    Object? vehicleName = null,
     Object? startTime = null,
     Object? endTime = null,
     Object? status = null,
-    Object? reason = freezed,
-    Object? isActive = null,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
+    Object? notes = freezed,
   }) {
     return _then(
       _$ScheduleModelImpl(
-        id: freezed == id
+        id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as String,
         studentId: null == studentId
             ? _value.studentId
             : studentId // ignore: cast_nullable_to_non_nullable
@@ -243,6 +216,10 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
         studentName: null == studentName
             ? _value.studentName
             : studentName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        studentPermit: null == studentPermit
+            ? _value.studentPermit
+            : studentPermit // ignore: cast_nullable_to_non_nullable
                   as String,
         instructorId: null == instructorId
             ? _value.instructorId
@@ -256,14 +233,10 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
             ? _value.vehicleId
             : vehicleId // ignore: cast_nullable_to_non_nullable
                   as String,
-        vehicleNumber: null == vehicleNumber
-            ? _value.vehicleNumber
-            : vehicleNumber // ignore: cast_nullable_to_non_nullable
+        vehicleName: null == vehicleName
+            ? _value.vehicleName
+            : vehicleName // ignore: cast_nullable_to_non_nullable
                   as String,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
         startTime: null == startTime
             ? _value.startTime
             : startTime // ignore: cast_nullable_to_non_nullable
@@ -276,22 +249,10 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as ScheduleStatus,
-        reason: freezed == reason
-            ? _value.reason
-            : reason // ignore: cast_nullable_to_non_nullable
+        notes: freezed == notes
+            ? _value.notes
+            : notes // ignore: cast_nullable_to_non_nullable
                   as String?,
-        isActive: null == isActive
-            ? _value.isActive
-            : isActive // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        updatedAt: freezed == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
       ),
     );
   }
@@ -301,32 +262,31 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ScheduleModelImpl implements _ScheduleModel {
   const _$ScheduleModelImpl({
-    this.id,
+    required this.id,
     required this.studentId,
     required this.studentName,
+    required this.studentPermit,
     required this.instructorId,
     required this.instructorName,
     required this.vehicleId,
-    required this.vehicleNumber,
-    required this.date,
+    required this.vehicleName,
     required this.startTime,
     required this.endTime,
     this.status = ScheduleStatus.scheduled,
-    this.reason,
-    this.isActive = true,
-    this.createdAt,
-    this.updatedAt,
+    this.notes,
   });
 
   factory _$ScheduleModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ScheduleModelImplFromJson(json);
 
   @override
-  final String? id;
+  final String id;
   @override
   final String studentId;
   @override
   final String studentName;
+  @override
+  final String studentPermit;
   @override
   final String instructorId;
   @override
@@ -334,9 +294,7 @@ class _$ScheduleModelImpl implements _ScheduleModel {
   @override
   final String vehicleId;
   @override
-  final String vehicleNumber;
-  @override
-  final DateTime date;
+  final String vehicleName;
   @override
   final DateTime startTime;
   @override
@@ -345,18 +303,11 @@ class _$ScheduleModelImpl implements _ScheduleModel {
   @JsonKey()
   final ScheduleStatus status;
   @override
-  final String? reason;
-  @override
-  @JsonKey()
-  final bool isActive;
-  @override
-  final DateTime? createdAt;
-  @override
-  final DateTime? updatedAt;
+  final String? notes;
 
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, studentId: $studentId, studentName: $studentName, instructorId: $instructorId, instructorName: $instructorName, vehicleId: $vehicleId, vehicleNumber: $vehicleNumber, date: $date, startTime: $startTime, endTime: $endTime, status: $status, reason: $reason, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ScheduleModel(id: $id, studentId: $studentId, studentName: $studentName, studentPermit: $studentPermit, instructorId: $instructorId, instructorName: $instructorName, vehicleId: $vehicleId, vehicleName: $vehicleName, startTime: $startTime, endTime: $endTime, status: $status, notes: $notes)';
   }
 
   @override
@@ -369,26 +320,21 @@ class _$ScheduleModelImpl implements _ScheduleModel {
                 other.studentId == studentId) &&
             (identical(other.studentName, studentName) ||
                 other.studentName == studentName) &&
+            (identical(other.studentPermit, studentPermit) ||
+                other.studentPermit == studentPermit) &&
             (identical(other.instructorId, instructorId) ||
                 other.instructorId == instructorId) &&
             (identical(other.instructorName, instructorName) ||
                 other.instructorName == instructorName) &&
             (identical(other.vehicleId, vehicleId) ||
                 other.vehicleId == vehicleId) &&
-            (identical(other.vehicleNumber, vehicleNumber) ||
-                other.vehicleNumber == vehicleNumber) &&
-            (identical(other.date, date) || other.date == date) &&
+            (identical(other.vehicleName, vehicleName) ||
+                other.vehicleName == vehicleName) &&
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.reason, reason) || other.reason == reason) &&
-            (identical(other.isActive, isActive) ||
-                other.isActive == isActive) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+            (identical(other.notes, notes) || other.notes == notes));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -398,18 +344,15 @@ class _$ScheduleModelImpl implements _ScheduleModel {
     id,
     studentId,
     studentName,
+    studentPermit,
     instructorId,
     instructorName,
     vehicleId,
-    vehicleNumber,
-    date,
+    vehicleName,
     startTime,
     endTime,
     status,
-    reason,
-    isActive,
-    createdAt,
-    updatedAt,
+    notes,
   );
 
   /// Create a copy of ScheduleModel
@@ -428,32 +371,31 @@ class _$ScheduleModelImpl implements _ScheduleModel {
 
 abstract class _ScheduleModel implements ScheduleModel {
   const factory _ScheduleModel({
-    final String? id,
+    required final String id,
     required final String studentId,
     required final String studentName,
+    required final String studentPermit,
     required final String instructorId,
     required final String instructorName,
     required final String vehicleId,
-    required final String vehicleNumber,
-    required final DateTime date,
+    required final String vehicleName,
     required final DateTime startTime,
     required final DateTime endTime,
     final ScheduleStatus status,
-    final String? reason,
-    final bool isActive,
-    final DateTime? createdAt,
-    final DateTime? updatedAt,
+    final String? notes,
   }) = _$ScheduleModelImpl;
 
   factory _ScheduleModel.fromJson(Map<String, dynamic> json) =
       _$ScheduleModelImpl.fromJson;
 
   @override
-  String? get id;
+  String get id;
   @override
   String get studentId;
   @override
   String get studentName;
+  @override
+  String get studentPermit;
   @override
   String get instructorId;
   @override
@@ -461,9 +403,7 @@ abstract class _ScheduleModel implements ScheduleModel {
   @override
   String get vehicleId;
   @override
-  String get vehicleNumber;
-  @override
-  DateTime get date;
+  String get vehicleName;
   @override
   DateTime get startTime;
   @override
@@ -471,13 +411,7 @@ abstract class _ScheduleModel implements ScheduleModel {
   @override
   ScheduleStatus get status;
   @override
-  String? get reason;
-  @override
-  bool get isActive;
-  @override
-  DateTime? get createdAt;
-  @override
-  DateTime? get updatedAt;
+  String? get notes;
 
   /// Create a copy of ScheduleModel
   /// with the given fields replaced by the non-null parameter values.

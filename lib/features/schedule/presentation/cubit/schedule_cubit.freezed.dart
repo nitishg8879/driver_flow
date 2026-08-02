@@ -22,10 +22,12 @@ mixin _$ScheduleState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )
     loaded,
     required TResult Function(String message) error,
@@ -35,10 +37,12 @@ mixin _$ScheduleState {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult? Function(String message)? error,
@@ -48,10 +52,12 @@ mixin _$ScheduleState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult Function(String message)? error,
@@ -149,10 +155,12 @@ class _$ScheduleInitialImpl implements ScheduleInitial {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )
     loaded,
     required TResult Function(String message) error,
@@ -166,10 +174,12 @@ class _$ScheduleInitialImpl implements ScheduleInitial {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult? Function(String message)? error,
@@ -183,10 +193,12 @@ class _$ScheduleInitialImpl implements ScheduleInitial {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult Function(String message)? error,
@@ -286,10 +298,12 @@ class _$ScheduleLoadingImpl implements ScheduleLoading {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )
     loaded,
     required TResult Function(String message) error,
@@ -303,10 +317,12 @@ class _$ScheduleLoadingImpl implements ScheduleLoading {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult? Function(String message)? error,
@@ -320,10 +336,12 @@ class _$ScheduleLoadingImpl implements ScheduleLoading {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult Function(String message)? error,
@@ -385,10 +403,12 @@ abstract class _$$ScheduleLoadedImplCopyWith<$Res> {
   ) = __$$ScheduleLoadedImplCopyWithImpl<$Res>;
   @useResult
   $Res call({
-    List<ScheduleModel> schedules,
-    DateTime date,
+    List<ScheduleModel> allSchedules,
+    List<ScheduleModel> filtered,
     String? instructorId,
     String? studentId,
+    ScheduleStatus? status,
+    DateTimeRange<DateTime>? dateRange,
   });
 }
 
@@ -406,21 +426,23 @@ class __$$ScheduleLoadedImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? schedules = null,
-    Object? date = null,
+    Object? allSchedules = null,
+    Object? filtered = null,
     Object? instructorId = freezed,
     Object? studentId = freezed,
+    Object? status = freezed,
+    Object? dateRange = freezed,
   }) {
     return _then(
       _$ScheduleLoadedImpl(
-        schedules: null == schedules
-            ? _value._schedules
-            : schedules // ignore: cast_nullable_to_non_nullable
+        allSchedules: null == allSchedules
+            ? _value._allSchedules
+            : allSchedules // ignore: cast_nullable_to_non_nullable
                   as List<ScheduleModel>,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+        filtered: null == filtered
+            ? _value._filtered
+            : filtered // ignore: cast_nullable_to_non_nullable
+                  as List<ScheduleModel>,
         instructorId: freezed == instructorId
             ? _value.instructorId
             : instructorId // ignore: cast_nullable_to_non_nullable
@@ -429,6 +451,14 @@ class __$$ScheduleLoadedImplCopyWithImpl<$Res>
             ? _value.studentId
             : studentId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as ScheduleStatus?,
+        dateRange: freezed == dateRange
+            ? _value.dateRange
+            : dateRange // ignore: cast_nullable_to_non_nullable
+                  as DateTimeRange<DateTime>?,
       ),
     );
   }
@@ -438,30 +468,43 @@ class __$$ScheduleLoadedImplCopyWithImpl<$Res>
 
 class _$ScheduleLoadedImpl implements ScheduleLoaded {
   const _$ScheduleLoadedImpl({
-    required final List<ScheduleModel> schedules,
-    required this.date,
+    required final List<ScheduleModel> allSchedules,
+    required final List<ScheduleModel> filtered,
     this.instructorId,
     this.studentId,
-  }) : _schedules = schedules;
+    this.status,
+    this.dateRange,
+  }) : _allSchedules = allSchedules,
+       _filtered = filtered;
 
-  final List<ScheduleModel> _schedules;
+  final List<ScheduleModel> _allSchedules;
   @override
-  List<ScheduleModel> get schedules {
-    if (_schedules is EqualUnmodifiableListView) return _schedules;
+  List<ScheduleModel> get allSchedules {
+    if (_allSchedules is EqualUnmodifiableListView) return _allSchedules;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_schedules);
+    return EqualUnmodifiableListView(_allSchedules);
   }
 
+  final List<ScheduleModel> _filtered;
   @override
-  final DateTime date;
+  List<ScheduleModel> get filtered {
+    if (_filtered is EqualUnmodifiableListView) return _filtered;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_filtered);
+  }
+
   @override
   final String? instructorId;
   @override
   final String? studentId;
+  @override
+  final ScheduleStatus? status;
+  @override
+  final DateTimeRange<DateTime>? dateRange;
 
   @override
   String toString() {
-    return 'ScheduleState.loaded(schedules: $schedules, date: $date, instructorId: $instructorId, studentId: $studentId)';
+    return 'ScheduleState.loaded(allSchedules: $allSchedules, filtered: $filtered, instructorId: $instructorId, studentId: $studentId, status: $status, dateRange: $dateRange)';
   }
 
   @override
@@ -470,23 +513,28 @@ class _$ScheduleLoadedImpl implements ScheduleLoaded {
         (other.runtimeType == runtimeType &&
             other is _$ScheduleLoadedImpl &&
             const DeepCollectionEquality().equals(
-              other._schedules,
-              _schedules,
+              other._allSchedules,
+              _allSchedules,
             ) &&
-            (identical(other.date, date) || other.date == date) &&
+            const DeepCollectionEquality().equals(other._filtered, _filtered) &&
             (identical(other.instructorId, instructorId) ||
                 other.instructorId == instructorId) &&
             (identical(other.studentId, studentId) ||
-                other.studentId == studentId));
+                other.studentId == studentId) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.dateRange, dateRange) ||
+                other.dateRange == dateRange));
   }
 
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    const DeepCollectionEquality().hash(_schedules),
-    date,
+    const DeepCollectionEquality().hash(_allSchedules),
+    const DeepCollectionEquality().hash(_filtered),
     instructorId,
     studentId,
+    status,
+    dateRange,
   );
 
   /// Create a copy of ScheduleState
@@ -506,15 +554,24 @@ class _$ScheduleLoadedImpl implements ScheduleLoaded {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )
     loaded,
     required TResult Function(String message) error,
   }) {
-    return loaded(schedules, date, instructorId, studentId);
+    return loaded(
+      allSchedules,
+      filtered,
+      instructorId,
+      studentId,
+      status,
+      dateRange,
+    );
   }
 
   @override
@@ -523,15 +580,24 @@ class _$ScheduleLoadedImpl implements ScheduleLoaded {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult? Function(String message)? error,
   }) {
-    return loaded?.call(schedules, date, instructorId, studentId);
+    return loaded?.call(
+      allSchedules,
+      filtered,
+      instructorId,
+      studentId,
+      status,
+      dateRange,
+    );
   }
 
   @override
@@ -540,17 +606,26 @@ class _$ScheduleLoadedImpl implements ScheduleLoaded {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(schedules, date, instructorId, studentId);
+      return loaded(
+        allSchedules,
+        filtered,
+        instructorId,
+        studentId,
+        status,
+        dateRange,
+      );
     }
     return orElse();
   }
@@ -595,16 +670,20 @@ class _$ScheduleLoadedImpl implements ScheduleLoaded {
 
 abstract class ScheduleLoaded implements ScheduleState {
   const factory ScheduleLoaded({
-    required final List<ScheduleModel> schedules,
-    required final DateTime date,
+    required final List<ScheduleModel> allSchedules,
+    required final List<ScheduleModel> filtered,
     final String? instructorId,
     final String? studentId,
+    final ScheduleStatus? status,
+    final DateTimeRange<DateTime>? dateRange,
   }) = _$ScheduleLoadedImpl;
 
-  List<ScheduleModel> get schedules;
-  DateTime get date;
+  List<ScheduleModel> get allSchedules;
+  List<ScheduleModel> get filtered;
   String? get instructorId;
   String? get studentId;
+  ScheduleStatus? get status;
+  DateTimeRange<DateTime>? get dateRange;
 
   /// Create a copy of ScheduleState
   /// with the given fields replaced by the non-null parameter values.
@@ -686,10 +765,12 @@ class _$ScheduleErrorImpl implements ScheduleError {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )
     loaded,
     required TResult Function(String message) error,
@@ -703,10 +784,12 @@ class _$ScheduleErrorImpl implements ScheduleError {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult? Function(String message)? error,
@@ -720,10 +803,12 @@ class _$ScheduleErrorImpl implements ScheduleError {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(
-      List<ScheduleModel> schedules,
-      DateTime date,
+      List<ScheduleModel> allSchedules,
+      List<ScheduleModel> filtered,
       String? instructorId,
       String? studentId,
+      ScheduleStatus? status,
+      DateTimeRange<DateTime>? dateRange,
     )?
     loaded,
     TResult Function(String message)? error,
