@@ -1,5 +1,6 @@
 import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_cubit.dart';
 import 'package:driver_flow_admin/utils/components/upload_card.dart';
+import 'package:driver_flow_admin/utils/extensions/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +26,7 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
   int _installmentsCount = 3;
   late List<TextEditingController> _dueDateControllers;
   late List<TextEditingController> _amountControllers;
-  List<String> _uploadedDocuments = [];
+  final List<String> _uploadedDocuments = [];
 
   @override
   void initState() {
@@ -49,384 +50,538 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
     super.dispose();
   }
 
-  bool validate() {
-    bool isValid = _formKey.currentState?.validate() ?? false;
-    if (_uploadedDocuments.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload required documents')),
-      );
-      return false;
-    }
-    return isValid;
-  }
-
-  Map<String, dynamic> getFormData() {
-    final amounts = _amountControllers
-        .take(_installmentsCount)
-        .map((c) => double.tryParse(c.text) ?? 0.0)
-        .toList();
-
-    final dates = _dueDateControllers
-        .take(_installmentsCount)
-        .map((c) => c.text)
-        .toList();
-
-    return {
-      'documents': _uploadedDocuments,
-      'installments': _installmentsCount,
-      'amounts': amounts,
-      'dates': dates,
-    };
-  }
+  
 
   @override
   Widget build(BuildContext context) {
     final double totalAmount = widget.pricePerSession * widget.sessionsCount;
 
     return Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left: Required Documents
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Required Documents',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Upload identity and photo documents for verification.',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      UploadCard(
-                        icon: Icons.description,
-                        title: 'ID Proof',
-                        subtitle:
-                            'Upload a copy of your valid ID (Aadhar, DL, etc.)',
-                        onUpload: () {
-                          setState(() {
-                            _uploadedDocuments.add('ID Proof');
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      UploadCard(
-                        icon: Icons.photo_camera,
-                        title: 'Student Photo',
-                        subtitle: 'Upload a recent passport-sized photograph',
-                        onUpload: () {
-                          setState(() {
-                            _uploadedDocuments.add('Student Photo');
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 24),
-                // Right: Installment Planner
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      border: Border.all(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Installment Planner',
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 16),
-                        // Summary Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(color: Colors.grey[300]!),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'TOTAL AMOUNT',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            color: Colors.grey[600],
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '\$$totalAmount',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[50],
-                                  border: Border.all(color: Colors.blue[300]!),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'REMAINING BALANCE',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            color: Colors.blue[900],
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '\$$totalAmount',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.blue[900],
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<int>(
-                          initialValue: _installmentsCount,
-                          decoration: const InputDecoration(
-                            labelText: 'Number of Installments',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: const [
-                            DropdownMenuItem(value: 1, child: Text('1')),
-                            DropdownMenuItem(value: 2, child: Text('2')),
-                            DropdownMenuItem(value: 3, child: Text('3')),
-                            DropdownMenuItem(value: 4, child: Text('4')),
-                            DropdownMenuItem(value: 6, child: Text('6')),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _installmentsCount = value;
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Row(
-                                  children: [
-                                    _buildTableCell(
-                                      context,
-                                      '#',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    _buildTableCell(
-                                      context,
-                                      'Due Date',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    _buildTableCell(
-                                      context,
-                                      'Amount',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              ...List.generate(
-                                _installmentsCount,
-                                (index) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 4,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      _buildTableCell(context, '${index + 1}'),
-                                      SizedBox(
-                                        width: 120,
-                                        child: TextFormField(
-                                          controller:
-                                              _dueDateControllers[index],
-                                          decoration: InputDecoration(
-                                            labelText: 'Date',
-                                            border: const OutlineInputBorder(),
-                                            suffixIcon: IconButton(
-                                              icon: const Icon(
-                                                Icons.calendar_today,
-                                                size: 18,
-                                              ),
-                                              onPressed: () async {
-                                                final date =
-                                                    await showDatePicker(
-                                                      context: context,
-                                                      initialDate:
-                                                          DateTime.now().add(
-                                                            Duration(
-                                                              days:
-                                                                  (index + 1) *
-                                                                  30,
-                                                            ),
-                                                          ),
-                                                      firstDate: DateTime.now(),
-                                                      lastDate: DateTime.now()
-                                                          .add(
-                                                            const Duration(
-                                                              days: 365,
-                                                            ),
-                                                          ),
-                                                    );
-                                                if (date != null) {
-                                                  setState(() {
-                                                    _dueDateControllers[index]
-                                                        .text = DateFormat(
-                                                      'MMM dd',
-                                                    ).format(date);
-                                                  });
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                          readOnly: true,
-                                          validator: (value) {
-                                            if (value?.isEmpty ?? true) {
-                                              return 'Required';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 100,
-                                        child: TextFormField(
-                                          controller: _amountControllers[index],
-                                          decoration: const InputDecoration(
-                                            labelText: 'Amount',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          keyboardType: TextInputType.number,
-                                          validator: (value) {
-                                            if (value?.isEmpty ?? true) {
-                                              return 'Required';
-                                            }
-                                            if (double.tryParse(value!) ==
-                                                null) {
-                                              return 'Invalid';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300],
-                    foregroundColor: Colors.black87,
-                  ),
-                  onPressed: () =>
-                      context.read<OnboardingCubit>().previousStep(),
-                  child: const Text('Back'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      context.read<OnboardingCubit>().submit();
-                    }
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: RequiredDocumentsSection(
+                  onDocumentUploaded: (docName) {
+                    setState(() {
+                      _uploadedDocuments.add(docName);
+                    });
                   },
-                  icon: const Icon(Icons.check),
-                  label: const Text('Complete Onboarding'),
                 ),
-              ],
-            ),
-          ],
-        ),
-      );
-  }
-
-  Widget _buildTableCell(
-    BuildContext context,
-    String text, {
-    FontWeight? fontWeight,
-    double width = 60,
-  }) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(8),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: Theme.of(
-          context,
-        ).textTheme.labelSmall?.copyWith(fontWeight: fontWeight),
+              ),
+              const SizedBox(width: 24),
+              Expanded(
+                child: InstallmentPlannerSection(
+                  totalAmount: totalAmount,
+                  installmentsCount: _installmentsCount,
+                  dueDateControllers: _dueDateControllers,
+                  amountControllers: _amountControllers,
+                  onInstallmentChanged: (val) {
+                    setState(() {
+                      _installmentsCount = val;
+                    });
+                  },
+                  onDateSelected: (index, formattedDate) {
+                    setState(() {
+                      _dueDateControllers[index].text = formattedDate;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          StepNavigationActions(
+            onBack: () => context.read<OnboardingCubit>().previousStep(),
+            onSubmit: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                context.read<OnboardingCubit>().submit();
+              }
+            },
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class RequiredDocumentsSection extends StatelessWidget {
+  final ValueChanged<String> onDocumentUploaded;
+
+  const RequiredDocumentsSection({super.key, required this.onDocumentUploaded});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Required Documents',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.blueGrey[900],
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Upload identity and photo documents for verification.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.blueGrey[500]),
+        ),
+        const SizedBox(height: 20),
+        UploadCard(
+          icon: Icons.badge_outlined,
+          title: 'ID Proof',
+          subtitle: 'Upload a copy of your valid Government ID',
+          onUpload: () => onDocumentUploaded('ID Proof'),
+        ),
+        const SizedBox(height: 12),
+        UploadCard(
+          icon: Icons.account_box_outlined,
+          title: 'Student Photo',
+          subtitle: 'Upload a recent passport-sized photograph',
+          onUpload: () => onDocumentUploaded('Student Photo'),
+        ),
+      ],
+    );
+  }
+}
+
+class InstallmentPlannerSection extends StatelessWidget {
+  final double totalAmount;
+  final int installmentsCount;
+  final List<TextEditingController> dueDateControllers;
+  final List<TextEditingController> amountControllers;
+  final ValueChanged<int> onInstallmentChanged;
+  final Function(int index, String formattedDate) onDateSelected;
+
+  const InstallmentPlannerSection({
+    super.key,
+    required this.totalAmount,
+    required this.installmentsCount,
+    required this.dueDateControllers,
+    required this.amountControllers,
+    required this.onInstallmentChanged,
+    required this.onDateSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.withOpacity(0.15)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Installment Planner',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey[900],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$installmentsCount Payments',
+                  style: TextStyle(
+                    color: Colors.blue[700],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: MetricCard(
+                  title: 'TOTAL AMOUNT',
+                  value: totalAmount.toRuppess,
+                  backgroundColor: Colors.grey.shade50,
+                  textColor: Colors.blueGrey[900]!,
+                  borderColor: Colors.grey.shade200,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: MetricCard(
+                  title: 'REMAINING BALANCE',
+                  value: totalAmount.toRuppess,
+                  backgroundColor: const Color(0xFFEFF6FF),
+                  textColor: const Color(0xFF1E40AF),
+                  borderColor: const Color(0xFFBFDBFE),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          DropdownButtonFormField<int>(
+            value: installmentsCount,
+            decoration: InputDecoration(
+              labelText: 'Number of Installments',
+              labelStyle: TextStyle(color: Colors.blueGrey[600]),
+              filled: true,
+              fillColor: Colors.grey.shade50,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+              ),
+            ),
+            items: const [1, 2, 3, 4, 6]
+                .map(
+                  (val) => DropdownMenuItem(
+                    value: val,
+                    child: Text('$val Installment${val > 1 ? 's' : ''}'),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) {
+              if (value != null) {
+                onInstallmentChanged(value);
+              }
+            },
+          ),
+          const SizedBox(height: 20),
+          const TableHeaderRow(),
+          const SizedBox(height: 8),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: installmentsCount,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, index) {
+              return InstallmentRowItem(
+                index: index,
+                dueDateController: dueDateControllers[index],
+                amountController: amountControllers[index],
+                onDateTap: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now().add(
+                      Duration(days: (index + 1) * 30),
+                    ),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (date != null) {
+                    onDateSelected(
+                      index,
+                      DateFormat('MMM dd, yyyy').format(date),
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MetricCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color borderColor;
+
+  const MetricCard({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 10,
+              letterSpacing: 0.5,
+              color: textColor.withOpacity(0.7),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TableHeaderRow extends StatelessWidget {
+  const TableHeaderRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: const [
+          SizedBox(
+            width: 32,
+            child: Text(
+              '#',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+                color: Colors.blueGrey,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              'Due Date',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+                color: Colors.blueGrey,
+              ),
+            ),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Amount',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+                color: Colors.blueGrey,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InstallmentRowItem extends StatelessWidget {
+  final int index;
+  final TextEditingController dueDateController;
+  final TextEditingController amountController;
+  final VoidCallback onDateTap;
+
+  const InstallmentRowItem({
+    super.key,
+    required this.index,
+    required this.dueDateController,
+    required this.amountController,
+    required this.onDateTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 32,
+          child: Text(
+            '${index + 1}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.blueGrey,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: TextFormField(
+            controller: dueDateController,
+            readOnly: true,
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              hintText: 'Select Date',
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 10,
+              ),
+              suffixIcon: const Icon(
+                Icons.calendar_today_rounded,
+                size: 16,
+                color: Colors.blue,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+            onTap: onDateTap,
+            validator: (value) {
+              if (value?.isEmpty ?? true) {
+                return 'Required';
+              }
+              return null;
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: TextFormField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              hintText: '0.00',
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 10,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+            validator: (value) {
+              if (value?.isEmpty ?? true) {
+                return 'Required';
+              }
+              if (double.tryParse(value!) == null) {
+                return 'Invalid';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class StepNavigationActions extends StatelessWidget {
+  final VoidCallback onBack;
+  final VoidCallback onSubmit;
+
+  const StepNavigationActions({
+    super.key,
+    required this.onBack,
+    required this.onSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            side: BorderSide(color: Colors.grey.shade300),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onPressed: onBack,
+          child: const Text(
+            'Back',
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue[600],
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onPressed: onSubmit,
+          icon: const Icon(Icons.check_circle_outline, size: 18),
+          label: const Text(
+            'Complete Onboarding',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }

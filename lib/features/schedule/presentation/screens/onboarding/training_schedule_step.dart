@@ -23,11 +23,9 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
   late TextEditingController priceController;
   late TextEditingController startDateController;
 
-  String? _selectedVehicleType;
+  VehicleTypeModel? _selectedVehicleType;
   DateTime? _courseStartDate;
   String _recurrence = 'Weekly';
-  // List<VehicleTypeModel> _vehicleTypes = [];
-  // bool _isLoadingVehicles = true;
 
   @override
   void initState() {
@@ -36,27 +34,6 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
     durationController = TextEditingController();
     priceController = TextEditingController();
     startDateController = TextEditingController();
-    _loadVehicleTypes();
-  }
-
-  Future<void> _loadVehicleTypes() async {
-    try {
-      final repository = context.read<VehicleTypeRepository>();
-      final vehicles = await repository.getVehicleTypes();
-      setState(() {
-        _vehicleTypes = vehicles;
-        _isLoadingVehicles = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoadingVehicles = false;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading vehicle types: $e')),
-        );
-      }
-    }
   }
 
   @override
@@ -69,18 +46,13 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
   }
 
   
-  void _onVehicleTypeChanged(String? vehicleId) {
-    final selected = _vehicleTypes.firstWhere(
-      (v) => v.id == vehicleId,
-      orElse: () => const VehicleTypeModel(id: null, name: '', isActive: true),
-    );
-
+  void _onVehicleTypeChanged(VehicleTypeModel? vehicle) {
     setState(() {
-      _selectedVehicleType = vehicleId;
-      if (selected.id != null) {
-        sessionsController.text = (selected.numberOfSessions).toString();
-        durationController.text = (selected.sessionDurationMinutes).toString();
-        priceController.text = (selected.pricePerSession).toStringAsFixed(2);
+      _selectedVehicleType = vehicle;
+      if (vehicle != null) {
+        sessionsController.text = (vehicle.numberOfSessions).toString();
+        durationController.text = (vehicle.sessionDurationMinutes).toString();
+        priceController.text = (vehicle.pricePerSession).toStringAsFixed(2);
       }
     });
   }
@@ -116,32 +88,20 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                if (_isLoadingVehicles)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedVehicleType,
-                    decoration: const InputDecoration(
-                      labelText: 'Vehicle Type / Course',
-                      prefixIcon: Icon(Icons.directions_car),
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _vehicleTypes
-                        .map(
-                          (vehicle) => DropdownMenuItem(
-                            value: vehicle.id,
-                            child: Text(vehicle.name),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: _onVehicleTypeChanged,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Vehicle type is required';
-                      }
-                      return null;
-                    },
-                  ),
+                AsyncDropdown<VehicleTypeModel>(
+                  fetchItems: () =>
+                      sl<VehicleTypeRepository>().getVehicleTypes(),
+                  itemLabelBuilder: (vehicle) => vehicle.name,
+                  value: _selectedVehicleType,
+                  onChanged: _onVehicleTypeChanged,
+                  labelText: 'Vehicle Type / Course',
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Vehicle type is required';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -381,7 +341,7 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     context.read<OnboardingCubit>().updateTrainingScheduleInfo(
-                      vehicleTypeId: _selectedVehicleType ?? '',
+                      vehicleTypeId: _selectedVehicleType?.id ?? '',
                       sessionsCount: int.tryParse(sessionsController.text) ?? 0,
                       pricePerSession:
                           double.tryParse(priceController.text) ?? 0.0,
