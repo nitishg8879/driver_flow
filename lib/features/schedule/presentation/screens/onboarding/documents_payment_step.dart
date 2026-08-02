@@ -1,6 +1,5 @@
 import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_cubit.dart';
 import 'package:driver_flow_admin/utils/components/upload_card.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_form_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -84,8 +83,7 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
   Widget build(BuildContext context) {
     final double totalAmount = widget.pricePerSession * widget.sessionsCount;
 
-    return OnboardingFormWrapper(
-      child: Form(
+    return Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -400,9 +398,7 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
                 ElevatedButton.icon(
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      context.read<OnboardingCubit>().submitOnboarding(
-                        context.read<OnboardingCubit>().state.formData!,
-                      );
+                      context.read<OnboardingCubit>().submit();
                     }
                   },
                   icon: const Icon(Icons.check),
@@ -412,8 +408,7 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildTableCell(

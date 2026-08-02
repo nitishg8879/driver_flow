@@ -18,47 +18,47 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$OnboardingState {
   int get currentStep => throw _privateConstructorUsedError;
-  OnboardingFormData? get formData => throw _privateConstructorUsedError;
+  OnboardingFormData get formData => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     initial,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loading,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loaded,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     success,
     required TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )
     error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult? Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult? Function(int currentStep, OnboardingFormData formData)? success,
     TResult? Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult Function(int currentStep, OnboardingFormData formData)? success,
     TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
     required TResult orElse(),
@@ -103,9 +103,9 @@ abstract class $OnboardingStateCopyWith<$Res> {
     $Res Function(OnboardingState) then,
   ) = _$OnboardingStateCopyWithImpl<$Res, OnboardingState>;
   @useResult
-  $Res call({int currentStep, OnboardingFormData? formData});
+  $Res call({int currentStep, OnboardingFormData formData});
 
-  $OnboardingFormDataCopyWith<$Res>? get formData;
+  $OnboardingFormDataCopyWith<$Res> get formData;
 }
 
 /// @nodoc
@@ -122,17 +122,17 @@ class _$OnboardingStateCopyWithImpl<$Res, $Val extends OnboardingState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? currentStep = null, Object? formData = freezed}) {
+  $Res call({Object? currentStep = null, Object? formData = null}) {
     return _then(
       _value.copyWith(
             currentStep: null == currentStep
                 ? _value.currentStep
                 : currentStep // ignore: cast_nullable_to_non_nullable
                       as int,
-            formData: freezed == formData
+            formData: null == formData
                 ? _value.formData
                 : formData // ignore: cast_nullable_to_non_nullable
-                      as OnboardingFormData?,
+                      as OnboardingFormData,
           )
           as $Val,
     );
@@ -142,12 +142,8 @@ class _$OnboardingStateCopyWithImpl<$Res, $Val extends OnboardingState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $OnboardingFormDataCopyWith<$Res>? get formData {
-    if (_value.formData == null) {
-      return null;
-    }
-
-    return $OnboardingFormDataCopyWith<$Res>(_value.formData!, (value) {
+  $OnboardingFormDataCopyWith<$Res> get formData {
+    return $OnboardingFormDataCopyWith<$Res>(_value.formData, (value) {
       return _then(_value.copyWith(formData: value) as $Val);
     });
   }
@@ -162,10 +158,10 @@ abstract class _$$OnboardingInitialImplCopyWith<$Res>
   ) = __$$OnboardingInitialImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int currentStep, OnboardingFormData? formData});
+  $Res call({int currentStep, OnboardingFormData formData});
 
   @override
-  $OnboardingFormDataCopyWith<$Res>? get formData;
+  $OnboardingFormDataCopyWith<$Res> get formData;
 }
 
 /// @nodoc
@@ -181,17 +177,17 @@ class __$$OnboardingInitialImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? currentStep = null, Object? formData = freezed}) {
+  $Res call({Object? currentStep = null, Object? formData = null}) {
     return _then(
       _$OnboardingInitialImpl(
         currentStep: null == currentStep
             ? _value.currentStep
             : currentStep // ignore: cast_nullable_to_non_nullable
                   as int,
-        formData: freezed == formData
+        formData: null == formData
             ? _value.formData
             : formData // ignore: cast_nullable_to_non_nullable
-                  as OnboardingFormData?,
+                  as OnboardingFormData,
       ),
     );
   }
@@ -200,14 +196,17 @@ class __$$OnboardingInitialImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$OnboardingInitialImpl implements OnboardingInitial {
-  const _$OnboardingInitialImpl({this.currentStep = 0, this.formData = null});
+  const _$OnboardingInitialImpl({
+    this.currentStep = 0,
+    this.formData = const OnboardingFormData(),
+  });
 
   @override
   @JsonKey()
   final int currentStep;
   @override
   @JsonKey()
-  final OnboardingFormData? formData;
+  final OnboardingFormData formData;
 
   @override
   String toString() {
@@ -242,18 +241,18 @@ class _$OnboardingInitialImpl implements OnboardingInitial {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     initial,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loading,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loaded,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     success,
     required TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )
     error,
   }) {
@@ -263,14 +262,14 @@ class _$OnboardingInitialImpl implements OnboardingInitial {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult? Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult? Function(int currentStep, OnboardingFormData formData)? success,
     TResult? Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
   }) {
@@ -280,14 +279,14 @@ class _$OnboardingInitialImpl implements OnboardingInitial {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult Function(int currentStep, OnboardingFormData formData)? success,
     TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
     required TResult orElse(),
@@ -342,13 +341,13 @@ class _$OnboardingInitialImpl implements OnboardingInitial {
 abstract class OnboardingInitial implements OnboardingState {
   const factory OnboardingInitial({
     final int currentStep,
-    final OnboardingFormData? formData,
+    final OnboardingFormData formData,
   }) = _$OnboardingInitialImpl;
 
   @override
   int get currentStep;
   @override
-  OnboardingFormData? get formData;
+  OnboardingFormData get formData;
 
   /// Create a copy of OnboardingState
   /// with the given fields replaced by the non-null parameter values.
@@ -367,10 +366,10 @@ abstract class _$$OnboardingLoadingImplCopyWith<$Res>
   ) = __$$OnboardingLoadingImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int currentStep, OnboardingFormData? formData});
+  $Res call({int currentStep, OnboardingFormData formData});
 
   @override
-  $OnboardingFormDataCopyWith<$Res>? get formData;
+  $OnboardingFormDataCopyWith<$Res> get formData;
 }
 
 /// @nodoc
@@ -386,17 +385,17 @@ class __$$OnboardingLoadingImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? currentStep = null, Object? formData = freezed}) {
+  $Res call({Object? currentStep = null, Object? formData = null}) {
     return _then(
       _$OnboardingLoadingImpl(
         currentStep: null == currentStep
             ? _value.currentStep
             : currentStep // ignore: cast_nullable_to_non_nullable
                   as int,
-        formData: freezed == formData
+        formData: null == formData
             ? _value.formData
             : formData // ignore: cast_nullable_to_non_nullable
-                  as OnboardingFormData?,
+                  as OnboardingFormData,
       ),
     );
   }
@@ -405,14 +404,17 @@ class __$$OnboardingLoadingImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$OnboardingLoadingImpl implements OnboardingLoading {
-  const _$OnboardingLoadingImpl({this.currentStep = 0, this.formData = null});
+  const _$OnboardingLoadingImpl({
+    this.currentStep = 0,
+    this.formData = const OnboardingFormData(),
+  });
 
   @override
   @JsonKey()
   final int currentStep;
   @override
   @JsonKey()
-  final OnboardingFormData? formData;
+  final OnboardingFormData formData;
 
   @override
   String toString() {
@@ -447,18 +449,18 @@ class _$OnboardingLoadingImpl implements OnboardingLoading {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     initial,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loading,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loaded,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     success,
     required TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )
     error,
   }) {
@@ -468,14 +470,14 @@ class _$OnboardingLoadingImpl implements OnboardingLoading {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult? Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult? Function(int currentStep, OnboardingFormData formData)? success,
     TResult? Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
   }) {
@@ -485,14 +487,14 @@ class _$OnboardingLoadingImpl implements OnboardingLoading {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult Function(int currentStep, OnboardingFormData formData)? success,
     TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
     required TResult orElse(),
@@ -547,13 +549,13 @@ class _$OnboardingLoadingImpl implements OnboardingLoading {
 abstract class OnboardingLoading implements OnboardingState {
   const factory OnboardingLoading({
     final int currentStep,
-    final OnboardingFormData? formData,
+    final OnboardingFormData formData,
   }) = _$OnboardingLoadingImpl;
 
   @override
   int get currentStep;
   @override
-  OnboardingFormData? get formData;
+  OnboardingFormData get formData;
 
   /// Create a copy of OnboardingState
   /// with the given fields replaced by the non-null parameter values.
@@ -572,10 +574,10 @@ abstract class _$$OnboardingLoadedImplCopyWith<$Res>
   ) = __$$OnboardingLoadedImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int currentStep, OnboardingFormData? formData});
+  $Res call({int currentStep, OnboardingFormData formData});
 
   @override
-  $OnboardingFormDataCopyWith<$Res>? get formData;
+  $OnboardingFormDataCopyWith<$Res> get formData;
 }
 
 /// @nodoc
@@ -591,17 +593,17 @@ class __$$OnboardingLoadedImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? currentStep = null, Object? formData = freezed}) {
+  $Res call({Object? currentStep = null, Object? formData = null}) {
     return _then(
       _$OnboardingLoadedImpl(
         currentStep: null == currentStep
             ? _value.currentStep
             : currentStep // ignore: cast_nullable_to_non_nullable
                   as int,
-        formData: freezed == formData
+        formData: null == formData
             ? _value.formData
             : formData // ignore: cast_nullable_to_non_nullable
-                  as OnboardingFormData?,
+                  as OnboardingFormData,
       ),
     );
   }
@@ -610,14 +612,17 @@ class __$$OnboardingLoadedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$OnboardingLoadedImpl implements OnboardingLoaded {
-  const _$OnboardingLoadedImpl({this.currentStep = 0, this.formData = null});
+  const _$OnboardingLoadedImpl({
+    this.currentStep = 0,
+    this.formData = const OnboardingFormData(),
+  });
 
   @override
   @JsonKey()
   final int currentStep;
   @override
   @JsonKey()
-  final OnboardingFormData? formData;
+  final OnboardingFormData formData;
 
   @override
   String toString() {
@@ -652,18 +657,18 @@ class _$OnboardingLoadedImpl implements OnboardingLoaded {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     initial,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loading,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loaded,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     success,
     required TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )
     error,
   }) {
@@ -673,14 +678,14 @@ class _$OnboardingLoadedImpl implements OnboardingLoaded {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult? Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult? Function(int currentStep, OnboardingFormData formData)? success,
     TResult? Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
   }) {
@@ -690,14 +695,14 @@ class _$OnboardingLoadedImpl implements OnboardingLoaded {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult Function(int currentStep, OnboardingFormData formData)? success,
     TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
     required TResult orElse(),
@@ -752,13 +757,13 @@ class _$OnboardingLoadedImpl implements OnboardingLoaded {
 abstract class OnboardingLoaded implements OnboardingState {
   const factory OnboardingLoaded({
     final int currentStep,
-    final OnboardingFormData? formData,
+    final OnboardingFormData formData,
   }) = _$OnboardingLoadedImpl;
 
   @override
   int get currentStep;
   @override
-  OnboardingFormData? get formData;
+  OnboardingFormData get formData;
 
   /// Create a copy of OnboardingState
   /// with the given fields replaced by the non-null parameter values.
@@ -777,10 +782,10 @@ abstract class _$$OnboardingSuccessImplCopyWith<$Res>
   ) = __$$OnboardingSuccessImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int currentStep, OnboardingFormData? formData});
+  $Res call({int currentStep, OnboardingFormData formData});
 
   @override
-  $OnboardingFormDataCopyWith<$Res>? get formData;
+  $OnboardingFormDataCopyWith<$Res> get formData;
 }
 
 /// @nodoc
@@ -796,17 +801,17 @@ class __$$OnboardingSuccessImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? currentStep = null, Object? formData = freezed}) {
+  $Res call({Object? currentStep = null, Object? formData = null}) {
     return _then(
       _$OnboardingSuccessImpl(
         currentStep: null == currentStep
             ? _value.currentStep
             : currentStep // ignore: cast_nullable_to_non_nullable
                   as int,
-        formData: freezed == formData
+        formData: null == formData
             ? _value.formData
             : formData // ignore: cast_nullable_to_non_nullable
-                  as OnboardingFormData?,
+                  as OnboardingFormData,
       ),
     );
   }
@@ -815,14 +820,17 @@ class __$$OnboardingSuccessImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$OnboardingSuccessImpl implements OnboardingSuccess {
-  const _$OnboardingSuccessImpl({this.currentStep = 0, this.formData = null});
+  const _$OnboardingSuccessImpl({
+    this.currentStep = 0,
+    this.formData = const OnboardingFormData(),
+  });
 
   @override
   @JsonKey()
   final int currentStep;
   @override
   @JsonKey()
-  final OnboardingFormData? formData;
+  final OnboardingFormData formData;
 
   @override
   String toString() {
@@ -857,18 +865,18 @@ class _$OnboardingSuccessImpl implements OnboardingSuccess {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     initial,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loading,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loaded,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     success,
     required TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )
     error,
   }) {
@@ -878,14 +886,14 @@ class _$OnboardingSuccessImpl implements OnboardingSuccess {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult? Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult? Function(int currentStep, OnboardingFormData formData)? success,
     TResult? Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
   }) {
@@ -895,14 +903,14 @@ class _$OnboardingSuccessImpl implements OnboardingSuccess {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult Function(int currentStep, OnboardingFormData formData)? success,
     TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
     required TResult orElse(),
@@ -957,13 +965,13 @@ class _$OnboardingSuccessImpl implements OnboardingSuccess {
 abstract class OnboardingSuccess implements OnboardingState {
   const factory OnboardingSuccess({
     final int currentStep,
-    final OnboardingFormData? formData,
+    final OnboardingFormData formData,
   }) = _$OnboardingSuccessImpl;
 
   @override
   int get currentStep;
   @override
-  OnboardingFormData? get formData;
+  OnboardingFormData get formData;
 
   /// Create a copy of OnboardingState
   /// with the given fields replaced by the non-null parameter values.
@@ -982,10 +990,10 @@ abstract class _$$OnboardingErrorImplCopyWith<$Res>
   ) = __$$OnboardingErrorImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String message, int currentStep, OnboardingFormData? formData});
+  $Res call({String message, int currentStep, OnboardingFormData formData});
 
   @override
-  $OnboardingFormDataCopyWith<$Res>? get formData;
+  $OnboardingFormDataCopyWith<$Res> get formData;
 }
 
 /// @nodoc
@@ -1004,7 +1012,7 @@ class __$$OnboardingErrorImplCopyWithImpl<$Res>
   $Res call({
     Object? message = null,
     Object? currentStep = null,
-    Object? formData = freezed,
+    Object? formData = null,
   }) {
     return _then(
       _$OnboardingErrorImpl(
@@ -1016,10 +1024,10 @@ class __$$OnboardingErrorImplCopyWithImpl<$Res>
             ? _value.currentStep
             : currentStep // ignore: cast_nullable_to_non_nullable
                   as int,
-        formData: freezed == formData
+        formData: null == formData
             ? _value.formData
             : formData // ignore: cast_nullable_to_non_nullable
-                  as OnboardingFormData?,
+                  as OnboardingFormData,
       ),
     );
   }
@@ -1031,7 +1039,7 @@ class _$OnboardingErrorImpl implements OnboardingError {
   const _$OnboardingErrorImpl(
     this.message, {
     this.currentStep = 0,
-    this.formData = null,
+    this.formData = const OnboardingFormData(),
   });
 
   @override
@@ -1041,7 +1049,7 @@ class _$OnboardingErrorImpl implements OnboardingError {
   final int currentStep;
   @override
   @JsonKey()
-  final OnboardingFormData? formData;
+  final OnboardingFormData formData;
 
   @override
   String toString() {
@@ -1077,18 +1085,18 @@ class _$OnboardingErrorImpl implements OnboardingError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     initial,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loading,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     loaded,
-    required TResult Function(int currentStep, OnboardingFormData? formData)
+    required TResult Function(int currentStep, OnboardingFormData formData)
     success,
     required TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )
     error,
   }) {
@@ -1098,14 +1106,14 @@ class _$OnboardingErrorImpl implements OnboardingError {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult? Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult? Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult? Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult? Function(int currentStep, OnboardingFormData formData)? success,
     TResult? Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
   }) {
@@ -1115,14 +1123,14 @@ class _$OnboardingErrorImpl implements OnboardingError {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int currentStep, OnboardingFormData? formData)? initial,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loading,
-    TResult Function(int currentStep, OnboardingFormData? formData)? loaded,
-    TResult Function(int currentStep, OnboardingFormData? formData)? success,
+    TResult Function(int currentStep, OnboardingFormData formData)? initial,
+    TResult Function(int currentStep, OnboardingFormData formData)? loading,
+    TResult Function(int currentStep, OnboardingFormData formData)? loaded,
+    TResult Function(int currentStep, OnboardingFormData formData)? success,
     TResult Function(
       String message,
       int currentStep,
-      OnboardingFormData? formData,
+      OnboardingFormData formData,
     )?
     error,
     required TResult orElse(),
@@ -1178,14 +1186,14 @@ abstract class OnboardingError implements OnboardingState {
   const factory OnboardingError(
     final String message, {
     final int currentStep,
-    final OnboardingFormData? formData,
+    final OnboardingFormData formData,
   }) = _$OnboardingErrorImpl;
 
   String get message;
   @override
   int get currentStep;
   @override
-  OnboardingFormData? get formData;
+  OnboardingFormData get formData;
 
   /// Create a copy of OnboardingState
   /// with the given fields replaced by the non-null parameter values.

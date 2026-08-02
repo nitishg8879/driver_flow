@@ -7,23 +7,23 @@ part 'onboarding_state.freezed.dart';
 class OnboardingState with _$OnboardingState {
   const factory OnboardingState.initial({
     @Default(0) int currentStep,
-    @Default(null) OnboardingFormData? formData,
+    @Default(OnboardingFormData()) OnboardingFormData formData,
   }) = OnboardingInitial;
   const factory OnboardingState.loading({
     @Default(0) int currentStep,
-    @Default(null) OnboardingFormData? formData,
+    @Default(OnboardingFormData()) OnboardingFormData formData,
   }) = OnboardingLoading;
   const factory OnboardingState.loaded({
     @Default(0) int currentStep,
-    @Default(null) OnboardingFormData? formData,
+    @Default(OnboardingFormData()) OnboardingFormData formData,
   }) = OnboardingLoaded;
   const factory OnboardingState.success({
     @Default(0) int currentStep,
-    @Default(null) OnboardingFormData? formData,
+    @Default(OnboardingFormData()) OnboardingFormData formData,
   }) = OnboardingSuccess;
   const factory OnboardingState.error(
     String message, {
     @Default(0) int currentStep,
-    @Default(null) OnboardingFormData? formData,
+    @Default(OnboardingFormData()) OnboardingFormData formData,
   }) = OnboardingError;
 }

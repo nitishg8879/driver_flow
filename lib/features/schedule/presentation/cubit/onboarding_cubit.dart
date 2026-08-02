@@ -27,6 +27,52 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     _updateStep(state.currentStep, formData);
   }
 
+  void updatePersonalInfo({
+    required String fullName,
+    required String phoneNumber,
+    required String email,
+    required String streetAddress,
+    required String states,
+    required String city,
+    required String zipCode,
+  }) {
+    final updatedData = state.formData.copyWith(
+      fullName: fullName,
+      phoneNumber: phoneNumber,
+      email: email,
+      streetAddress: streetAddress,
+      state: states,
+      city: city,
+      zipCode: zipCode,
+    );
+    _updateStep(state.currentStep, updatedData);
+    nextStep();
+  }
+
+  void updateTrainingScheduleInfo({
+    required String vehicleTypeId,
+    required int sessionsCount,
+    required double pricePerSession,
+    required int sessionDuration,
+    required DateTime startDate,
+    required String recurrence,
+  }) {
+    final updatedData = (state.formData).copyWith(
+      vehicleTypeId: vehicleTypeId,
+      sessionsCount: sessionsCount,
+      pricePerSession: pricePerSession,
+      sessionDuration: sessionDuration,
+      courseStartDate: startDate,
+      recurrence: recurrence,
+    );
+    _updateStep(state.currentStep, updatedData);
+    nextStep();
+  }
+
+  Future<void> submit() async {
+    await submitOnboarding(state.formData);
+  }
+
   void _updateStep(int step, [OnboardingFormData? data]) {
     final formData = data ?? state.formData;
     state.maybeMap(

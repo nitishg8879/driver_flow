@@ -18,6 +18,7 @@ import '../../features/payment/presentation/cubit/payment_cubit.dart';
 import '../../features/profile/data/repositories/profile_repository.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/schedule/presentation/cubit/onboarding_cubit.dart';
+import '../../features/schedule/data/repositories/state_city_repository.dart';
 import '../services/attachment_service.dart';
 import '../services/storage_service.dart';
 
@@ -63,6 +64,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<ProfileRepository>(
     () => ProfileRepositoryImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<StateCityRepository>(
+    () => StateCityRepositoryImpl(),
   );
 
   // Blocs / Cubits

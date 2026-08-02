@@ -86,6 +86,7 @@ class _OnboardingStudentFormState extends State<OnboardingStudentForm> {
                   // Content Area
                   Expanded(
                     child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 16),
                       child: _buildStepContent(state.currentStep),
                     ),
                   ),
@@ -108,8 +109,8 @@ class _OnboardingStudentFormState extends State<OnboardingStudentForm> {
       case 2:
         return DocumentsPaymentStep(
           key: DocumentsPaymentStep.stateKey,
-          pricePerSession: formData?.pricePerSession ?? 0.0,
-          sessionsCount: formData?.sessionsCount ?? 0,
+          pricePerSession: formData.pricePerSession ?? 0.0,
+          sessionsCount: formData.sessionsCount ?? 0,
         );
       default:
         return const SizedBox.shrink();
@@ -117,3 +118,6 @@ class _OnboardingStudentFormState extends State<OnboardingStudentForm> {
   }
 
 }
+
+
+
