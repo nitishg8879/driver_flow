@@ -11,7 +11,6 @@ import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
 import '../../features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/tags/data/repositories/tag_repository.dart';
-import '../../features/tags/presentation/cubit/tags_cubit.dart';
 import '../../features/payment/data/repositories/payment_repository.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
 import '../../features/profile/data/repositories/profile_repository.dart';
@@ -70,7 +69,6 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
   sl.registerFactory(() => VehicleTypeCubit(repository: sl()));
   sl.registerFactory(() => ScheduleCubit(repository: sl()));
-  sl.registerFactory(() => TagsCubit(repository: sl()));
   sl.registerFactory(() => PaymentCubit(repository: sl()));
   sl.registerFactory(() => ProfileCubit(repository: sl()));
   sl.registerFactory(() => OnboardingCubit(repository: sl()));

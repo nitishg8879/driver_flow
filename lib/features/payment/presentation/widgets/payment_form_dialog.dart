@@ -10,8 +10,6 @@ import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
 import '../../../../utils/components/searchable_async_dropdown.dart';
 import '../../../../utils/constants/app_enums.dart';
-import '../../../tags/data/repositories/tag_repository.dart';
-import '../../../tags/presentation/cubit/tags_cubit.dart';
 import '../../../user/data/models/user_model.dart';
 import '../../../user/data/repositories/user_repository.dart';
 import '../../data/models/payment_model.dart';
@@ -302,67 +300,63 @@ class _PaymentFormDialogState extends State<PaymentFormDialog> {
             ),
             const SizedBox(height: 16),
             // Tags Multi-Select
-            BlocProvider<TagsCubit>(
-              create: (_) => TagsCubit(repository: sl<TagRepository>()),
-              child: Builder(
-                builder: (context) {
-                  return FutureBuilder<void>(
-                    future: Future(
-                      () =>
-                          context.read<TagsCubit>().listTags(activeOnly: true),
-                    ),
-                    builder: (context, snapshot) {
-                      return BlocBuilder<TagsCubit, TagsState>(
-                        builder: (context, tagsState) {
-                          return tagsState.maybeWhen(
-                            loaded:
-                                (
-                                  allTags,
-                                  currentPage,
-                                  totalPages,
-                                  searchQuery,
-                                ) => Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Tags',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Wrap(
-                                      spacing: 8,
-                                      children: allTags.map((tag) {
-                                        final isSelected = _selectedTagIds
-                                            .contains(tag.id);
-                                        return FilterChip(
-                                          label: Text(tag.name),
-                                          selected: isSelected,
-                                          onSelected: (selected) {
-                                            setState(() {
-                                              if (selected) {
-                                                _selectedTagIds.add(tag.id!);
-                                              } else {
-                                                _selectedTagIds.remove(tag.id);
-                                              }
-                                            });
-                                          },
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
-                                ),
-                            loading: () => const CircularProgressIndicator(),
-                            orElse: () => const SizedBox.shrink(),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
+            // Builder(
+            //   builder: (context) {
+            //     return FutureBuilder<void>(
+            //       future: Future(
+            //         () => context.read<TagsCubit>().listTags(activeOnly: true),
+            //       ),
+            //       builder: (context, snapshot) {
+            //         return BlocBuilder<TagsCubit, TagsState>(
+            //           builder: (context, tagsState) {
+            //             return tagsState.maybeWhen(
+            //               loaded:
+            //                   (
+            //                     allTags,
+            //                     currentPage,
+            //                     totalPages,
+            //                     searchQuery,
+            //                   ) => Column(
+            //                     crossAxisAlignment: CrossAxisAlignment.start,
+            //                     children: [
+            //                       const Text(
+            //                         'Tags',
+            //                         style: TextStyle(
+            //                           fontWeight: FontWeight.w500,
+            //                         ),
+            //                       ),
+            //                       const SizedBox(height: 8),
+            //                       Wrap(
+            //                         spacing: 8,
+            //                         children: allTags.map((tag) {
+            //                           final isSelected = _selectedTagIds
+            //                               .contains(tag.id);
+            //                           return FilterChip(
+            //                             label: Text(tag.name),
+            //                             selected: isSelected,
+            //                             onSelected: (selected) {
+            //                               setState(() {
+            //                                 if (selected) {
+            //                                   _selectedTagIds.add(tag.id!);
+            //                                 } else {
+            //                                   _selectedTagIds.remove(tag.id);
+            //                                 }
+            //                               });
+            //                             },
+            //                           );
+            //                         }).toList(),
+            //                       ),
+            //                     ],
+            //                   ),
+            //               loading: () => const CircularProgressIndicator(),
+            //               orElse: () => const SizedBox.shrink(),
+            //             );
+            //           },
+            //         );
+            //       },
+            //     );
+            //   },
+            // ),
             const SizedBox(height: 16),
             // Attachments
             AttachmentPickerField(

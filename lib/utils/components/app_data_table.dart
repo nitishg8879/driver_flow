@@ -312,7 +312,7 @@ class _AppDataTableState extends State<AppDataTable> {
               color: colorScheme.error.withValues(alpha: 0.35),
             ),
             const SizedBox(height: 12),
-            Text(
+            SelectableText(
               kDebugMode
                   ? 'Error loading data: ${error.toString()}'
                   : 'Technical Error, Please try again later.',

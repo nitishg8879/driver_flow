@@ -1,198 +1,133 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../utils/components/custom_button.dart';
-import '../../../../utils/components/custom_text_field.dart';
-import '../../data/models/tag_model.dart';
-import '../cubit/tags_cubit.dart';
+import '../../../../utils/components/app_data_table.dart';
+import '../../../../utils/extensions/context_extensions.dart';
+import '../../data/repositories/tag_repository.dart';
+import '../widgets/tag_data_source.dart';
 import '../widgets/tag_form_dialog.dart';
 
-class TagsScreen extends StatefulWidget {
+class TagsScreen extends HookConsumerWidget {
   const TagsScreen({super.key});
 
   @override
-  State<TagsScreen> createState() => _TagsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Filter state
+    final activeOnly = useState(true);
+    final searchQuery = useState('');
+    final refreshCounter = useState(0);
 
-class _TagsScreenState extends State<TagsScreen> {
-  late TextEditingController _searchController;
-  int _currentPage = 1;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-    context.read<TagsCubit>().listTags(
-      activeOnly: false,
-      pageNumber: _currentPage,
-    );
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _loadTags() {
-    _currentPage = 1;
-    context.read<TagsCubit>().listTags(
-      activeOnly: false,
-      searchQuery: _searchController.text.isEmpty
-          ? null
-          : _searchController.text,
-      pageNumber: _currentPage,
-    );
-  }
-
-  void _nextPage(int totalPages) {
-    if (_currentPage < totalPages) {
-      _currentPage++;
-      context.read<TagsCubit>().listTags(
-        activeOnly: false,
-        searchQuery: _searchController.text.isEmpty
-            ? null
-            : _searchController.text,
-        pageNumber: _currentPage,
+    // Memoized data source based on filter changes and refresh counter
+    final dataSource = useMemoized(() {
+      return TagDataSource(
+        ref: ref,
+        context: context,
+        activeOnly: activeOnly.value,
+        searchQuery: searchQuery.value,
+        onEdit: (tag) async {
+          final result = await showDialog<bool>(
+            context: context,
+            builder: (_) => TagFormDialog(existing: tag),
+          );
+          if (result == true) {
+            context.showSuccessSnackBar('Tag updated successfully');
+            refreshCounter.value++;
+          }
+        },
+        onStatusChanged: (tagId, newStatus) async {
+          try {
+            await ref
+                .read(tagRepositoryProvider)
+                .setActiveStatus(tagId, newStatus);
+            context.showSuccessSnackBar(
+              'Tag ${newStatus ? 'activated' : 'deactivated'} successfully',
+            );
+            refreshCounter.value++;
+          } catch (e) {
+            context.showErrorSnackBar('Failed to update tag status');
+          }
+        },
       );
-    }
-  }
+    }, [activeOnly.value, searchQuery.value, refreshCounter.value]);
 
-  void _previousPage() {
-    if (_currentPage > 1) {
-      _currentPage--;
-      context.read<TagsCubit>().listTags(
-        activeOnly: false,
-        searchQuery: _searchController.text.isEmpty
-            ? null
-            : _searchController.text,
-        pageNumber: _currentPage,
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tags'), actions: []),
-      body: Column(
-        children: [
-          // Search Filter
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              spacing: 16,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Expanded(
-                  child: CustomTextField(
-                    labelText: 'Search Tags',
-                    controller: _searchController,
-                    hintText: 'Enter tag name...',
-                    onChanged: (_) => _loadTags(),
+                Text(
+                  'Tags',
+                  style: context.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                CustomButton(
-                  text: 'Add Tag',
-                  onPressed: () => _showTagDialog(context),
+                const Spacer(),
+                FilledButton.icon(
+                  onPressed: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (_) => const TagFormDialog(),
+                    );
+                    if (result == true) {
+                      context.showSuccessSnackBar('Tag saved successfully');
+                      refreshCounter.value++;
+                    }
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Tag'),
                 ),
               ],
             ),
-          ),
-          // Tags List
-          Expanded(
-            child: BlocBuilder<TagsCubit, TagsState>(
-              builder: (context, state) {
-                return state.maybeWhen(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loaded: (tags, currentPage, totalPages, searchQuery) =>
-                      tags.isEmpty
-                      ? const Center(child: Text('No tags found'))
-                      : Column(
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: tags.length,
-                                itemBuilder: (context, index) {
-                                  final tag = tags[index];
-                                  return ListTile(
-                                    title: Text(tag.name),
-                                    subtitle: Text(tag.color ?? 'No color'),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          onPressed: () =>
-                                              _showTagDialog(context, tag),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(
-                                            tag.isActive
-                                                ? Icons.visibility
-                                                : Icons.visibility_off,
-                                          ),
-                                          onPressed: () => context
-                                              .read<TagsCubit>()
-                                              .setActiveStatus(
-                                                tag.id!,
-                                                !tag.isActive,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            // Pagination Controls
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  CustomButton(
-                                    text: 'Previous',
-                                    onPressed: _currentPage > 1
-                                        ? () => _previousPage()
-                                        : null,
-                                  ),
-                                  Text(
-                                    'Page $_currentPage of $totalPages',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  CustomButton(
-                                    text: 'Next',
-                                    onPressed: _currentPage < totalPages
-                                        ? () => _nextPage(totalPages)
-                                        : null,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                  error: (message) => Center(child: Text('Error: $message')),
-                  orElse: () => const SizedBox.shrink(),
-                );
+            const SizedBox(height: 16),
+            TextField(
+              onChanged: (value) {
+                searchQuery.value = value;
+              },
+              decoration: InputDecoration(
+                hintText: 'Search by name...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: true, label: Text('Active')),
+                ButtonSegment(value: false, label: Text('Inactive')),
+              ],
+              selected: {activeOnly.value},
+              onSelectionChanged: (selection) {
+                activeOnly.value = selection.first;
               },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showTagDialog(BuildContext context, [TagModel? existing]) {
-    showDialog(
-      context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<TagsCubit>(),
-        child: TagFormDialog(existing: existing),
+            const SizedBox(height: 16),
+            Expanded(
+              child: AppDataTable(
+                minWidth: 800,
+                dataRowHeight: 64,
+                rowsPerPage: 10,
+                columns: const [
+                  DataColumn2(label: Text('Name'), size: ColumnSize.M),
+                  DataColumn2(label: Text('Color'), size: ColumnSize.S),
+                  DataColumn2(label: Text('Status'), size: ColumnSize.S),
+                  DataColumn2(label: Text('Actions'), fixedWidth: 72),
+                ],
+                source: dataSource,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

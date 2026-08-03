@@ -1,6 +1,5 @@
 import 'package:driver_flow_admin/core/router/app_pages.dart';
 import 'package:driver_flow_admin/core/router/app_router_observer.dart';
-import 'package:driver_flow_admin/features/user/presentation/cubit/user_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,7 +12,6 @@ import '../../features/schedule/presentation/screens/schedule_screen.dart';
 import '../../features/user/presentation/screens/users_screen.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/vehicle_type/presentation/screens/vehicle_type_screen.dart';
-import '../../features/tags/presentation/cubit/tags_cubit.dart';
 import '../../features/tags/presentation/screens/tags_screen.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
 import '../../features/payment/presentation/screens/payment_list_screen.dart';
@@ -58,12 +56,7 @@ class AppRouter {
             path: Routes.users,
             name: 'users',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
-                child: BlocProvider(
-                  create: (context) => UserCubit(sl()),
-                  child: const UsersScreen(),
-                ),
-              );
+              return NoTransitionPage(child: UsersScreen());
             },
           ),
 
@@ -95,12 +88,7 @@ class AppRouter {
             path: Routes.tags,
             name: 'tags',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
-                child: BlocProvider(
-                  create: (context) => sl<TagsCubit>(),
-                  child: const TagsScreen(),
-                ),
-              );
+              return NoTransitionPage(child: const TagsScreen());
             },
           ),
           GoRoute(
