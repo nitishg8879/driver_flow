@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_flow_admin/core/models/paginated_result.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../utils/constants/app_constants.dart';
 import '../../../../utils/constants/app_enums.dart';
@@ -304,3 +305,7 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 }
+
+final userRepositoryProvider = Provider<UserRepository>((ref) {
+  return UserRepositoryImpl(firestore: FirebaseFirestore.instance);
+});
