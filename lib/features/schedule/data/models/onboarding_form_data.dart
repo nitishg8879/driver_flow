@@ -1,3 +1,4 @@
+import 'package:driver_flow_admin/features/vehicle_type/data/models/vehicle_type_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'onboarding_form_data.freezed.dart';
@@ -15,7 +16,7 @@ class OnboardingFormData with _$OnboardingFormData {
     String? state,
     String? zipCode,
     // Step 2: Training & Schedule
-    String? vehicleTypeId,
+    VehicleTypeModel? vehicleType,
     int? sessionsCount,
     int? sessionDuration,
     double? pricePerSession,

@@ -86,7 +86,10 @@ class _OnboardingStudentFormState extends State<OnboardingStudentForm> {
                   // Content Area
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
                       child: _buildStepContent(state.currentStep),
                     ),
                   ),
@@ -116,8 +119,4 @@ class _OnboardingStudentFormState extends State<OnboardingStudentForm> {
         return const SizedBox.shrink();
     }
   }
-
 }
-
-
-

@@ -9,9 +9,8 @@ part 'city_cubit.freezed.dart';
 class CityCubitState with _$CityCubitState {
   const factory CityCubitState.initial() = _Initial;
   const factory CityCubitState.loading() = _Loading;
-  const factory CityCubitState.success({
-    required List<String> cities,
-  }) = _Success;
+  const factory CityCubitState.success({required List<String> cities}) =
+      _Success;
   const factory CityCubitState.error(String message) = _Error;
 }
 

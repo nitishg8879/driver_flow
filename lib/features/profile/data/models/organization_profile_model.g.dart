@@ -21,13 +21,17 @@ _$OrganizationProfileModelImpl _$$OrganizationProfileModelImplFromJson(
   aboutUs: json['aboutUs'] as String?,
   workingDays:
       (json['workingDays'] as List<dynamic>?)
-          ?.map((e) => e as String)
+          ?.map((e) => $enumDecode(_$OrgWorkingDayEnumMap, e))
           .toList() ??
       const [],
-  isHolidayToday: json['isHolidayToday'] as bool? ?? false,
-  isHalfDayToday: json['isHalfDayToday'] as bool? ?? false,
   createdAt: const _TimestampConverter().fromJson(json['createdAt']),
   updatedAt: const _TimestampConverter().fromJson(json['updatedAt']),
+  workingHoursStart: const _TimestampConverter().fromJson(
+    json['workingHoursStart'],
+  ),
+  workingHoursEnd: const _TimestampConverter().fromJson(
+    json['workingHoursEnd'],
+  ),
 );
 
 Map<String, dynamic> _$$OrganizationProfileModelImplToJson(
@@ -39,9 +43,29 @@ Map<String, dynamic> _$$OrganizationProfileModelImplToJson(
   'phoneNumber': instance.phoneNumber,
   'websiteUrls': instance.websiteUrls,
   'aboutUs': instance.aboutUs,
-  'workingDays': instance.workingDays,
-  'isHolidayToday': instance.isHolidayToday,
-  'isHalfDayToday': instance.isHalfDayToday,
+  'workingDays': instance.workingDays
+      ?.map((e) => _$OrgWorkingDayEnumMap[e]!)
+      .toList(),
   'createdAt': const _TimestampConverter().toJson(instance.createdAt),
   'updatedAt': const _TimestampConverter().toJson(instance.updatedAt),
+  'workingHoursStart': const _TimestampConverter().toJson(
+    instance.workingHoursStart,
+  ),
+  'workingHoursEnd': const _TimestampConverter().toJson(
+    instance.workingHoursEnd,
+  ),
+};
+
+const _$OrgWorkingDayEnumMap = {
+  OrgWorkingDay.monday: 'monday',
+  OrgWorkingDay.tuesday: 'tuesday',
+  OrgWorkingDay.wednesday: 'wednesday',
+  OrgWorkingDay.thursday: 'thursday',
+  OrgWorkingDay.friday: 'friday',
+  OrgWorkingDay.saturday: 'saturday',
+  OrgWorkingDay.sunday: 'sunday',
+  OrgWorkingDay.firstAndThirdSaturday: 'firstAndThirdSaturday',
+  OrgWorkingDay.secondAndFourthSaturday: 'secondAndFourthSaturday',
+  OrgWorkingDay.firstAndSecondSaturday: 'firstAndSecondSaturday',
+  OrgWorkingDay.thirdAndFourthSaturday: 'thirdAndFourthSaturday',
 };

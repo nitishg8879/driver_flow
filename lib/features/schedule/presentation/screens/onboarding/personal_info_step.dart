@@ -27,16 +27,11 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
   @override
   void initState() {
     super.initState();
-    final randomNumber = DateTime.now().millisecondsSinceEpoch % 100000;
-    fullNameController = TextEditingController(
-      text: 'Nitish Gupta $randomNumber',
-    );
-    phoneController = TextEditingController(text: '123456789$randomNumber');
-    emailController = TextEditingController(
-      text: 'nitish.gupta+$randomNumber@example.com',
-    );
-    streetController = TextEditingController(text: '123 Main St');
-    zipController = TextEditingController(text: '12345');
+    fullNameController = TextEditingController();
+    phoneController = TextEditingController();
+    emailController = TextEditingController();
+    streetController = TextEditingController();
+    zipController = TextEditingController();
     reInitalize();
   }
 

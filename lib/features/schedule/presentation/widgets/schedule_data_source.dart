@@ -71,13 +71,13 @@ class ScheduleDataSource extends AsyncDataTableSource {
   @override
   Future<AsyncRowsResponse> getRows(int startIndex, int count) async {
     final allSchedules = await sl<ScheduleRepository>().getSchedules();
-    
+
     final endIndex = startIndex + count;
     final paginatedSchedules = allSchedules.sublist(
       startIndex,
       endIndex > allSchedules.length ? allSchedules.length : endIndex,
     );
-    
+
     return AsyncRowsResponse(
       allSchedules.length,
       paginatedSchedules.map((s) {

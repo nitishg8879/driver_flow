@@ -29,13 +29,17 @@ mixin _$OrganizationProfileModel {
   String? get phoneNumber => throw _privateConstructorUsedError;
   List<String>? get websiteUrls => throw _privateConstructorUsedError;
   String? get aboutUs => throw _privateConstructorUsedError;
-  List<String>? get workingDays => throw _privateConstructorUsedError;
-  bool? get isHolidayToday => throw _privateConstructorUsedError;
-  bool? get isHalfDayToday => throw _privateConstructorUsedError;
+  List<OrgWorkingDay>? get workingDays =>
+      throw _privateConstructorUsedError; // @Default(false) bool? isHolidayToday,
+  // @Default(false) bool? isHalfDayToday,
   @_TimestampConverter()
   DateTime? get createdAt => throw _privateConstructorUsedError;
   @_TimestampConverter()
   DateTime? get updatedAt => throw _privateConstructorUsedError;
+  @_TimestampConverter()
+  DateTime? get workingHoursStart => throw _privateConstructorUsedError;
+  @_TimestampConverter()
+  DateTime? get workingHoursEnd => throw _privateConstructorUsedError;
 
   /// Serializes this OrganizationProfileModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,11 +65,11 @@ abstract class $OrganizationProfileModelCopyWith<$Res> {
     String? phoneNumber,
     List<String>? websiteUrls,
     String? aboutUs,
-    List<String>? workingDays,
-    bool? isHolidayToday,
-    bool? isHalfDayToday,
+    List<OrgWorkingDay>? workingDays,
     @_TimestampConverter() DateTime? createdAt,
     @_TimestampConverter() DateTime? updatedAt,
+    @_TimestampConverter() DateTime? workingHoursStart,
+    @_TimestampConverter() DateTime? workingHoursEnd,
   });
 }
 
@@ -94,10 +98,10 @@ class _$OrganizationProfileModelCopyWithImpl<
     Object? websiteUrls = freezed,
     Object? aboutUs = freezed,
     Object? workingDays = freezed,
-    Object? isHolidayToday = freezed,
-    Object? isHalfDayToday = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? workingHoursStart = freezed,
+    Object? workingHoursEnd = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -128,15 +132,7 @@ class _$OrganizationProfileModelCopyWithImpl<
             workingDays: freezed == workingDays
                 ? _value.workingDays
                 : workingDays // ignore: cast_nullable_to_non_nullable
-                      as List<String>?,
-            isHolidayToday: freezed == isHolidayToday
-                ? _value.isHolidayToday
-                : isHolidayToday // ignore: cast_nullable_to_non_nullable
-                      as bool?,
-            isHalfDayToday: freezed == isHalfDayToday
-                ? _value.isHalfDayToday
-                : isHalfDayToday // ignore: cast_nullable_to_non_nullable
-                      as bool?,
+                      as List<OrgWorkingDay>?,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -144,6 +140,14 @@ class _$OrganizationProfileModelCopyWithImpl<
             updatedAt: freezed == updatedAt
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            workingHoursStart: freezed == workingHoursStart
+                ? _value.workingHoursStart
+                : workingHoursStart // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            workingHoursEnd: freezed == workingHoursEnd
+                ? _value.workingHoursEnd
+                : workingHoursEnd // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
           )
           as $Val,
@@ -167,11 +171,11 @@ abstract class _$$OrganizationProfileModelImplCopyWith<$Res>
     String? phoneNumber,
     List<String>? websiteUrls,
     String? aboutUs,
-    List<String>? workingDays,
-    bool? isHolidayToday,
-    bool? isHalfDayToday,
+    List<OrgWorkingDay>? workingDays,
     @_TimestampConverter() DateTime? createdAt,
     @_TimestampConverter() DateTime? updatedAt,
+    @_TimestampConverter() DateTime? workingHoursStart,
+    @_TimestampConverter() DateTime? workingHoursEnd,
   });
 }
 
@@ -200,10 +204,10 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
     Object? websiteUrls = freezed,
     Object? aboutUs = freezed,
     Object? workingDays = freezed,
-    Object? isHolidayToday = freezed,
-    Object? isHalfDayToday = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? workingHoursStart = freezed,
+    Object? workingHoursEnd = freezed,
   }) {
     return _then(
       _$OrganizationProfileModelImpl(
@@ -234,15 +238,7 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
         workingDays: freezed == workingDays
             ? _value._workingDays
             : workingDays // ignore: cast_nullable_to_non_nullable
-                  as List<String>?,
-        isHolidayToday: freezed == isHolidayToday
-            ? _value.isHolidayToday
-            : isHolidayToday // ignore: cast_nullable_to_non_nullable
-                  as bool?,
-        isHalfDayToday: freezed == isHalfDayToday
-            ? _value.isHalfDayToday
-            : isHalfDayToday // ignore: cast_nullable_to_non_nullable
-                  as bool?,
+                  as List<OrgWorkingDay>?,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -250,6 +246,14 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
         updatedAt: freezed == updatedAt
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        workingHoursStart: freezed == workingHoursStart
+            ? _value.workingHoursStart
+            : workingHoursStart // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        workingHoursEnd: freezed == workingHoursEnd
+            ? _value.workingHoursEnd
+            : workingHoursEnd // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
       ),
     );
@@ -266,11 +270,11 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     this.phoneNumber,
     final List<String>? websiteUrls = const [],
     this.aboutUs,
-    final List<String>? workingDays = const [],
-    this.isHolidayToday = false,
-    this.isHalfDayToday = false,
+    final List<OrgWorkingDay>? workingDays = const [],
     @_TimestampConverter() this.createdAt,
     @_TimestampConverter() this.updatedAt,
+    @_TimestampConverter() this.workingHoursStart,
+    @_TimestampConverter() this.workingHoursEnd,
   }) : _websiteUrls = websiteUrls,
        _workingDays = workingDays;
 
@@ -298,10 +302,10 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
 
   @override
   final String? aboutUs;
-  final List<String>? _workingDays;
+  final List<OrgWorkingDay>? _workingDays;
   @override
   @JsonKey()
-  List<String>? get workingDays {
+  List<OrgWorkingDay>? get workingDays {
     final value = _workingDays;
     if (value == null) return null;
     if (_workingDays is EqualUnmodifiableListView) return _workingDays;
@@ -309,22 +313,24 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     return EqualUnmodifiableListView(value);
   }
 
-  @override
-  @JsonKey()
-  final bool? isHolidayToday;
-  @override
-  @JsonKey()
-  final bool? isHalfDayToday;
+  // @Default(false) bool? isHolidayToday,
+  // @Default(false) bool? isHalfDayToday,
   @override
   @_TimestampConverter()
   final DateTime? createdAt;
   @override
   @_TimestampConverter()
   final DateTime? updatedAt;
+  @override
+  @_TimestampConverter()
+  final DateTime? workingHoursStart;
+  @override
+  @_TimestampConverter()
+  final DateTime? workingHoursEnd;
 
   @override
   String toString() {
-    return 'OrganizationProfileModel(id: $id, email: $email, organizationName: $organizationName, phoneNumber: $phoneNumber, websiteUrls: $websiteUrls, aboutUs: $aboutUs, workingDays: $workingDays, isHolidayToday: $isHolidayToday, isHalfDayToday: $isHalfDayToday, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'OrganizationProfileModel(id: $id, email: $email, organizationName: $organizationName, phoneNumber: $phoneNumber, websiteUrls: $websiteUrls, aboutUs: $aboutUs, workingDays: $workingDays, createdAt: $createdAt, updatedAt: $updatedAt, workingHoursStart: $workingHoursStart, workingHoursEnd: $workingHoursEnd)';
   }
 
   @override
@@ -347,14 +353,14 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
               other._workingDays,
               _workingDays,
             ) &&
-            (identical(other.isHolidayToday, isHolidayToday) ||
-                other.isHolidayToday == isHolidayToday) &&
-            (identical(other.isHalfDayToday, isHalfDayToday) ||
-                other.isHalfDayToday == isHalfDayToday) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.workingHoursStart, workingHoursStart) ||
+                other.workingHoursStart == workingHoursStart) &&
+            (identical(other.workingHoursEnd, workingHoursEnd) ||
+                other.workingHoursEnd == workingHoursEnd));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -368,10 +374,10 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     const DeepCollectionEquality().hash(_websiteUrls),
     aboutUs,
     const DeepCollectionEquality().hash(_workingDays),
-    isHolidayToday,
-    isHalfDayToday,
     createdAt,
     updatedAt,
+    workingHoursStart,
+    workingHoursEnd,
   );
 
   /// Create a copy of OrganizationProfileModel
@@ -399,11 +405,11 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
     final String? phoneNumber,
     final List<String>? websiteUrls,
     final String? aboutUs,
-    final List<String>? workingDays,
-    final bool? isHolidayToday,
-    final bool? isHalfDayToday,
+    final List<OrgWorkingDay>? workingDays,
     @_TimestampConverter() final DateTime? createdAt,
     @_TimestampConverter() final DateTime? updatedAt,
+    @_TimestampConverter() final DateTime? workingHoursStart,
+    @_TimestampConverter() final DateTime? workingHoursEnd,
   }) = _$OrganizationProfileModelImpl;
 
   factory _OrganizationProfileModel.fromJson(Map<String, dynamic> json) =
@@ -422,17 +428,20 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
   @override
   String? get aboutUs;
   @override
-  List<String>? get workingDays;
-  @override
-  bool? get isHolidayToday;
-  @override
-  bool? get isHalfDayToday;
+  List<OrgWorkingDay>? get workingDays; // @Default(false) bool? isHolidayToday,
+  // @Default(false) bool? isHalfDayToday,
   @override
   @_TimestampConverter()
   DateTime? get createdAt;
   @override
   @_TimestampConverter()
   DateTime? get updatedAt;
+  @override
+  @_TimestampConverter()
+  DateTime? get workingHoursStart;
+  @override
+  @_TimestampConverter()
+  DateTime? get workingHoursEnd;
 
   /// Create a copy of OrganizationProfileModel
   /// with the given fields replaced by the non-null parameter values.

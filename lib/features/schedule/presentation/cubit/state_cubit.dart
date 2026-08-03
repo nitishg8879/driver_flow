@@ -9,9 +9,8 @@ part 'state_cubit.freezed.dart';
 class StateCubitState with _$StateCubitState {
   const factory StateCubitState.initial() = _Initial;
   const factory StateCubitState.loading() = _Loading;
-  const factory StateCubitState.success({
-    required List<String> states,
-  }) = _Success;
+  const factory StateCubitState.success({required List<String> states}) =
+      _Success;
   const factory StateCubitState.error(String message) = _Error;
 }
 

@@ -34,6 +34,7 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
     durationController = TextEditingController();
     priceController = TextEditingController();
     startDateController = TextEditingController();
+    reInitalize();
   }
 
   @override
@@ -45,7 +46,6 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
     super.dispose();
   }
 
-  
   void _onVehicleTypeChanged(VehicleTypeModel? vehicle) {
     setState(() {
       _selectedVehicleType = vehicle;
@@ -55,6 +55,23 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
         priceController.text = (vehicle.pricePerSession).toStringAsFixed(2);
       }
     });
+  }
+
+  void reInitalize() {
+    final formData = context.read<OnboardingCubit>().state.formData;
+    if (formData.vehicleType != null) {
+      setState(() {
+        _selectedVehicleType = formData.vehicleType;
+        sessionsController.text = formData.sessionsCount.toString();
+        durationController.text = formData.sessionDuration.toString();
+        priceController.text = formData.pricePerSession.toString();
+        _courseStartDate = formData.courseStartDate;
+        startDateController.text = DateFormat(
+          'MMM dd, yyyy',
+        ).format(_courseStartDate ?? DateTime.now());
+        _recurrence = formData.recurrence ?? 'Weekly';
+      });
+    }
   }
 
   @override
@@ -341,7 +358,7 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     context.read<OnboardingCubit>().updateTrainingScheduleInfo(
-                      vehicleTypeId: _selectedVehicleType?.id ?? '',
+                      vehicleType: _selectedVehicleType!,
                       sessionsCount: int.tryParse(sessionsController.text) ?? 0,
                       pricePerSession:
                           double.tryParse(priceController.text) ?? 0.0,

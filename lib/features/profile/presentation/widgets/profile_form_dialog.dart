@@ -7,16 +7,6 @@ import '../../../../utils/helpers/validators.dart';
 import '../../data/models/organization_profile_model.dart';
 import '../cubit/profile_cubit.dart';
 
-const _workingDays = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
 class ProfileFormDialog extends StatefulWidget {
   final OrganizationProfileModel? existing;
 
@@ -33,7 +23,7 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
   late final TextEditingController _aboutController;
   late final TextEditingController _urlController;
   List<String> _websiteUrls = [];
-  List<String> _selectedWorkingDays = [];
+  List<OrgWorkingDay> _selectedWorkingDays = [];
   bool _isSaving = false;
 
   @override
@@ -231,10 +221,10 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
-          children: _workingDays.map((day) {
+          children: OrgWorkingDay.values.map((day) {
             final isSelected = _selectedWorkingDays.contains(day);
             return FilterChip(
-              label: Text(day),
+              label: Text(day.displayName),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {

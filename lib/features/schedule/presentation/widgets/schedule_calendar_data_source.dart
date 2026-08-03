@@ -19,8 +19,8 @@ class ScheduleCalendarDataSource extends CalendarDataSource {
   }
 
   static Color _colorFor(ScheduleStatus status) => switch (status) {
-        ScheduleStatus.completed => const Color(0xFF2E7D32),
-        ScheduleStatus.scheduled => const Color(0xFF1565C0),
-        _ => const Color(0xFFC62828),
-      };
+    ScheduleStatus.completed => const Color(0xFF2E7D32),
+    ScheduleStatus.scheduled => const Color(0xFF1565C0),
+    _ => const Color(0xFFC62828),
+  };
 }

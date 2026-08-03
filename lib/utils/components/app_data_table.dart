@@ -53,7 +53,8 @@ class AppDataTable extends StatelessWidget {
           dividerThickness: 1,
           renderEmptyRowsInTheEnd: false,
           controller: controller,
-          empty: empty ??
+          empty:
+              empty ??
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(48),
@@ -63,7 +64,9 @@ class AppDataTable extends StatelessWidget {
                       Icon(
                         Icons.inbox_outlined,
                         size: 52,
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.35,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(

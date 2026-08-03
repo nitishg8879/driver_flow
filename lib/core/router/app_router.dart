@@ -66,7 +66,7 @@ class AppRouter {
               );
             },
           ),
-          
+
           GoRoute(
             path: Routes.vehicleTypes,
             name: 'vehicleTypes',

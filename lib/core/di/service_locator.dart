@@ -53,9 +53,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(firestore: sl()),
   );
-  sl.registerLazySingleton<ScheduleRepository>(
-    () => ScheduleRepositoryImpl(),
-  );
+  sl.registerLazySingleton<ScheduleRepository>(() => ScheduleRepositoryImpl());
   sl.registerLazySingleton<TagRepository>(
     () => TagRepositoryImpl(firestore: sl()),
   );

@@ -38,9 +38,9 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
       if (_nameController.text.isEmpty ||
           _emailController.text.isEmpty ||
           _phoneController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill all fields')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
         return;
       }
     } else if (_currentStep == 1) {
@@ -112,7 +112,9 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
                       labelText: 'Full Name',
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -125,7 +127,9 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
                       labelText: 'Email Address',
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -138,7 +142,9 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
                       labelText: 'Phone Number',
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -170,7 +176,9 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -203,16 +211,19 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+                      color: colorScheme.primaryContainer.withValues(
+                        alpha: 0.3,
+                      ),
                       borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: colorScheme.primary.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       'Please review your information before booking.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -235,12 +246,7 @@ class _BookLessonDialogState extends State<BookLessonDialog> {
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
           ),
         ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 13),
-          ),
-        ),
+        Expanded(child: Text(value, style: const TextStyle(fontSize: 13))),
       ],
     );
   }

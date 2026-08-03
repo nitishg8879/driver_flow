@@ -10,6 +10,7 @@ import '../models/vehicle_type_model.dart';
 
 abstract class VehicleTypeRepository {
   Future<List<VehicleTypeModel>> getVehicleTypes({bool activeOnly = true});
+  Future<VehicleTypeModel?> getVehicleTypeById(String id);
   Future<VehicleTypeModel> createVehicleType(
     VehicleTypeModel vehicleType, {
     Uint8List? imageBytes,
@@ -33,6 +34,20 @@ class VehicleTypeRepositoryImpl implements VehicleTypeRepository {
 
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection(AppConstants.vehicleTypesCollection);
+
+  @override
+  Future<VehicleTypeModel?> getVehicleTypeById(String id) async {
+    try {
+      final doc = await _collection.doc(id).get();
+      if (doc.exists) {
+        return VehicleTypeModel.fromJson({'id': doc.id, ...doc.data()!});
+      }
+      return null;
+    } catch (e, stackTrace) {
+      _logger.error('Failed to fetch vehicle type by id', e, stackTrace);
+      rethrow;
+    }
+  }
 
   @override
   Future<List<VehicleTypeModel>> getVehicleTypes({

@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Wrap(
                 spacing: 8,
                 children: (profile.workingDays ?? [])
-                    .map((day) => Chip(label: Text(day)))
+                    .map((day) => Chip(label: Text(day.displayName)))
                     .toList(),
               ),
             ],
@@ -240,9 +240,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showProfileDialog([OrganizationProfileModel? profile]) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    final profileWithEmail = profile ?? OrganizationProfileModel(
-      email: currentUser?.email,
-    );
+    final profileWithEmail =
+        profile ?? OrganizationProfileModel(email: currentUser?.email);
     showDialog(
       context: context,
       builder: (_) => BlocProvider.value(

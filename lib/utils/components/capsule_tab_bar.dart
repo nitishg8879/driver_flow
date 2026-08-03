@@ -60,8 +60,9 @@ class CapsuleTabBar extends StatelessWidget {
                     tab.label,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                       color: isSelected
                           ? colorScheme.primary
                           : colorScheme.onSurfaceVariant,

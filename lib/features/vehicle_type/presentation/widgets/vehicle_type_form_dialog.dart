@@ -178,7 +178,8 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
                   if (value == null || value.isEmpty) {
                     return 'Price required';
                   }
-                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                  if (double.tryParse(value) == null ||
+                      double.parse(value) <= 0) {
                     return 'Enter a valid price';
                   }
                   return null;

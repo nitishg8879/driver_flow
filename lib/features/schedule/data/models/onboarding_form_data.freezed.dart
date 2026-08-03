@@ -26,7 +26,7 @@ mixin _$OnboardingFormData {
   String? get state => throw _privateConstructorUsedError;
   String? get zipCode =>
       throw _privateConstructorUsedError; // Step 2: Training & Schedule
-  String? get vehicleTypeId => throw _privateConstructorUsedError;
+  VehicleTypeModel? get vehicleType => throw _privateConstructorUsedError;
   int? get sessionsCount => throw _privateConstructorUsedError;
   int? get sessionDuration => throw _privateConstructorUsedError;
   double? get pricePerSession => throw _privateConstructorUsedError;
@@ -60,7 +60,7 @@ abstract class $OnboardingFormDataCopyWith<$Res> {
     String? city,
     String? state,
     String? zipCode,
-    String? vehicleTypeId,
+    VehicleTypeModel? vehicleType,
     int? sessionsCount,
     int? sessionDuration,
     double? pricePerSession,
@@ -70,6 +70,8 @@ abstract class $OnboardingFormDataCopyWith<$Res> {
     int? installmentsCount,
     List<InstallmentDetail>? installments,
   });
+
+  $VehicleTypeModelCopyWith<$Res>? get vehicleType;
 }
 
 /// @nodoc
@@ -94,7 +96,7 @@ class _$OnboardingFormDataCopyWithImpl<$Res, $Val extends OnboardingFormData>
     Object? city = freezed,
     Object? state = freezed,
     Object? zipCode = freezed,
-    Object? vehicleTypeId = freezed,
+    Object? vehicleType = freezed,
     Object? sessionsCount = freezed,
     Object? sessionDuration = freezed,
     Object? pricePerSession = freezed,
@@ -134,10 +136,10 @@ class _$OnboardingFormDataCopyWithImpl<$Res, $Val extends OnboardingFormData>
                 ? _value.zipCode
                 : zipCode // ignore: cast_nullable_to_non_nullable
                       as String?,
-            vehicleTypeId: freezed == vehicleTypeId
-                ? _value.vehicleTypeId
-                : vehicleTypeId // ignore: cast_nullable_to_non_nullable
-                      as String?,
+            vehicleType: freezed == vehicleType
+                ? _value.vehicleType
+                : vehicleType // ignore: cast_nullable_to_non_nullable
+                      as VehicleTypeModel?,
             sessionsCount: freezed == sessionsCount
                 ? _value.sessionsCount
                 : sessionsCount // ignore: cast_nullable_to_non_nullable
@@ -174,6 +176,20 @@ class _$OnboardingFormDataCopyWithImpl<$Res, $Val extends OnboardingFormData>
           as $Val,
     );
   }
+
+  /// Create a copy of OnboardingFormData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $VehicleTypeModelCopyWith<$Res>? get vehicleType {
+    if (_value.vehicleType == null) {
+      return null;
+    }
+
+    return $VehicleTypeModelCopyWith<$Res>(_value.vehicleType!, (value) {
+      return _then(_value.copyWith(vehicleType: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -193,7 +209,7 @@ abstract class _$$OnboardingFormDataImplCopyWith<$Res>
     String? city,
     String? state,
     String? zipCode,
-    String? vehicleTypeId,
+    VehicleTypeModel? vehicleType,
     int? sessionsCount,
     int? sessionDuration,
     double? pricePerSession,
@@ -203,6 +219,9 @@ abstract class _$$OnboardingFormDataImplCopyWith<$Res>
     int? installmentsCount,
     List<InstallmentDetail>? installments,
   });
+
+  @override
+  $VehicleTypeModelCopyWith<$Res>? get vehicleType;
 }
 
 /// @nodoc
@@ -226,7 +245,7 @@ class __$$OnboardingFormDataImplCopyWithImpl<$Res>
     Object? city = freezed,
     Object? state = freezed,
     Object? zipCode = freezed,
-    Object? vehicleTypeId = freezed,
+    Object? vehicleType = freezed,
     Object? sessionsCount = freezed,
     Object? sessionDuration = freezed,
     Object? pricePerSession = freezed,
@@ -266,10 +285,10 @@ class __$$OnboardingFormDataImplCopyWithImpl<$Res>
             ? _value.zipCode
             : zipCode // ignore: cast_nullable_to_non_nullable
                   as String?,
-        vehicleTypeId: freezed == vehicleTypeId
-            ? _value.vehicleTypeId
-            : vehicleTypeId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+        vehicleType: freezed == vehicleType
+            ? _value.vehicleType
+            : vehicleType // ignore: cast_nullable_to_non_nullable
+                  as VehicleTypeModel?,
         sessionsCount: freezed == sessionsCount
             ? _value.sessionsCount
             : sessionsCount // ignore: cast_nullable_to_non_nullable
@@ -318,7 +337,7 @@ class _$OnboardingFormDataImpl implements _OnboardingFormData {
     this.city,
     this.state,
     this.zipCode,
-    this.vehicleTypeId,
+    this.vehicleType,
     this.sessionsCount,
     this.sessionDuration,
     this.pricePerSession,
@@ -347,7 +366,7 @@ class _$OnboardingFormDataImpl implements _OnboardingFormData {
   final String? zipCode;
   // Step 2: Training & Schedule
   @override
-  final String? vehicleTypeId;
+  final VehicleTypeModel? vehicleType;
   @override
   final int? sessionsCount;
   @override
@@ -384,7 +403,7 @@ class _$OnboardingFormDataImpl implements _OnboardingFormData {
 
   @override
   String toString() {
-    return 'OnboardingFormData(fullName: $fullName, phoneNumber: $phoneNumber, email: $email, streetAddress: $streetAddress, city: $city, state: $state, zipCode: $zipCode, vehicleTypeId: $vehicleTypeId, sessionsCount: $sessionsCount, sessionDuration: $sessionDuration, pricePerSession: $pricePerSession, courseStartDate: $courseStartDate, recurrence: $recurrence, documentUrls: $documentUrls, installmentsCount: $installmentsCount, installments: $installments)';
+    return 'OnboardingFormData(fullName: $fullName, phoneNumber: $phoneNumber, email: $email, streetAddress: $streetAddress, city: $city, state: $state, zipCode: $zipCode, vehicleType: $vehicleType, sessionsCount: $sessionsCount, sessionDuration: $sessionDuration, pricePerSession: $pricePerSession, courseStartDate: $courseStartDate, recurrence: $recurrence, documentUrls: $documentUrls, installmentsCount: $installmentsCount, installments: $installments)';
   }
 
   @override
@@ -402,8 +421,8 @@ class _$OnboardingFormDataImpl implements _OnboardingFormData {
             (identical(other.city, city) || other.city == city) &&
             (identical(other.state, state) || other.state == state) &&
             (identical(other.zipCode, zipCode) || other.zipCode == zipCode) &&
-            (identical(other.vehicleTypeId, vehicleTypeId) ||
-                other.vehicleTypeId == vehicleTypeId) &&
+            (identical(other.vehicleType, vehicleType) ||
+                other.vehicleType == vehicleType) &&
             (identical(other.sessionsCount, sessionsCount) ||
                 other.sessionsCount == sessionsCount) &&
             (identical(other.sessionDuration, sessionDuration) ||
@@ -436,7 +455,7 @@ class _$OnboardingFormDataImpl implements _OnboardingFormData {
     city,
     state,
     zipCode,
-    vehicleTypeId,
+    vehicleType,
     sessionsCount,
     sessionDuration,
     pricePerSession,
@@ -468,7 +487,7 @@ abstract class _OnboardingFormData implements OnboardingFormData {
     final String? city,
     final String? state,
     final String? zipCode,
-    final String? vehicleTypeId,
+    final VehicleTypeModel? vehicleType,
     final int? sessionsCount,
     final int? sessionDuration,
     final double? pricePerSession,
@@ -495,7 +514,7 @@ abstract class _OnboardingFormData implements OnboardingFormData {
   @override
   String? get zipCode; // Step 2: Training & Schedule
   @override
-  String? get vehicleTypeId;
+  VehicleTypeModel? get vehicleType;
   @override
   int? get sessionsCount;
   @override

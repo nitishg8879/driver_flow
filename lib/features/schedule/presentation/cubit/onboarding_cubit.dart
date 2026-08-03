@@ -1,4 +1,5 @@
 import 'package:driver_flow_admin/features/schedule/data/repositories/onboarding_repository.dart';
+import 'package:driver_flow_admin/features/vehicle_type/data/models/vehicle_type_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/onboarding_form_data.dart';
 import 'onboarding_state.dart';
@@ -7,7 +8,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   final OnboardingRepository repository;
   static const int totalSteps = 3;
 
-  OnboardingCubit({required this.repository}) : super(const OnboardingState.initial());
+  OnboardingCubit({required this.repository})
+    : super(const OnboardingState.initial());
 
   void nextStep() {
     final currentStep = state.currentStep;
@@ -50,7 +52,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   void updateTrainingScheduleInfo({
-    required String vehicleTypeId,
+    required VehicleTypeModel vehicleType,
     required int sessionsCount,
     required double pricePerSession,
     required int sessionDuration,
@@ -58,7 +60,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required String recurrence,
   }) {
     final updatedData = (state.formData).copyWith(
-      vehicleTypeId: vehicleTypeId,
+      vehicleType: vehicleType,
       sessionsCount: sessionsCount,
       pricePerSession: pricePerSession,
       sessionDuration: sessionDuration,
@@ -76,22 +78,44 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   void _updateStep(int step, [OnboardingFormData? data]) {
     final formData = data ?? state.formData;
     state.maybeMap(
-      initial: (_) => emit(OnboardingState.initial(currentStep: step, formData: formData)),
-      loading: (_) => emit(OnboardingState.loading(currentStep: step, formData: formData)),
-      loaded: (_) => emit(OnboardingState.loaded(currentStep: step, formData: formData)),
-      success: (_) => emit(OnboardingState.success(currentStep: step, formData: formData)),
-      error: (s) => emit(OnboardingState.error(s.message, currentStep: step, formData: formData)),
+      initial: (_) =>
+          emit(OnboardingState.initial(currentStep: step, formData: formData)),
+      loading: (_) =>
+          emit(OnboardingState.loading(currentStep: step, formData: formData)),
+      loaded: (_) =>
+          emit(OnboardingState.loaded(currentStep: step, formData: formData)),
+      success: (_) =>
+          emit(OnboardingState.success(currentStep: step, formData: formData)),
+      error: (s) => emit(
+        OnboardingState.error(s.message, currentStep: step, formData: formData),
+      ),
       orElse: () {},
     );
   }
 
   Future<void> submitOnboarding(OnboardingFormData formData) async {
     try {
-      emit(OnboardingState.loading(currentStep: state.currentStep, formData: formData));
+      emit(
+        OnboardingState.loading(
+          currentStep: state.currentStep,
+          formData: formData,
+        ),
+      );
       await repository.submitOnboarding(formData);
-      emit(OnboardingState.success(currentStep: state.currentStep, formData: formData));
+      emit(
+        OnboardingState.success(
+          currentStep: state.currentStep,
+          formData: formData,
+        ),
+      );
     } catch (e) {
-      emit(OnboardingState.error(e.toString(), currentStep: state.currentStep, formData: formData));
+      emit(
+        OnboardingState.error(
+          e.toString(),
+          currentStep: state.currentStep,
+          formData: formData,
+        ),
+      );
     }
   }
 

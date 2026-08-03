@@ -1,6 +1,8 @@
+import 'package:driver_flow_admin/features/profile/data/models/organization_profile_model.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_cubit.dart';
 import 'package:driver_flow_admin/utils/components/upload_card.dart';
 import 'package:driver_flow_admin/utils/extensions/string_extension.dart';
+import 'package:driver_flow_admin/utils/helpers/date_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -10,11 +12,13 @@ class DocumentsPaymentStep extends StatefulWidget {
 
   final double pricePerSession;
   final int sessionsCount;
+  final OrganizationProfileModel? orgProfile;
 
   const DocumentsPaymentStep({
     super.key,
     required this.pricePerSession,
     required this.sessionsCount,
+    this.orgProfile,
   });
 
   @override
@@ -23,20 +27,66 @@ class DocumentsPaymentStep extends StatefulWidget {
 
 class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
   final _formKey = GlobalKey<FormState>();
-  int _installmentsCount = 3;
+  int _installmentsCount = 1;
   late List<TextEditingController> _dueDateControllers;
   late List<TextEditingController> _amountControllers;
   final List<String> _uploadedDocuments = [];
+  late final double totalAmount;
+  late List<DateTime> _sessionDates;
+  bool isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    totalAmount = widget.pricePerSession * widget.sessionsCount;
     _initializeControllers();
   }
 
   void _initializeControllers() {
-    _dueDateControllers = List.generate(6, (index) => TextEditingController());
-    _amountControllers = List.generate(6, (index) => TextEditingController());
+    if (isInitialized) {
+      for (var controller in _dueDateControllers) {
+        controller.dispose();
+      }
+      for (var controller in _amountControllers) {
+        controller.dispose();
+      }
+    }
+    isInitialized = true;
+    _dueDateControllers = List.generate(
+      _installmentsCount,
+      (index) => TextEditingController(),
+    );
+    _amountControllers = List.generate(
+      _installmentsCount,
+      (index) => TextEditingController(),
+    );
+
+    // Generate session dates based on organization working days
+    final workingDays = widget.orgProfile?.workingDays ?? [];
+    // Normalize today's date to midnight (00:00:00) for consistent calculations
+    final today = DateTime.now();
+    final startDate = DateTime(today.year, today.month, today.day);
+
+    _sessionDates = DateHelper.getSessionDates(
+      startDate,
+      widget.sessionsCount,
+      workingDays,
+    );
+
+    // Pre-populate due dates and amounts
+    final amountPerInstallment = totalAmount / _installmentsCount;
+    for (int i = 0; i < _installmentsCount; i++) {
+      // Set due date (last session date for this installment)
+      final dueDate = DateHelper.getInstallmentDueDate(
+        _sessionDates,
+        i,
+        _installmentsCount,
+      );
+      _dueDateControllers[i].text = DateFormat('MMM dd, yyyy').format(dueDate);
+
+      // Set amount
+      _amountControllers[i].text = amountPerInstallment.toRuppess;
+    }
   }
 
   @override
@@ -50,12 +100,8 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
     super.dispose();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
-    final double totalAmount = widget.pricePerSession * widget.sessionsCount;
-
     return Form(
       key: _formKey,
       child: Column(
@@ -80,9 +126,11 @@ class _DocumentsPaymentStepState extends State<DocumentsPaymentStep> {
                   installmentsCount: _installmentsCount,
                   dueDateControllers: _dueDateControllers,
                   amountControllers: _amountControllers,
+                  sessionDates: _sessionDates,
                   onInstallmentChanged: (val) {
                     setState(() {
                       _installmentsCount = val;
+                      _initializeControllers();
                     });
                   },
                   onDateSelected: (index, formattedDate) {
@@ -158,6 +206,7 @@ class InstallmentPlannerSection extends StatelessWidget {
   final int installmentsCount;
   final List<TextEditingController> dueDateControllers;
   final List<TextEditingController> amountControllers;
+  final List<DateTime> sessionDates;
   final ValueChanged<int> onInstallmentChanged;
   final Function(int index, String formattedDate) onDateSelected;
 
@@ -167,6 +216,7 @@ class InstallmentPlannerSection extends StatelessWidget {
     required this.installmentsCount,
     required this.dueDateControllers,
     required this.amountControllers,
+    required this.sessionDates,
     required this.onInstallmentChanged,
     required this.onDateSelected,
   });
@@ -279,7 +329,7 @@ class InstallmentPlannerSection extends StatelessWidget {
                 )
                 .toList(),
             onChanged: (value) {
-              if (value != null) {
+              if (value != null && value != installmentsCount) {
                 onInstallmentChanged(value);
               }
             },

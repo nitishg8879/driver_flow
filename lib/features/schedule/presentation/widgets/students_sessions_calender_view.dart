@@ -93,10 +93,7 @@ class StudentsSessions extends StatelessWidget {
                 if (appointment.notes != null)
                   Text(
                     appointment.notes!,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 10,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 10),
                     overflow: TextOverflow.ellipsis,
                   ),
               ],

@@ -48,7 +48,7 @@ class StateCityRepositoryImpl implements StateCityRepository {
     try {
       final data = await _loadStateCityData();
       final cities = data[state] as List<dynamic>?;
-      
+
       if (cities == null) {
         _logger.warning('No cities found for state: $state');
         return [];

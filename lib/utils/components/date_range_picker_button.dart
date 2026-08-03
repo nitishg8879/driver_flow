@@ -48,7 +48,9 @@ class DateRangePickerButton extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         side: BorderSide(
-          color: hasValue ? colorScheme.primary : colorScheme.outline.withValues(alpha: 0.5),
+          color: hasValue
+              ? colorScheme.primary
+              : colorScheme.outline.withValues(alpha: 0.5),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         foregroundColor: colorScheme.onSurface,
@@ -59,13 +61,17 @@ class DateRangePickerButton extends StatelessWidget {
           Icon(
             Icons.date_range_outlined,
             size: 16,
-            color: hasValue ? colorScheme.primary : colorScheme.onSurfaceVariant,
+            color: hasValue
+                ? colorScheme.primary
+                : colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 8),
           Text(
             _label,
             style: TextStyle(
-              color: hasValue ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              color: hasValue
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: hasValue ? FontWeight.w600 : FontWeight.w400,
               fontSize: 14,
             ),
