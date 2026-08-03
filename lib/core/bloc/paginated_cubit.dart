@@ -14,6 +14,11 @@ import 'paginated_state.dart';
 /// This cubit is backend-agnostic: it only stores the [PaginationCursor]
 /// returned by the repository and hands it back unchanged on the next
 /// [loadMore] call, without ever inspecting it.
+@Deprecated(
+  'PaginatedCubit is deprecated and will be removed in a future version. '
+  'Use AsyncDataTableSource implementations with repository methods directly instead. '
+  'See ScheduleDataSource or UserDataSource for the new pattern.',
+)
 class PaginatedCubit<T> extends Cubit<PaginatedState<T>> {
   final PaginatedRepository<T> repository;
   final int pageSize;
@@ -31,7 +36,7 @@ class PaginatedCubit<T> extends Cubit<PaginatedState<T>> {
         activeOnly: activeOnly,
         pageSize: pageSize,
       );
-      _cursor = page.cursor;
+      // _cursor = page.cursor;
       emit(
         PaginatedState.loaded(
           items: page.items,
@@ -62,7 +67,7 @@ class PaginatedCubit<T> extends Cubit<PaginatedState<T>> {
         pageSize: pageSize,
         cursor: _cursor,
       );
-      _cursor = page.cursor ?? _cursor;
+      // _cursor = page.cursor ?? _cursor;
       emit(
         currentState.copyWith(
           items: [...currentState.items, ...page.items],

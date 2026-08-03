@@ -12,7 +12,7 @@ import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
 import '../../../../utils/helpers/validators.dart';
 import '../../data/models/user_model.dart';
-import '../cubit/user_cubit.dart';
+import '../../data/repositories/user_repository.dart';
 
 class UserFormDialog extends StatefulWidget {
   final UserModel? existing;
@@ -81,7 +81,6 @@ class _UserFormDialogState extends State<UserFormDialog> {
     if (_selectedRole == null) return;
 
     setState(() => _isSaving = true);
-    final cubit = context.read<UserCubit>();
     final authState = context.read<AuthBloc>().state;
     final currentUserId = authState.maybeWhen(
       authenticated: (user) => user.id,
@@ -94,16 +93,24 @@ class _UserFormDialogState extends State<UserFormDialog> {
       role: _selectedRole,
     );
 
-    final savedUser = _isEditMode
-        ? await cubit.updateUser(model)
-        : await cubit.createUser(model);
-
-    if (savedUser == null) {
+    final repository = sl<UserRepository>();
+    UserModel? savedUser;
+    try {
+      savedUser = _isEditMode
+          ? await repository.updateUser(model)
+          : await repository.createUser(model);
+    } catch (e, stackTrace) {
+      _logger.error('Failed to save user', e, stackTrace);
       if (mounted) setState(() => _isSaving = false);
       return;
     }
 
-    final userId = savedUser.id!;
+    if (savedUser?.id == null) {
+      if (mounted) setState(() => _isSaving = false);
+      return;
+    }
+
+    final userId = savedUser!.id!;
     if (_selectedRole == UserRole.student && currentUserId != null) {
       final attachmentService = sl<AttachmentService>();
 

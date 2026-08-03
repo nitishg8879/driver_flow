@@ -1,6 +1,7 @@
 import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_student_form.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/widgets/schedule_data_source.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/widgets/students_sessions_calender_view.dart';
+import 'package:driver_flow_admin/features/user/data/models/user_model.dart';
+import 'package:driver_flow_admin/features/user/data/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,8 +25,8 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   int _tabIndex = 1;
-  ScheduleInstructorOption? _selectedInstructor;
-  ScheduleStudentOption? _selectedStudent;
+  // ScheduleInstructorOption? _selectedInstructor;
+  // ScheduleStudentOption? _selectedStudent;
   ScheduleStatus? _selectedStatus;
   DateTimeRange? _dateRange;
 
@@ -37,8 +38,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   void _applyFilters() {
     context.read<ScheduleCubit>().applyFilters(
-      instructorId: _selectedInstructor?.id,
-      studentId: _selectedStudent?.id,
+      // instructorId: _selectedInstructor?.id,
+      // studentId: _selectedStudent?.id,
       status: _selectedStatus,
       dateRange: _dateRange,
     );
@@ -85,34 +86,38 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       runSpacing: 12,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        SizedBox(
-          width: 200,
-          child: AsyncDropdown<ScheduleInstructorOption>(
-            fetchItems: cubit.getInstructors,
-            itemLabelBuilder: (i) => i.name,
-            value: _selectedInstructor,
-            labelText: 'Instructor',
-            nullItemLabel: 'All Instructors',
-            onChanged: (val) {
-              setState(() => _selectedInstructor = val);
-              _applyFilters();
-            },
-          ),
-        ),
-        SizedBox(
-          width: 200,
-          child: AsyncDropdown<ScheduleStudentOption>(
-            fetchItems: cubit.getStudents,
-            itemLabelBuilder: (s) => s.name,
-            value: _selectedStudent,
-            labelText: 'Student',
-            nullItemLabel: 'All Students',
-            onChanged: (val) {
-              setState(() => _selectedStudent = val);
-              _applyFilters();
-            },
-          ),
-        ),
+        // SizedBox(
+        //   width: 200,
+        //   child: AsyncDropdown<UserModel>(
+        //     fetchItems: () => sl<UserRepository>().getUsersByRole(
+        //       role: UserRole.instructor,
+        //       activeOnly: true,
+        //       pageSize: 100,
+        //     ),
+        //     itemLabelBuilder: (i) => i.name,
+        //     value: _selectedInstructor,
+        //     labelText: 'Instructor',
+        //     nullItemLabel: 'All Instructors',
+        //     onChanged: (val) {
+        //       setState(() => _selectedInstructor = val);
+        //       _applyFilters();
+        //     },
+        //   ),
+        // ),
+        // SizedBox(
+        //   width: 200,
+        //   child: AsyncDropdown<ScheduleStudentOption>(
+        //     fetchItems: cubit.getStudents,
+        //     itemLabelBuilder: (s) => s.name,
+        //     value: _selectedStudent,
+        //     labelText: 'Student',
+        //     nullItemLabel: 'All Students',
+        //     onChanged: (val) {
+        //       setState(() => _selectedStudent = val);
+        //       _applyFilters();
+        //     },
+        //   ),
+        // ),
         SizedBox(
           width: 200,
           child: AsyncDropdown<ScheduleStatus>(
@@ -217,9 +222,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           }
 
           if (state is ScheduleLoaded) {
-            return _tabIndex == 0
-                ? Expanded(child: StudentsSessionTable())
-                : StudentsSessions(schedules: state.filtered, context: context);
+            // return Expanded(child: StudentsSessionTable());
           }
 
           return const SizedBox.shrink();

@@ -1,12 +1,14 @@
+import 'package:driver_flow_admin/features/user/presentation/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../utils/components/paginated_list_view.dart';
+import '../../../../core/di/service_locator.dart';
 import '../../../../utils/extensions/context_extensions.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../../data/models/user_model.dart';
-import '../cubit/user_cubit.dart';
+import '../../data/repositories/user_repository.dart';
 import '../widgets/user_form_dialog.dart';
+import '../widgets/users_table.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});
@@ -16,47 +18,17 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
-  bool _showActive = true;
-  String _searchQuery = '';
-  UserRole? _selectedRole;
-
+  late UsersTable userTable;
   @override
   void initState() {
     super.initState();
-    _loadUsers();
-  }
-
-  void _loadUsers() {
-    context.read<UserCubit>().loadFiltered(
-      activeOnly: _showActive,
-      searchQuery: _searchQuery,
-      role: _selectedRole,
-    );
-  }
-
-  void _onFilterChanged(bool showActive) {
-    setState(() => _showActive = showActive);
-    _loadUsers();
-  }
-
-  void _onSearchChanged(String query) {
-    setState(() => _searchQuery = query);
-    _loadUsers();
-  }
-
-  void _onRoleFilterChanged(UserRole? role) {
-    setState(() => _selectedRole = role);
-    _loadUsers();
+    userTable = UsersTable(role: null, activeOnly: true, searchQuery: '');
   }
 
   Future<void> _openForm({UserModel? existing}) async {
-    final cubit = context.read<UserCubit>();
     final result = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: cubit,
-        child: UserFormDialog(existing: existing),
-      ),
+      builder: (_) => UserFormDialog(existing: existing),
     );
 
     if (result == true && mounted) {
@@ -87,135 +59,108 @@ class _UsersScreenState extends State<UsersScreen> {
     );
 
     if (confirmed == true && mounted) {
-      await context.read<UserCubit>().setActiveStatus(user.id!, newStatus);
+      await sl<UserRepository>().setActiveStatus(user.id!, newStatus);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      body: BlocConsumer<UserCubit, UserState>(
+        listener: (context, state) {
+          userTable = UsersTable(
+            role: state.role,
+            activeOnly: state.activeOnly ?? true,
+            searchQuery: state.searchQuery ?? '',
+          );
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Users',
-                  style: context.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                FilledButton.icon(
-                  onPressed: () => _openForm(),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add User'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    onChanged: _onSearchChanged,
-                    decoration: InputDecoration(
-                      hintText: 'Search by name...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                Row(
+                  children: [
+                    Text(
+                      'Users',
+                      style: context.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: DropdownMenu<UserRole?>(
-                    initialSelection: _selectedRole,
-                    onSelected: _onRoleFilterChanged,
-                    dropdownMenuEntries: [
-                      const DropdownMenuEntry<UserRole?>(
-                        value: null,
-                        label: 'All Roles',
-                      ),
-                      ...UserRole.values.map(
-                        (role) => DropdownMenuEntry<UserRole?>(
-                          value: role,
-                          label: role.displayName,
-                        ),
-                      ),
-                    ],
-                    label: const Text('Role'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: true, label: Text('Active')),
-                ButtonSegment(value: false, label: Text('Inactive')),
-              ],
-              selected: {_showActive},
-              onSelectionChanged: (selection) =>
-                  _onFilterChanged(selection.first),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: PaginatedListView<UserModel>(
-                cubit: context.read<UserCubit>(),
-                emptyMessage: 'No active users found',
-                emptyMessageInactive: 'No inactive users found',
-                itemBuilder: (context, user) {
-                  final subtitleParts = <String>[];
-                  if (user.role != null) {
-                    subtitleParts.add(user.role!.displayName);
-                  }
-                  if (user.phoneNumber != null) {
-                    subtitleParts.add(user.phoneNumber!);
-                  }
-
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Icon(
-                        user.role == UserRole.instructor
-                            ? Icons.badge_outlined
-                            : Icons.person_outline,
-                      ),
+                    const Spacer(),
+                    FilledButton.icon(
+                      onPressed: () => _openForm(),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add User'),
                     ),
-                    title: Text(user.name ?? '-'),
-                    subtitle: Text(subtitleParts.join(' • ')),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined),
-                          onPressed: () => _openForm(existing: user),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            user.isActive
-                                ? Icons.person_remove_outlined
-                                : Icons.person_add_outlined,
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        onChanged: (value) {
+                          context.read<UserCubit>().applyFilters(
+                            searchQuery: value,
+                          );
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search by name...',
+                          prefixIcon: const Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          tooltip: user.isActive ? 'Deactivate' : 'Activate',
-                          onPressed: () => _toggleActive(user),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
-                      ],
+                      ),
                     ),
-                  );
-                },
-              ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: DropdownMenu<UserRole?>(
+                        initialSelection: state.role,
+                        onSelected: (role) {
+                          context.read<UserCubit>().applyFilters(role: role);
+                        },
+                        dropdownMenuEntries: [
+                          const DropdownMenuEntry<UserRole?>(
+                            value: null,
+                            label: 'All Roles',
+                          ),
+                          ...UserRole.values.map(
+                            (role) => DropdownMenuEntry<UserRole?>(
+                              value: role,
+                              label: role.displayName,
+                            ),
+                          ),
+                        ],
+                        label: const Text('Role'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: true, label: Text('Active')),
+                    ButtonSegment(value: false, label: Text('Inactive')),
+                  ],
+                  selected: {state.activeOnly ?? true},
+                  onSelectionChanged: (selection) => context
+                      .read<UserCubit>()
+                      .applyFilters(activeOnly: selection.first),
+                ),
+                const SizedBox(height: 16),
+                userTable,
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -8,16 +8,17 @@ part of 'schedule_model.dart';
 
 _$ScheduleModelImpl _$$ScheduleModelImplFromJson(Map<String, dynamic> json) =>
     _$ScheduleModelImpl(
-      id: json['id'] as String,
-      studentId: json['studentId'] as String,
-      studentName: json['studentName'] as String,
-      studentPermit: json['studentPermit'] as String,
-      instructorId: json['instructorId'] as String,
-      instructorName: json['instructorName'] as String,
-      vehicleId: json['vehicleId'] as String,
-      vehicleName: json['vehicleName'] as String,
-      startTime: DateTime.parse(json['startTime'] as String),
-      endTime: DateTime.parse(json['endTime'] as String),
+      id: json['id'] as String?,
+      studentId: json['studentId'] as String?,
+      studentName: json['studentName'] as String?,
+      instructorId: json['instructorId'] as String?,
+      vehicleId: json['vehicleId'] as String?,
+      startTime: json['startTime'] == null
+          ? null
+          : DateTime.parse(json['startTime'] as String),
+      endTime: json['endTime'] == null
+          ? null
+          : DateTime.parse(json['endTime'] as String),
       status:
           $enumDecodeNullable(_$ScheduleStatusEnumMap, json['status']) ??
           ScheduleStatus.scheduled,
@@ -29,13 +30,10 @@ Map<String, dynamic> _$$ScheduleModelImplToJson(_$ScheduleModelImpl instance) =>
       'id': instance.id,
       'studentId': instance.studentId,
       'studentName': instance.studentName,
-      'studentPermit': instance.studentPermit,
       'instructorId': instance.instructorId,
-      'instructorName': instance.instructorName,
       'vehicleId': instance.vehicleId,
-      'vehicleName': instance.vehicleName,
-      'startTime': instance.startTime.toIso8601String(),
-      'endTime': instance.endTime.toIso8601String(),
+      'startTime': instance.startTime?.toIso8601String(),
+      'endTime': instance.endTime?.toIso8601String(),
       'status': _$ScheduleStatusEnumMap[instance.status]!,
       'notes': instance.notes,
     };

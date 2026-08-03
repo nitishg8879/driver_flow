@@ -9,8 +9,6 @@ abstract class ScheduleRepository {
     ScheduleStatus? status,
     DateTimeRange? dateRange,
   });
-  Future<List<ScheduleInstructorOption>> getInstructors();
-  Future<List<ScheduleStudentOption>> getStudents();
 }
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
@@ -26,11 +24,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's1',
       studentId: 'st1',
       studentName: 'James Doe',
-      studentPermit: 'Permit #84920',
       instructorId: 'i1',
-      instructorName: 'Sarah Jenkins',
       vehicleId: 'v1',
-      vehicleName: 'Toyota Corolla (A)',
       startTime: _dt(0, 9, 0),
       endTime: _dt(0, 11, 0),
       status: ScheduleStatus.scheduled,
@@ -39,11 +34,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's2',
       studentId: 'st2',
       studentName: 'Alice Smith',
-      studentPermit: 'Permit #93012',
       instructorId: 'i2',
-      instructorName: 'Mike Torres',
       vehicleId: 'v2',
-      vehicleName: 'Honda Civic (M)',
       startTime: _dt(0, 13, 30),
       endTime: _dt(0, 15, 30),
       status: ScheduleStatus.scheduled,
@@ -52,11 +44,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's3',
       studentId: 'st3',
       studentName: 'Emma Watson',
-      studentPermit: 'Permit #11204',
       instructorId: 'i3',
-      instructorName: 'David Chen',
       vehicleId: 'v3',
-      vehicleName: 'Ford Focus (A)',
       startTime: _dt(-1, 10, 0),
       endTime: _dt(-1, 12, 0),
       status: ScheduleStatus.cancelledByStudent,
@@ -65,11 +54,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's4',
       studentId: 'st4',
       studentName: 'Liam Neeson',
-      studentPermit: 'Permit #55490',
       instructorId: 'i1',
-      instructorName: 'Sarah Jenkins',
       vehicleId: 'v1',
-      vehicleName: 'Toyota Corolla (A)',
       startTime: _dt(1, 14, 0),
       endTime: _dt(1, 16, 0),
       status: ScheduleStatus.scheduled,
@@ -78,11 +64,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's5',
       studentId: 'st5',
       studentName: 'Nina Patel',
-      studentPermit: 'Permit #32180',
       instructorId: 'i2',
-      instructorName: 'Mike Torres',
       vehicleId: 'v2',
-      vehicleName: 'Honda Civic (M)',
       startTime: _dt(2, 9, 0),
       endTime: _dt(2, 11, 0),
       status: ScheduleStatus.completed,
@@ -91,11 +74,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's6',
       studentId: 'st6',
       studentName: 'Carlos Rivera',
-      studentPermit: 'Permit #77661',
       instructorId: 'i3',
-      instructorName: 'David Chen',
       vehicleId: 'v3',
-      vehicleName: 'Ford Focus (A)',
       startTime: _dt(3, 11, 0),
       endTime: _dt(3, 13, 0),
       status: ScheduleStatus.scheduled,
@@ -104,11 +84,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's7',
       studentId: 'st7',
       studentName: 'Priya Mehta',
-      studentPermit: 'Permit #41230',
       instructorId: 'i1',
-      instructorName: 'Sarah Jenkins',
       vehicleId: 'v4',
-      vehicleName: 'Suzuki Swift (M)',
       startTime: _dt(5, 8, 0),
       endTime: _dt(5, 10, 0),
       status: ScheduleStatus.adminCancelled,
@@ -117,11 +94,10 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's8',
       studentId: 'st2',
       studentName: 'Alice Smith',
-      studentPermit: 'Permit #93012',
       instructorId: 'i2',
-      instructorName: 'Mike Torres',
+
       vehicleId: 'v2',
-      vehicleName: 'Honda Civic (M)',
+
       startTime: _dt(6, 15, 0),
       endTime: _dt(6, 17, 0),
       status: ScheduleStatus.completed,
@@ -130,11 +106,11 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's9',
       studentId: 'st8',
       studentName: 'Tom Bradley',
-      studentPermit: 'Permit #22394',
+
       instructorId: 'i3',
-      instructorName: 'David Chen',
+
       vehicleId: 'v1',
-      vehicleName: 'Toyota Corolla (A)',
+
       startTime: _dt(7, 9, 30),
       endTime: _dt(7, 11, 30),
       status: ScheduleStatus.scheduled,
@@ -143,63 +119,13 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       id: 's10',
       studentId: 'st1',
       studentName: 'James Doe',
-      studentPermit: 'Permit #84920',
       instructorId: 'i2',
-      instructorName: 'Mike Torres',
+
       vehicleId: 'v3',
-      vehicleName: 'Ford Focus (A)',
+
       startTime: _dt(8, 14, 0),
       endTime: _dt(8, 16, 0),
       status: ScheduleStatus.cancelledByInstructor,
-    ),
-  ];
-
-  static final _mockInstructors = [
-    const ScheduleInstructorOption(id: 'i1', name: 'Sarah Jenkins'),
-    const ScheduleInstructorOption(id: 'i2', name: 'Mike Torres'),
-    const ScheduleInstructorOption(id: 'i3', name: 'David Chen'),
-  ];
-
-  static final _mockStudents = [
-    const ScheduleStudentOption(
-      id: 'st1',
-      name: 'James Doe',
-      permit: 'Permit #84920',
-    ),
-    const ScheduleStudentOption(
-      id: 'st2',
-      name: 'Alice Smith',
-      permit: 'Permit #93012',
-    ),
-    const ScheduleStudentOption(
-      id: 'st3',
-      name: 'Emma Watson',
-      permit: 'Permit #11204',
-    ),
-    const ScheduleStudentOption(
-      id: 'st4',
-      name: 'Liam Neeson',
-      permit: 'Permit #55490',
-    ),
-    const ScheduleStudentOption(
-      id: 'st5',
-      name: 'Nina Patel',
-      permit: 'Permit #32180',
-    ),
-    const ScheduleStudentOption(
-      id: 'st6',
-      name: 'Carlos Rivera',
-      permit: 'Permit #77661',
-    ),
-    const ScheduleStudentOption(
-      id: 'st7',
-      name: 'Priya Mehta',
-      permit: 'Permit #41230',
-    ),
-    const ScheduleStudentOption(
-      id: 'st8',
-      name: 'Tom Bradley',
-      permit: 'Permit #22394',
     ),
   ];
 
@@ -229,22 +155,10 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
           59,
           59,
         );
-        if (s.startTime.isBefore(start) || s.startTime.isAfter(end))
-          return false;
+        // if (s.startTime.isBefore(start) || s.startTime.isAfter(end))
+        return false;
       }
       return true;
     }).toList();
-  }
-
-  @override
-  Future<List<ScheduleInstructorOption>> getInstructors() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _mockInstructors;
-  }
-
-  @override
-  Future<List<ScheduleStudentOption>> getStudents() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _mockStudents;
   }
 }

@@ -9,6 +9,10 @@ import '../models/pagination_cursor.dart';
 /// concrete subclass (e.g. `FirestoreCursor` for Firestore, a page
 /// token/offset cursor for a REST API). Pass `null` to fetch the first
 /// page.
+@Deprecated(
+  'PaginatedRepository is deprecated and will be removed in a future version. '
+  'Use repository methods directly in AsyncDataTableSource implementations.',
+)
 abstract class PaginatedRepository<T> {
   Future<PaginatedResult<T>> getPage({
     required bool activeOnly,

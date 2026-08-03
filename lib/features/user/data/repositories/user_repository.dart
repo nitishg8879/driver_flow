@@ -1,44 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driver_flow_admin/core/models/paginated_result.dart';
 
-import '../../../../core/models/firestore_cursor.dart';
-import '../../../../core/models/paginated_result.dart';
-import '../../../../core/models/pagination_cursor.dart';
 import '../../../../utils/constants/app_constants.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
 import '../models/user_model.dart';
 
-/// Shared repository for the `users` collection. Students and instructors
-/// are just users with `role == UserRole.student` / `UserRole.instructor`
-/// — there is no separate `students`/`instructors` collection.
 abstract class UserRepository {
-  Future<PaginatedResult<UserModel>> getUsersByRole({
-    required UserRole role,
-    required bool activeOnly,
-    required int pageSize,
-    PaginationCursor? cursor,
-  });
-
   Future<PaginatedResult<UserModel>> getUsers({
     required bool activeOnly,
-    required int pageSize,
-    PaginationCursor? cursor,
+    int pageSize = 20,
+    DocumentSnapshot? lastDocument,
     String searchQuery = '',
     UserRole? role,
+  });
+
+  Future<List<UserModel>> getUsersByRole({
+    required UserRole role,
+    required bool activeOnly,
+    int pageSize = 20,
+    DocumentSnapshot? lastDocument,
   });
 
   Future<UserModel> createUser(UserModel user);
   Future<UserModel> updateUser(UserModel user);
   Future<void> setActiveStatus(String id, bool isActive);
 
-  /// Fetches all active users with [role] in one call (no pagination).
-  /// Used by dropdowns (e.g. schedule feature) where the full list is
-  /// small enough to load once and filter client-side.
   Future<List<UserModel>> getAllActiveByRole(UserRole role);
 
-  /// Searches active users with [role] by name prefix (case-insensitive),
-  /// returning at most [limit] results. Used by dropdowns backed by large
-  /// collections instead of full pagination.
   Future<List<UserModel>> searchActiveByRole({
     required UserRole role,
     required String query,
@@ -56,18 +45,16 @@ class UserRepositoryImpl implements UserRepository {
       _firestore.collection(AppConstants.usersCollection);
 
   @override
-  Future<PaginatedResult<UserModel>> getUsersByRole({
+  Future<List<UserModel>> getUsersByRole({
     required UserRole role,
     required bool activeOnly,
-    required int pageSize,
-    PaginationCursor? cursor,
+    int pageSize = 20,
+    DocumentSnapshot? lastDocument,
   }) async {
     try {
-      final countQuery = _collection
-          .where('role', isEqualTo: role.name)
-          .where('isActive', isEqualTo: activeOnly);
-      final countSnapshot = await countQuery.count().get();
-      final totalCount = countSnapshot.count ?? 0;
+      _logger.debug(
+        'Fetching users - role: ${role.name}, activeOnly: $activeOnly, pageSize: $pageSize, hasCursor: ${lastDocument != null}',
+      );
 
       Query<Map<String, dynamic>> query = _collection
           .where('role', isEqualTo: role.name)
@@ -75,8 +62,8 @@ class UserRepositoryImpl implements UserRepository {
           .orderBy('createdAt', descending: true)
           .limit(pageSize);
 
-      if (cursor != null) {
-        query = query.startAfterDocument((cursor as FirestoreCursor).document);
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument);
       }
 
       final snapshot = await query.get();
@@ -84,16 +71,14 @@ class UserRepositoryImpl implements UserRepository {
           .map((doc) => UserModel.fromJson({'id': doc.id, ...doc.data()}))
           .toList();
 
-      return PaginatedResult(
-        items: users,
-        cursor: snapshot.docs.isNotEmpty
-            ? FirestoreCursor(snapshot.docs.last)
-            : null,
-        hasMore: snapshot.docs.length == pageSize,
-        totalCount: totalCount,
-      );
+      _logger.info('Fetched ${users.length} users by role: ${role.name}');
+      return users;
     } catch (e, stackTrace) {
-      _logger.error('Failed to fetch users by role', e, stackTrace);
+      _logger.error(
+        'Failed to fetch users by role: ${role.name}',
+        e,
+        stackTrace,
+      );
       rethrow;
     }
   }
@@ -101,6 +86,10 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<UserModel> createUser(UserModel user) async {
     try {
+      _logger.debug(
+        'Creating new user - name: ${user.name}, role: ${user.role}',
+      );
+
       final docRef = _collection.doc();
       final data = user.copyWith(
         id: docRef.id,
@@ -109,10 +98,16 @@ class UserRepositoryImpl implements UserRepository {
         updatedAt: DateTime.now(),
       );
       await docRef.set(data.toJson()..remove('id'));
-      _logger.info('User created: ${docRef.id} (role: ${user.role})');
+      _logger.info(
+        'User created successfully - id: ${docRef.id}, name: ${data.name}, role: ${data.role}',
+      );
       return data;
     } catch (e, stackTrace) {
-      _logger.error('Failed to create user', e, stackTrace);
+      _logger.error(
+        'Failed to create user - name: ${user.name}, role: ${user.role}',
+        e,
+        stackTrace,
+      );
       rethrow;
     }
   }
@@ -123,15 +118,20 @@ class UserRepositoryImpl implements UserRepository {
       if (user.id == null) {
         throw Exception('User id is required for update');
       }
+
+      _logger.debug('Updating user - id: ${user.id}, name: ${user.name}');
+
       final data = user.copyWith(
         nameLower: user.name?.toLowerCase(),
         updatedAt: DateTime.now(),
       );
       await _collection.doc(user.id).update(data.toJson()..remove('id'));
-      _logger.info('User updated: ${user.id}');
+      _logger.info(
+        'User updated successfully - id: ${user.id}, name: ${data.name}',
+      );
       return data;
     } catch (e, stackTrace) {
-      _logger.error('Failed to update user', e, stackTrace);
+      _logger.error('Failed to update user - id: ${user.id}', e, stackTrace);
       rethrow;
     }
   }
@@ -139,23 +139,15 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<PaginatedResult<UserModel>> getUsers({
     required bool activeOnly,
-    required int pageSize,
-    PaginationCursor? cursor,
+    int pageSize = 20,
+    DocumentSnapshot? lastDocument,
     String searchQuery = '',
     UserRole? role,
   }) async {
     try {
-      Query<Map<String, dynamic>> countBaseQuery = _collection.where(
-        'isActive',
-        isEqualTo: activeOnly,
+      _logger.info(
+        'Fetching paginated users - activeOnly: $activeOnly, pageSize: $pageSize, role: ${role?.name}, hasSearch: ${searchQuery.isNotEmpty}, hasCursor: ${lastDocument != null}',
       );
-
-      if (role != null) {
-        countBaseQuery = countBaseQuery.where('role', isEqualTo: role.name);
-      }
-
-      final countSnapshot = await countBaseQuery.count().get();
-      final totalCount = countSnapshot.count ?? 0;
 
       Query<Map<String, dynamic>> query = _collection.where(
         'isActive',
@@ -171,31 +163,47 @@ class UserRepositoryImpl implements UserRepository {
         query = query.orderBy('nameLower').startAt([lowerQuery]).endAt([
           '$lowerQuery\uf8ff',
         ]);
+        _logger.info('Applied search filter: "$searchQuery"');
       } else {
         query = query.orderBy('createdAt', descending: true);
       }
 
-      query = query.limit(pageSize);
+      // Run count query in parallel
+      final countFuture = query.count().get();
 
-      if (cursor != null) {
-        query = query.startAfterDocument((cursor as FirestoreCursor).document);
+      // Apply pagination
+      Query<Map<String, dynamic>> paginatedQuery = query.limit(pageSize);
+
+      if (lastDocument != null) {
+        paginatedQuery = paginatedQuery.startAfterDocument(lastDocument);
       }
 
-      final snapshot = await query.get();
+      final dataFuture = paginatedQuery.get();
+
+      final results = await Future.wait([countFuture, dataFuture]);
+
+      final totalCount = (results[0] as AggregateQuerySnapshot).count;
+      final snapshot = results[1] as QuerySnapshot<Map<String, dynamic>>;
+
       final users = snapshot.docs
           .map((doc) => UserModel.fromJson({'id': doc.id, ...doc.data()}))
           .toList();
 
-      return PaginatedResult(
+      final hasMore = users.length == pageSize;
+      _logger.info(
+        'Fetched ${users.length} users (total: $totalCount, hasMore: $hasMore)',
+      );
+
+      return PaginatedResult<UserModel>(
         items: users,
-        cursor: snapshot.docs.isNotEmpty
-            ? FirestoreCursor(snapshot.docs.last)
-            : null,
-        hasMore: snapshot.docs.length == pageSize,
-        totalCount: totalCount,
+        totalCount: totalCount ?? 0,
+        lastDocument: snapshot.docs.isNotEmpty
+            ? snapshot.docs.last
+            : lastDocument,
+        hasMore: hasMore,
       );
     } catch (e, stackTrace) {
-      _logger.error('Failed to fetch users', e, stackTrace);
+      _logger.error('Failed to fetch paginated users', e, stackTrace);
       rethrow;
     }
   }
@@ -203,13 +211,21 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> setActiveStatus(String id, bool isActive) async {
     try {
+      _logger.debug(
+        'Updating user active status - id: $id, isActive: $isActive',
+      );
+
       await _collection.doc(id).update({
         'isActive': isActive,
         'updatedAt': DateTime.now().toIso8601String(),
       });
-      _logger.info('User $id active status set to $isActive');
+      _logger.info('User active status updated - id: $id, isActive: $isActive');
     } catch (e, stackTrace) {
-      _logger.error('Failed to update user status', e, stackTrace);
+      _logger.error(
+        'Failed to update user active status - id: $id, isActive: $isActive',
+        e,
+        stackTrace,
+      );
       rethrow;
     }
   }
@@ -217,15 +233,27 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<List<UserModel>> getAllActiveByRole(UserRole role) async {
     try {
+      _logger.debug('Fetching all active users by role: ${role.name}');
+
       final snapshot = await _collection
           .where('role', isEqualTo: role.name)
           .where('isActive', isEqualTo: true)
           .get();
-      return snapshot.docs
+
+      final users = snapshot.docs
           .map((doc) => UserModel.fromJson({'id': doc.id, ...doc.data()}))
           .toList();
+
+      _logger.info(
+        'Fetched ${users.length} active users by role: ${role.name}',
+      );
+      return users;
     } catch (e, stackTrace) {
-      _logger.error('Failed to fetch all active users by role', e, stackTrace);
+      _logger.error(
+        'Failed to fetch all active users by role: ${role.name}',
+        e,
+        stackTrace,
+      );
       rethrow;
     }
   }
@@ -237,6 +265,10 @@ class UserRepositoryImpl implements UserRepository {
     int limit = 10,
   }) async {
     try {
+      _logger.debug(
+        'Searching active users - role: ${role.name}, query: "$query", limit: $limit',
+      );
+
       final lowerQuery = query.trim().toLowerCase();
 
       Query<Map<String, dynamic>> firestoreQuery = _collection
@@ -254,11 +286,20 @@ class UserRepositoryImpl implements UserRepository {
       }
 
       final snapshot = await firestoreQuery.get();
-      return snapshot.docs
+      final users = snapshot.docs
           .map((doc) => UserModel.fromJson({'id': doc.id, ...doc.data()}))
           .toList();
+
+      _logger.info(
+        'Search found ${users.length} users - role: ${role.name}, query: "$query"',
+      );
+      return users;
     } catch (e, stackTrace) {
-      _logger.error('Failed to search users by role', e, stackTrace);
+      _logger.error(
+        'Failed to search users by role: ${role.name}, query: "$query"',
+        e,
+        stackTrace,
+      );
       rethrow;
     }
   }

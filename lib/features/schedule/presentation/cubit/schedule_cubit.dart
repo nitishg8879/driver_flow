@@ -62,10 +62,4 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       emit(ScheduleState.error(e.toString()));
     }
   }
-
-  Future<List<ScheduleInstructorOption>> getInstructors() =>
-      _repository.getInstructors();
-
-  Future<List<ScheduleStudentOption>> getStudents() =>
-      _repository.getStudents();
 }

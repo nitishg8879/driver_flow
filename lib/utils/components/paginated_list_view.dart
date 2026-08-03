@@ -8,6 +8,11 @@ import '../../core/bloc/paginated_state.dart';
 ///
 /// Handles infinite-scroll load-more, loading/error/empty states and
 /// delegates only the item rendering to the caller via [itemBuilder].
+@Deprecated(
+  'PaginatedListView is deprecated and will be removed in a future version. '
+  'Use AppDataTable with AsyncDataTableSource instead. '
+  'See StudentsSessionTable or UsersTable for the new pattern.',
+)
 class PaginatedListView<T> extends StatefulWidget {
   final PaginatedCubit<T> cubit;
   final Widget Function(BuildContext context, T item) itemBuilder;

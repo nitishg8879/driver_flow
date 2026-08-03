@@ -1,5 +1,6 @@
 import 'package:driver_flow_admin/core/router/app_pages.dart';
 import 'package:driver_flow_admin/core/router/app_router_observer.dart';
+import 'package:driver_flow_admin/features/user/presentation/cubit/user_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,7 +10,6 @@ import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
 import '../../features/schedule/presentation/screens/schedule_screen.dart';
-import '../../features/user/presentation/cubit/user_cubit.dart';
 import '../../features/user/presentation/screens/users_screen.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/vehicle_type/presentation/screens/vehicle_type_screen.dart';
@@ -60,7 +60,7 @@ class AppRouter {
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 child: BlocProvider(
-                  create: (context) => sl<UserCubit>(),
+                  create: (context) => UserCubit(sl()),
                   child: const UsersScreen(),
                 ),
               );

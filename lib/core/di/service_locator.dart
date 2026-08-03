@@ -8,7 +8,6 @@ import '../../features/user/data/repositories/user_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/schedule/data/repositories/schedule_repository.dart';
 import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
-import '../../features/user/presentation/cubit/user_cubit.dart';
 import '../../features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import '../../features/vehicle_type/presentation/cubit/vehicle_type_cubit.dart';
 import '../../features/tags/data/repositories/tag_repository.dart';
@@ -70,7 +69,6 @@ Future<void> setupServiceLocator() async {
   // Blocs / Cubits
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
   sl.registerFactory(() => VehicleTypeCubit(repository: sl()));
-  sl.registerFactory(() => UserCubit(userRepository: sl()));
   sl.registerFactory(() => ScheduleCubit(repository: sl()));
   sl.registerFactory(() => TagsCubit(repository: sl()));
   sl.registerFactory(() => PaymentCubit(repository: sl()));
