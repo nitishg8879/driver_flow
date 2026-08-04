@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../models/schedule_model.dart';
 
@@ -162,3 +163,7 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     }).toList();
   }
 }
+
+final scheduleRepositoryProvider = Provider<ScheduleRepository>((ref) {
+  return ScheduleRepositoryImpl();
+});

@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../utils/components/app_data_table.dart';
 import '../../../../utils/extensions/context_extensions.dart';
 import '../../data/models/vehicle_type_model.dart';
-import '../../data/repositories/vehicle_type_repository.dart';
 import '../widgets/vehicle_type_data_source.dart';
 import '../widgets/vehicle_type_form_dialog.dart';
 

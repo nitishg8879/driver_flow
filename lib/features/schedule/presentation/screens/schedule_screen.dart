@@ -1,3 +1,6 @@
+import 'package:driver_flow_admin/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:driver_flow_admin/features/calendar/presentation/widgets/calendar/calendar_widget.dart';
+import 'package:driver_flow_admin/features/profile/data/repositories/profile_repository.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_student_form.dart';
 import 'package:driver_flow_admin/features/user/data/models/user_model.dart';
 import 'package:driver_flow_admin/features/user/data/repositories/user_repository.dart';
@@ -21,7 +24,7 @@ class ScheduleScreen extends HookConsumerWidget {
     final selectedInstructor = useState<UserModel?>(null);
     final selectedStudent = useState<UserModel?>(null);
     final selectedStatus = useState<ScheduleStatus?>(null);
-    final selectedDateRange = useState<DateTimeRange<DateTime>?>(null);
+    final selectedDateRange = useState<DateTimeRange?>(null);
     final tabIndex = useState<int>(0);
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -34,8 +37,8 @@ class ScheduleScreen extends HookConsumerWidget {
           ),
           Divider(height: 1, color: colorScheme.outlineVariant),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -126,7 +129,6 @@ class ScheduleScreen extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      Spacer(),
                       CapsuleTabBar(
                         tabs: const [
                           (icon: Icons.table_rows_outlined, label: 'Table'),
@@ -140,10 +142,24 @@ class ScheduleScreen extends HookConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  // const ScheduleStatsRow(),
-                  const SizedBox(height: 20),
-                  // _buildContent(),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        return ref
+                            .watch(profileDataProvider)
+                            .when(
+                              data: (profileData) {
+                                return CalendarScreen();
+                              },
+                              error: (error, stackTrace) =>
+                                  Center(child: Text(error.toString())),
+                              loading: () =>
+                                  Center(child: CircularProgressIndicator()),
+                            );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
