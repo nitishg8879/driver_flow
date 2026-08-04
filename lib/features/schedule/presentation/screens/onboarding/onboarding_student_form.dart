@@ -1,5 +1,4 @@
-import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_state.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_notifier.dart';
 import 'package:driver_flow_admin/utils/components/horizontal_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -9,24 +8,12 @@ import 'personal_info_step.dart';
 import 'training_schedule_step.dart';
 
 class OnboardingStudentForm extends ConsumerWidget {
-  final VoidCallback onSuccess;
-
-  const OnboardingStudentForm({super.key, required this.onSuccess});
+  const OnboardingStudentForm({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(onboardingStateProvider);
-
-    ref.listen(onboardingStateProvider, (previous, next) {
-      if (next is OnboardingSuccess) {
-        Navigator.of(context).pop();
-        onSuccess();
-      } else if (next is OnboardingError) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${next.message}')));
-      }
-    });
+    final state = ref.watch(onboardingNotifierProvider);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -72,11 +59,7 @@ class OnboardingStudentForm extends ConsumerWidget {
             // Horizontal Stepper
             HorizontalStepper(
               currentStep: state.currentStep,
-              steps: const [
-                'Personal Info',
-                'Training & Schedule',
-                'Documents & Payment',
-              ],
+              steps: notifier.steps,
             ),
             Divider(height: 1, color: Colors.grey[300]),
             // Content Area
@@ -98,15 +81,11 @@ class OnboardingStudentForm extends ConsumerWidget {
   Widget _buildStepContent(int currentStep, formData) {
     switch (currentStep) {
       case 0:
-        return PersonalInfoStep(key: PersonalInfoStep.stateKey);
+        return PersonalInfoStep();
       case 1:
-        return TrainingScheduleStep(key: TrainingScheduleStep.stateKey);
+        return TrainingScheduleStep();
       case 2:
-        return DocumentsPaymentStep(
-          key: DocumentsPaymentStep.stateKey,
-          pricePerSession: formData.pricePerSession ?? 0.0,
-          sessionsCount: formData.sessionsCount ?? 0,
-        );
+        return DocumentsPaymentStep();
       default:
         return const SizedBox.shrink();
     }

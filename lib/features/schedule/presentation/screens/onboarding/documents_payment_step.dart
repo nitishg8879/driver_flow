@@ -1,4 +1,6 @@
 import 'package:driver_flow_admin/features/profile/data/models/organization_profile_model.dart';
+import 'package:driver_flow_admin/features/profile/data/repositories/profile_repository.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_notifier.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
 import 'package:driver_flow_admin/utils/components/upload_card.dart';
 import 'package:driver_flow_admin/utils/extensions/string_extension.dart';
@@ -9,34 +11,29 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class DocumentsPaymentStep extends HookConsumerWidget {
-  static final stateKey = GlobalKey();
-
-  final double pricePerSession;
-  final int sessionsCount;
-  final OrganizationProfileModel? orgProfile;
-
-  const DocumentsPaymentStep({
-    super.key,
-    required this.pricePerSession,
-    required this.sessionsCount,
-    this.orgProfile,
-  });
+  const DocumentsPaymentStep({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifier = ref.read(onboardingStateProvider.notifier);
+    final state = ref.watch(onboardingNotifierProvider);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
 
-    final totalAmount = useMemoized(() => pricePerSession * sessionsCount, [
-      pricePerSession,
-      sessionsCount,
-    ]);
+    final totalAmount = useMemoized(
+      () =>
+          (state.formData.pricePerSession ?? 0) *
+          (state.formData.sessionsCount ?? 0),
+      [state.formData.pricePerSession, state.formData.sessionsCount],
+    );
 
     final installmentsCount = useState<int>(1);
     final uploadedDocuments = useState<List<String>>([]);
 
-    final sessionDates = useMemoized(() {
+    final sessionDates = useMemoized(() async {
+      // final workingDays = orgProfile?.workingDays ?? [];
+      final orgProfile = await ref.read(profileDataProvider.future);
       final workingDays = orgProfile?.workingDays ?? [];
       final today = DateTime.now();
+      final sessionsCount = state.formData.sessionsCount ?? 0;
       final startDate = DateTime(today.year, today.month, today.day);
       return DateHelper.getSessionDates(startDate, sessionsCount, workingDays);
     }, [sessionsCount, orgProfile?.workingDays]);

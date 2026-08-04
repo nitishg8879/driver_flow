@@ -1,32 +1,57 @@
 import 'package:driver_flow_admin/features/schedule/data/models/onboarding_form_data.dart';
-import 'package:driver_flow_admin/features/schedule/data/repositories/onboarding_repository.dart';
 import 'package:driver_flow_admin/features/vehicle_type/data/models/vehicle_type_model.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../cubit/onboarding_state.dart';
+import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class OnboardingNotifier extends StateNotifier<OnboardingState> {
-  final OnboardingRepository repository;
-  static const int totalSteps = 3;
+part 'onboarding_notifier.g.dart';
 
-  OnboardingNotifier({required this.repository})
-    : super(const OnboardingState.initial());
+@immutable
+class OnboardingState {
+  final int currentStep;
+  final OnboardingFormData formData;
+
+  const OnboardingState({
+    this.currentStep = 0,
+    this.formData = const OnboardingFormData(),
+  });
+
+  OnboardingState copyWith({int? currentStep, OnboardingFormData? formData}) {
+    return OnboardingState(
+      currentStep: currentStep ?? this.currentStep,
+      formData: formData ?? this.formData,
+    );
+  }
+}
+
+@riverpod
+class OnboardingNotifier extends _$OnboardingNotifier {
+  final steps = const <String>[
+    'Personal Information',
+    'Training Schedule',
+    'Review & Submit',
+  ];
+
+  int get totalSteps => steps.length;
+
+  @override
+  OnboardingState build() {
+    return const OnboardingState();
+  }
 
   void nextStep() {
-    final currentStep = state.currentStep;
-    if (currentStep < totalSteps - 1) {
-      _updateStep(currentStep + 1);
+    if (state.currentStep < totalSteps - 1) {
+      state = state.copyWith(currentStep: state.currentStep + 1);
     }
   }
 
   void previousStep() {
-    final currentStep = state.currentStep;
-    if (currentStep > 0) {
-      _updateStep(currentStep - 1);
+    if (state.currentStep > 0) {
+      state = state.copyWith(currentStep: state.currentStep - 1);
     }
   }
 
   void updateFormData(OnboardingFormData formData) {
-    _updateStep(state.currentStep, formData);
+    state = state.copyWith(formData: formData);
   }
 
   void updatePersonalInfo({
@@ -38,16 +63,17 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
     required String city,
     required String zipCode,
   }) {
-    final updatedData = state.formData.copyWith(
-      fullName: fullName,
-      phoneNumber: phoneNumber,
-      email: email,
-      streetAddress: streetAddress,
-      state: states,
-      city: city,
-      zipCode: zipCode,
+    state = state.copyWith(
+      formData: state.formData.copyWith(
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+        email: email,
+        streetAddress: streetAddress,
+        state: states,
+        city: city,
+        zipCode: zipCode,
+      ),
     );
-    _updateStep(state.currentStep, updatedData);
     nextStep();
   }
 
@@ -59,69 +85,24 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
     required DateTime startDate,
     required String recurrence,
   }) {
-    final updatedData = (state.formData).copyWith(
-      vehicleType: vehicleType,
-      sessionsCount: sessionsCount,
-      pricePerSession: pricePerSession,
-      sessionDuration: sessionDuration,
-      courseStartDate: startDate,
-      recurrence: recurrence,
+    state = state.copyWith(
+      formData: state.formData.copyWith(
+        vehicleType: vehicleType,
+        sessionsCount: sessionsCount,
+        pricePerSession: pricePerSession,
+        sessionDuration: sessionDuration,
+        courseStartDate: startDate,
+        recurrence: recurrence,
+      ),
     );
-    _updateStep(state.currentStep, updatedData);
     nextStep();
   }
 
   Future<void> submit() async {
-    await submitOnboarding(state.formData);
-  }
-
-  void _updateStep(int step, [OnboardingFormData? data]) {
-    final formData = data ?? state.formData;
-    state.maybeMap(
-      initial: (_) => state = OnboardingState.initial(
-        currentStep: step,
-        formData: formData,
-      ),
-      loading: (_) => state = OnboardingState.loading(
-        currentStep: step,
-        formData: formData,
-      ),
-      loaded: (_) =>
-          state = OnboardingState.loaded(currentStep: step, formData: formData),
-      success: (_) => state = OnboardingState.success(
-        currentStep: step,
-        formData: formData,
-      ),
-      error: (s) => state = OnboardingState.error(
-        s.message,
-        currentStep: step,
-        formData: formData,
-      ),
-      orElse: () {},
-    );
-  }
-
-  Future<void> submitOnboarding(OnboardingFormData formData) async {
-    try {
-      state = OnboardingState.loading(
-        currentStep: state.currentStep,
-        formData: formData,
-      );
-      await repository.submitOnboarding(formData);
-      state = OnboardingState.success(
-        currentStep: state.currentStep,
-        formData: formData,
-      );
-    } catch (e) {
-      state = OnboardingState.error(
-        e.toString(),
-        currentStep: state.currentStep,
-        formData: formData,
-      );
-    }
+    // Add repository submission logic here
   }
 
   void reset() {
-    state = const OnboardingState.initial();
+    state = const OnboardingState();
   }
 }

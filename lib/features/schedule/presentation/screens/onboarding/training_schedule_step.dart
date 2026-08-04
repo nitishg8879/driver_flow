@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_notifier.dart';
 import 'package:driver_flow_admin/features/vehicle_type/data/models/vehicle_type_model.dart';
 import 'package:driver_flow_admin/features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import 'package:driver_flow_admin/utils/components/async_dropdown.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,30 +14,30 @@ class TrainingScheduleStep extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final formData = ref.watch(onboardingFormDataProvider);
-    final notifier = ref.read(onboardingStateProvider.notifier);
+    final state = ref.watch(onboardingNotifierProvider);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
 
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final sessionsController = useTextEditingController(
-      text: formData.sessionsCount?.toString() ?? '',
+      text: state.formData.sessionsCount?.toString() ?? '',
     );
     final durationController = useTextEditingController(
-      text: formData.sessionDuration?.toString() ?? '',
+      text: state.formData.sessionDuration?.toString() ?? '',
     );
     final priceController = useTextEditingController(
-      text: formData.pricePerSession?.toString() ?? '',
+      text: state.formData.pricePerSession?.toString() ?? '',
     );
     final startDateController = useTextEditingController(
-      text: formData.courseStartDate != null
-          ? DateFormat('MMM dd, yyyy').format(formData.courseStartDate!)
+      text: state.formData.courseStartDate != null
+          ? DateFormat('MMM dd, yyyy').format(state.formData.courseStartDate!)
           : '',
     );
 
     final selectedVehicleType = useState<VehicleTypeModel?>(
-      formData.vehicleType,
+      state.formData.vehicleType,
     );
-    final courseStartDate = useState<DateTime?>(formData.courseStartDate);
-    final recurrence = useState<String>(formData.recurrence ?? 'Weekly');
+    final courseStartDate = useState<DateTime?>(state.formData.courseStartDate);
+    final recurrence = useState<String>(state.formData.recurrence ?? 'Weekly');
 
     void onVehicleTypeChanged(VehicleTypeModel? vehicle) {
       selectedVehicleType.value = vehicle;
@@ -144,23 +142,26 @@ class _TrainingScheduleStepContent extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                AsyncDropdown<VehicleTypeModel>(
-                  fetchItems: () async {
-                    final _data = await VehicleTypeRepositoryImpl(
-                      firestore: FirebaseFirestore.instance,
-                      storage: FirebaseStorage.instance,
-                    ).getVehicleTypes();
-                    return _data.items;
-                  },
-                  itemLabelBuilder: (vehicle) => vehicle.name,
-                  value: selectedVehicleType,
-                  onChanged: onVehicleTypeChanged,
-                  labelText: 'Vehicle Type / Course',
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Vehicle type is required';
-                    }
-                    return null;
+                Consumer(
+                  builder: (context, ref, child) {
+                    return AsyncDropdown<VehicleTypeModel>(
+                      fetchItems: () async {
+                        return ref
+                            .read(vehicleTypeRepositoryProvider)
+                            .getVehicleTypes()
+                            .then((value) => value.items);
+                      },
+                      itemLabelBuilder: (vehicle) => vehicle.name,
+                      value: selectedVehicleType,
+                      onChanged: onVehicleTypeChanged,
+                      labelText: 'Vehicle Type / Course',
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Vehicle type is required';
+                        }
+                        return null;
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 16),

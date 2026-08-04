@@ -37,17 +37,17 @@ class _PaymentListScreenState extends State<PaymentListScreen> {
   }
 
   void _loadPayments() {
-    context.read<PaymentCubit>().listPayments(
-      monthFilter: _selectedMonth,
-      txnIdSearch: _txnIdSearchController.text.trim().isEmpty
-          ? null
-          : _txnIdSearchController.text.trim(),
-      studentNameSearch: _studentNameSearchController.text.trim().isEmpty
-          ? null
-          : _studentNameSearchController.text.trim(),
-      txnTypeFilter: _selectedTxnType,
-      pageNumber: _currentPage,
-    );
+    // context.read<PaymentCubit>().listPayments(
+    //   monthFilter: _selectedMonth,
+    //   txnIdSearch: _txnIdSearchController.text.trim().isEmpty
+    //       ? null
+    //       : _txnIdSearchController.text.trim(),
+    //   studentNameSearch: _studentNameSearchController.text.trim().isEmpty
+    //       ? null
+    //       : _studentNameSearchController.text.trim(),
+    //   txnTypeFilter: _selectedTxnType,
+    //   pageNumber: _currentPage,
+    // );
   }
 
   void _resetFilters() {
@@ -62,13 +62,13 @@ class _PaymentListScreenState extends State<PaymentListScreen> {
   }
 
   void _showPaymentDialog([PaymentModel? existing]) {
-    showDialog(
-      context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<PaymentCubit>(),
-        child: PaymentFormDialog(existing: existing),
-      ),
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (_) => BlocProvider.value(
+    //     value: context.read<PaymentCubit>(),
+    //     child: PaymentFormDialog(existing: existing),
+    //   ),
+    // );
   }
 
   @override
@@ -210,140 +210,140 @@ class _PaymentListScreenState extends State<PaymentListScreen> {
           ),
           const Divider(),
           // Payments List
-          Expanded(
-            child: BlocBuilder<PaymentCubit, PaymentState>(
-              builder: (context, state) {
-                return state.maybeWhen(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loaded: (payments, currentPage, totalPages) {
-                    if (payments.isEmpty) {
-                      return const Center(
-                        child: Text('No payments found for selected filters'),
-                      );
-                    }
+          // Expanded(
+          //   child: BlocBuilder<PaymentCubit, PaymentState>(
+          //     builder: (context, state) {
+          //       return state.maybeWhen(
+          //         loading: () =>
+          //             const Center(child: CircularProgressIndicator()),
+          //         loaded: (payments, currentPage, totalPages) {
+          //           if (payments.isEmpty) {
+          //             return const Center(
+          //               child: Text('No payments found for selected filters'),
+          //             );
+          //           }
 
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: payments.length,
-                            itemBuilder: (context, index) {
-                              final payment = payments[index];
-                              return Card(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                child: ListTile(
-                                  title: Text(
-                                    '${payment.txnId} - ${payment.studentName}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Amount: ${payment.amount} | Type: ${payment.txnType.displayName}',
-                                      ),
-                                      Text(
-                                        'Date: ${payment.txnDate.toString().split(' ')[0]}',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  trailing: PopupMenuButton(
-                                    itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                        child: const Text('Edit'),
-                                        onTap: () =>
-                                            _showPaymentDialog(payment),
-                                      ),
-                                      PopupMenuItem(
-                                        child: const Text('Delete'),
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                              title: const Text(
-                                                'Delete Payment?',
-                                              ),
-                                              content: const Text(
-                                                'Are you sure you want to delete this payment?',
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  child: const Text('Cancel'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    context
-                                                        .read<PaymentCubit>()
-                                                        .deletePayment(
-                                                          payment.id!,
-                                                        );
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: const Text('Delete'),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        // Pagination Controls
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (currentPage > 1)
-                                CustomButton(
-                                  text: 'Previous',
-                                  onPressed: () {
-                                    setState(() => _currentPage--);
-                                    _loadPayments();
-                                  },
-                                ),
-                              const SizedBox(width: 16),
-                              Text('Page $currentPage of $totalPages'),
-                              const SizedBox(width: 16),
-                              if (currentPage < totalPages)
-                                CustomButton(
-                                  text: 'Next',
-                                  onPressed: () {
-                                    setState(() => _currentPage++);
-                                    _loadPayments();
-                                  },
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  error: (message) => Center(child: Text('Error: $message')),
-                  orElse: () => const SizedBox.shrink(),
-                );
-              },
-            ),
-          ),
+          //           return Column(
+          //             children: [
+          //               Expanded(
+          //                 child: ListView.builder(
+          //                   itemCount: payments.length,
+          //                   itemBuilder: (context, index) {
+          //                     final payment = payments[index];
+          //                     return Card(
+          //                       margin: const EdgeInsets.symmetric(
+          //                         horizontal: 16,
+          //                         vertical: 8,
+          //                       ),
+          //                       child: ListTile(
+          //                         title: Text(
+          //                           '${payment.txnId} - ${payment.studentName}',
+          //                           style: const TextStyle(
+          //                             fontWeight: FontWeight.bold,
+          //                           ),
+          //                         ),
+          //                         subtitle: Column(
+          //                           crossAxisAlignment:
+          //                               CrossAxisAlignment.start,
+          //                           children: [
+          //                             const SizedBox(height: 4),
+          //                             Text(
+          //                               'Amount: ${payment.amount} | Type: ${payment.txnType.displayName}',
+          //                             ),
+          //                             Text(
+          //                               'Date: ${payment.txnDate.toString().split(' ')[0]}',
+          //                               style: TextStyle(
+          //                                 color: Colors.grey.shade600,
+          //                                 fontSize: 12,
+          //                               ),
+          //                             ),
+          //                           ],
+          //                         ),
+          //                         trailing: PopupMenuButton(
+          //                           itemBuilder: (context) => [
+          //                             PopupMenuItem(
+          //                               child: const Text('Edit'),
+          //                               onTap: () =>
+          //                                   _showPaymentDialog(payment),
+          //                             ),
+          //                             PopupMenuItem(
+          //                               child: const Text('Delete'),
+          //                               onTap: () {
+          //                                 showDialog(
+          //                                   context: context,
+          //                                   builder: (context) => AlertDialog(
+          //                                     title: const Text(
+          //                                       'Delete Payment?',
+          //                                     ),
+          //                                     content: const Text(
+          //                                       'Are you sure you want to delete this payment?',
+          //                                     ),
+          //                                     actions: [
+          //                                       TextButton(
+          //                                         onPressed: () =>
+          //                                             Navigator.pop(context),
+          //                                         child: const Text('Cancel'),
+          //                                       ),
+          //                                       TextButton(
+          //                                         onPressed: () {
+          //                                           context
+          //                                               .read<PaymentCubit>()
+          //                                               .deletePayment(
+          //                                                 payment.id!,
+          //                                               );
+          //                                           Navigator.pop(context);
+          //                                         },
+          //                                         child: const Text('Delete'),
+          //                                       ),
+          //                                     ],
+          //                                   ),
+          //                                 );
+          //                               },
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ),
+          //                     );
+          //                   },
+          //                 ),
+          //               ),
+          //               // Pagination Controls
+          //               Padding(
+          //                 padding: const EdgeInsets.all(16.0),
+          //                 child: Row(
+          //                   mainAxisAlignment: MainAxisAlignment.center,
+          //                   children: [
+          //                     if (currentPage > 1)
+          //                       CustomButton(
+          //                         text: 'Previous',
+          //                         onPressed: () {
+          //                           setState(() => _currentPage--);
+          //                           _loadPayments();
+          //                         },
+          //                       ),
+          //                     const SizedBox(width: 16),
+          //                     Text('Page $currentPage of $totalPages'),
+          //                     const SizedBox(width: 16),
+          //                     if (currentPage < totalPages)
+          //                       CustomButton(
+          //                         text: 'Next',
+          //                         onPressed: () {
+          //                           setState(() => _currentPage++);
+          //                           _loadPayments();
+          //                         },
+          //                       ),
+          //                   ],
+          //                 ),
+          //               ),
+          //             ],
+          //           );
+          //         },
+          //         error: (message) => Center(child: Text('Error: $message')),
+          //         orElse: () => const SizedBox.shrink(),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

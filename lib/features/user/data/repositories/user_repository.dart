@@ -11,11 +11,13 @@ import '../models/user_model.dart';
 /// are just users with `role == UserRole.student` / `UserRole.instructor`
 /// — there is no separate `students`/`instructors` collection.
 abstract class UserRepository {
+  /// [paginated]=true → cursor-based page; [paginated]=false → all records.
   Future<PaginatedResult<UserModel>> getUsersByRole({
     required UserRole role,
     required bool activeOnly,
     required int pageSize,
     DocumentSnapshot? lastDocument,
+    bool paginated = true,
   });
 
   Future<PaginatedResult<UserModel>> getUsers({
@@ -60,20 +62,31 @@ class UserRepositoryImpl implements UserRepository {
     required bool activeOnly,
     required int pageSize,
     DocumentSnapshot? lastDocument,
+    bool paginated = true,
   }) async {
     try {
-      final countQuery = _collection
-          .where('role', isEqualTo: role.name)
-          .where('isActive', isEqualTo: activeOnly);
-      final countSnapshot = await countQuery.count().get();
-      final totalCount = countSnapshot.count ?? 0;
-
-      Query<Map<String, dynamic>> query = _collection
+      Query<Map<String, dynamic>> baseQuery = _collection
           .where('role', isEqualTo: role.name)
           .where('isActive', isEqualTo: activeOnly)
-          .orderBy('createdAt', descending: true)
-          .limit(pageSize);
+          .orderBy('createdAt', descending: true);
 
+      if (!paginated) {
+        final snapshot = await baseQuery.get();
+        final users = snapshot.docs
+            .map((doc) => UserModel.fromJson({'id': doc.id, ...doc.data()}))
+            .toList();
+        return PaginatedResult(
+          items: users,
+          hasMore: false,
+          totalCount: users.length,
+          lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
+        );
+      }
+
+      final countSnapshot = await baseQuery.count().get();
+      final totalCount = countSnapshot.count ?? 0;
+
+      Query<Map<String, dynamic>> query = baseQuery.limit(pageSize);
       if (lastDocument != null) {
         query = query.startAfterDocument(lastDocument);
       }
@@ -87,7 +100,7 @@ class UserRepositoryImpl implements UserRepository {
         items: users,
         hasMore: snapshot.docs.length == pageSize,
         totalCount: totalCount,
-        lastDocument: snapshot.docs.last,
+        lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
       );
     } catch (e, stackTrace) {
       _logger.error('Failed to fetch users by role', e, stackTrace);
