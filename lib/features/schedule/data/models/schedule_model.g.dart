@@ -10,15 +10,12 @@ _$ScheduleModelImpl _$$ScheduleModelImplFromJson(Map<String, dynamic> json) =>
     _$ScheduleModelImpl(
       id: json['id'] as String?,
       studentId: json['studentId'] as String?,
-      studentName: json['studentName'] as String?,
       instructorId: json['instructorId'] as String?,
       vehicleId: json['vehicleId'] as String?,
-      startTime: json['startTime'] == null
-          ? null
-          : DateTime.parse(json['startTime'] as String),
-      endTime: json['endTime'] == null
-          ? null
-          : DateTime.parse(json['endTime'] as String),
+      studentName: json['studentName'] as String?,
+      instructorName: json['instructorName'] as String?,
+      startTime: const TimestampConverter().fromJson(json['startTime']),
+      endTime: const TimestampConverter().fromJson(json['endTime']),
       status:
           $enumDecodeNullable(_$ScheduleStatusEnumMap, json['status']) ??
           ScheduleStatus.scheduled,
@@ -29,11 +26,12 @@ Map<String, dynamic> _$$ScheduleModelImplToJson(_$ScheduleModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'studentId': instance.studentId,
-      'studentName': instance.studentName,
       'instructorId': instance.instructorId,
       'vehicleId': instance.vehicleId,
-      'startTime': instance.startTime?.toIso8601String(),
-      'endTime': instance.endTime?.toIso8601String(),
+      'studentName': instance.studentName,
+      'instructorName': instance.instructorName,
+      'startTime': const TimestampConverter().toJson(instance.startTime),
+      'endTime': const TimestampConverter().toJson(instance.endTime),
       'status': _$ScheduleStatusEnumMap[instance.status]!,
       'notes': instance.notes,
     };

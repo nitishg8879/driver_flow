@@ -29,17 +29,17 @@ mixin _$OrganizationProfileModel {
   String? get phoneNumber => throw _privateConstructorUsedError;
   String? get aboutUs => throw _privateConstructorUsedError;
   List<OrgWorkingDay>? get workingDays => throw _privateConstructorUsedError;
-  @_TimestampConverter()
+  @TimestampConverter()
   DateTime? get createdAt => throw _privateConstructorUsedError;
-  @_TimestampConverter()
+  @TimestampConverter()
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get officeStartTime => throw _privateConstructorUsedError;
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get officeEndTime => throw _privateConstructorUsedError;
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get vechileStartTime => throw _privateConstructorUsedError;
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get vechileEndTime => throw _privateConstructorUsedError;
 
   /// Serializes this OrganizationProfileModel to a JSON map.
@@ -66,12 +66,12 @@ abstract class $OrganizationProfileModelCopyWith<$Res> {
     String? phoneNumber,
     String? aboutUs,
     List<OrgWorkingDay>? workingDays,
-    @_TimestampConverter() DateTime? createdAt,
-    @_TimestampConverter() DateTime? updatedAt,
-    @_TimeOfDayConverter() TimeOfDay? officeStartTime,
-    @_TimeOfDayConverter() TimeOfDay? officeEndTime,
-    @_TimeOfDayConverter() TimeOfDay? vechileStartTime,
-    @_TimeOfDayConverter() TimeOfDay? vechileEndTime,
+    @TimestampConverter() DateTime? createdAt,
+    @TimestampConverter() DateTime? updatedAt,
+    @TimeOfDayConverter() TimeOfDay? officeStartTime,
+    @TimeOfDayConverter() TimeOfDay? officeEndTime,
+    @TimeOfDayConverter() TimeOfDay? vechileStartTime,
+    @TimeOfDayConverter() TimeOfDay? vechileEndTime,
   });
 }
 
@@ -178,12 +178,12 @@ abstract class _$$OrganizationProfileModelImplCopyWith<$Res>
     String? phoneNumber,
     String? aboutUs,
     List<OrgWorkingDay>? workingDays,
-    @_TimestampConverter() DateTime? createdAt,
-    @_TimestampConverter() DateTime? updatedAt,
-    @_TimeOfDayConverter() TimeOfDay? officeStartTime,
-    @_TimeOfDayConverter() TimeOfDay? officeEndTime,
-    @_TimeOfDayConverter() TimeOfDay? vechileStartTime,
-    @_TimeOfDayConverter() TimeOfDay? vechileEndTime,
+    @TimestampConverter() DateTime? createdAt,
+    @TimestampConverter() DateTime? updatedAt,
+    @TimeOfDayConverter() TimeOfDay? officeStartTime,
+    @TimeOfDayConverter() TimeOfDay? officeEndTime,
+    @TimeOfDayConverter() TimeOfDay? vechileStartTime,
+    @TimeOfDayConverter() TimeOfDay? vechileEndTime,
   });
 }
 
@@ -283,12 +283,12 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     this.phoneNumber,
     this.aboutUs,
     final List<OrgWorkingDay>? workingDays = const [],
-    @_TimestampConverter() this.createdAt,
-    @_TimestampConverter() this.updatedAt,
-    @_TimeOfDayConverter() this.officeStartTime,
-    @_TimeOfDayConverter() this.officeEndTime,
-    @_TimeOfDayConverter() this.vechileStartTime,
-    @_TimeOfDayConverter() this.vechileEndTime,
+    @TimestampConverter() this.createdAt,
+    @TimestampConverter() this.updatedAt,
+    @TimeOfDayConverter() this.officeStartTime,
+    @TimeOfDayConverter() this.officeEndTime,
+    @TimeOfDayConverter() this.vechileStartTime,
+    @TimeOfDayConverter() this.vechileEndTime,
   }) : _workingDays = workingDays;
 
   factory _$OrganizationProfileModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -316,22 +316,22 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
   }
 
   @override
-  @_TimestampConverter()
+  @TimestampConverter()
   final DateTime? createdAt;
   @override
-  @_TimestampConverter()
+  @TimestampConverter()
   final DateTime? updatedAt;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   final TimeOfDay? officeStartTime;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   final TimeOfDay? officeEndTime;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   final TimeOfDay? vechileStartTime;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   final TimeOfDay? vechileEndTime;
 
   @override
@@ -412,12 +412,12 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
     final String? phoneNumber,
     final String? aboutUs,
     final List<OrgWorkingDay>? workingDays,
-    @_TimestampConverter() final DateTime? createdAt,
-    @_TimestampConverter() final DateTime? updatedAt,
-    @_TimeOfDayConverter() final TimeOfDay? officeStartTime,
-    @_TimeOfDayConverter() final TimeOfDay? officeEndTime,
-    @_TimeOfDayConverter() final TimeOfDay? vechileStartTime,
-    @_TimeOfDayConverter() final TimeOfDay? vechileEndTime,
+    @TimestampConverter() final DateTime? createdAt,
+    @TimestampConverter() final DateTime? updatedAt,
+    @TimeOfDayConverter() final TimeOfDay? officeStartTime,
+    @TimeOfDayConverter() final TimeOfDay? officeEndTime,
+    @TimeOfDayConverter() final TimeOfDay? vechileStartTime,
+    @TimeOfDayConverter() final TimeOfDay? vechileEndTime,
   }) = _$OrganizationProfileModelImpl;
 
   factory _OrganizationProfileModel.fromJson(Map<String, dynamic> json) =
@@ -436,22 +436,22 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
   @override
   List<OrgWorkingDay>? get workingDays;
   @override
-  @_TimestampConverter()
+  @TimestampConverter()
   DateTime? get createdAt;
   @override
-  @_TimestampConverter()
+  @TimestampConverter()
   DateTime? get updatedAt;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get officeStartTime;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get officeEndTime;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get vechileStartTime;
   @override
-  @_TimeOfDayConverter()
+  @TimeOfDayConverter()
   TimeOfDay? get vechileEndTime;
 
   /// Create a copy of OrganizationProfileModel

@@ -23,10 +23,13 @@ ScheduleModel _$ScheduleModelFromJson(Map<String, dynamic> json) {
 mixin _$ScheduleModel {
   String? get id => throw _privateConstructorUsedError;
   String? get studentId => throw _privateConstructorUsedError;
-  String? get studentName => throw _privateConstructorUsedError;
   String? get instructorId => throw _privateConstructorUsedError;
   String? get vehicleId => throw _privateConstructorUsedError;
+  String? get studentName => throw _privateConstructorUsedError;
+  String? get instructorName => throw _privateConstructorUsedError;
+  @TimestampConverter()
   DateTime? get startTime => throw _privateConstructorUsedError;
+  @TimestampConverter()
   DateTime? get endTime => throw _privateConstructorUsedError;
   ScheduleStatus get status => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
@@ -51,11 +54,12 @@ abstract class $ScheduleModelCopyWith<$Res> {
   $Res call({
     String? id,
     String? studentId,
-    String? studentName,
     String? instructorId,
     String? vehicleId,
-    DateTime? startTime,
-    DateTime? endTime,
+    String? studentName,
+    String? instructorName,
+    @TimestampConverter() DateTime? startTime,
+    @TimestampConverter() DateTime? endTime,
     ScheduleStatus status,
     String? notes,
   });
@@ -78,9 +82,10 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
   $Res call({
     Object? id = freezed,
     Object? studentId = freezed,
-    Object? studentName = freezed,
     Object? instructorId = freezed,
     Object? vehicleId = freezed,
+    Object? studentName = freezed,
+    Object? instructorName = freezed,
     Object? startTime = freezed,
     Object? endTime = freezed,
     Object? status = null,
@@ -96,10 +101,6 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
                 ? _value.studentId
                 : studentId // ignore: cast_nullable_to_non_nullable
                       as String?,
-            studentName: freezed == studentName
-                ? _value.studentName
-                : studentName // ignore: cast_nullable_to_non_nullable
-                      as String?,
             instructorId: freezed == instructorId
                 ? _value.instructorId
                 : instructorId // ignore: cast_nullable_to_non_nullable
@@ -107,6 +108,14 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
             vehicleId: freezed == vehicleId
                 ? _value.vehicleId
                 : vehicleId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            studentName: freezed == studentName
+                ? _value.studentName
+                : studentName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            instructorName: freezed == instructorName
+                ? _value.instructorName
+                : instructorName // ignore: cast_nullable_to_non_nullable
                       as String?,
             startTime: freezed == startTime
                 ? _value.startTime
@@ -142,11 +151,12 @@ abstract class _$$ScheduleModelImplCopyWith<$Res>
   $Res call({
     String? id,
     String? studentId,
-    String? studentName,
     String? instructorId,
     String? vehicleId,
-    DateTime? startTime,
-    DateTime? endTime,
+    String? studentName,
+    String? instructorName,
+    @TimestampConverter() DateTime? startTime,
+    @TimestampConverter() DateTime? endTime,
     ScheduleStatus status,
     String? notes,
   });
@@ -168,9 +178,10 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? studentId = freezed,
-    Object? studentName = freezed,
     Object? instructorId = freezed,
     Object? vehicleId = freezed,
+    Object? studentName = freezed,
+    Object? instructorName = freezed,
     Object? startTime = freezed,
     Object? endTime = freezed,
     Object? status = null,
@@ -186,10 +197,6 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
             ? _value.studentId
             : studentId // ignore: cast_nullable_to_non_nullable
                   as String?,
-        studentName: freezed == studentName
-            ? _value.studentName
-            : studentName // ignore: cast_nullable_to_non_nullable
-                  as String?,
         instructorId: freezed == instructorId
             ? _value.instructorId
             : instructorId // ignore: cast_nullable_to_non_nullable
@@ -197,6 +204,14 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
         vehicleId: freezed == vehicleId
             ? _value.vehicleId
             : vehicleId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        studentName: freezed == studentName
+            ? _value.studentName
+            : studentName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        instructorName: freezed == instructorName
+            ? _value.instructorName
+            : instructorName // ignore: cast_nullable_to_non_nullable
                   as String?,
         startTime: freezed == startTime
             ? _value.startTime
@@ -225,11 +240,12 @@ class _$ScheduleModelImpl implements _ScheduleModel {
   const _$ScheduleModelImpl({
     this.id,
     this.studentId,
-    this.studentName,
     this.instructorId,
     this.vehicleId,
-    this.startTime,
-    this.endTime,
+    this.studentName,
+    this.instructorName,
+    @TimestampConverter() this.startTime,
+    @TimestampConverter() this.endTime,
     this.status = ScheduleStatus.scheduled,
     this.notes,
   });
@@ -242,14 +258,18 @@ class _$ScheduleModelImpl implements _ScheduleModel {
   @override
   final String? studentId;
   @override
-  final String? studentName;
-  @override
   final String? instructorId;
   @override
   final String? vehicleId;
   @override
+  final String? studentName;
+  @override
+  final String? instructorName;
+  @override
+  @TimestampConverter()
   final DateTime? startTime;
   @override
+  @TimestampConverter()
   final DateTime? endTime;
   @override
   @JsonKey()
@@ -259,7 +279,7 @@ class _$ScheduleModelImpl implements _ScheduleModel {
 
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, studentId: $studentId, studentName: $studentName, instructorId: $instructorId, vehicleId: $vehicleId, startTime: $startTime, endTime: $endTime, status: $status, notes: $notes)';
+    return 'ScheduleModel(id: $id, studentId: $studentId, instructorId: $instructorId, vehicleId: $vehicleId, studentName: $studentName, instructorName: $instructorName, startTime: $startTime, endTime: $endTime, status: $status, notes: $notes)';
   }
 
   @override
@@ -270,12 +290,14 @@ class _$ScheduleModelImpl implements _ScheduleModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.studentId, studentId) ||
                 other.studentId == studentId) &&
-            (identical(other.studentName, studentName) ||
-                other.studentName == studentName) &&
             (identical(other.instructorId, instructorId) ||
                 other.instructorId == instructorId) &&
             (identical(other.vehicleId, vehicleId) ||
                 other.vehicleId == vehicleId) &&
+            (identical(other.studentName, studentName) ||
+                other.studentName == studentName) &&
+            (identical(other.instructorName, instructorName) ||
+                other.instructorName == instructorName) &&
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
@@ -289,9 +311,10 @@ class _$ScheduleModelImpl implements _ScheduleModel {
     runtimeType,
     id,
     studentId,
-    studentName,
     instructorId,
     vehicleId,
+    studentName,
+    instructorName,
     startTime,
     endTime,
     status,
@@ -316,11 +339,12 @@ abstract class _ScheduleModel implements ScheduleModel {
   const factory _ScheduleModel({
     final String? id,
     final String? studentId,
-    final String? studentName,
     final String? instructorId,
     final String? vehicleId,
-    final DateTime? startTime,
-    final DateTime? endTime,
+    final String? studentName,
+    final String? instructorName,
+    @TimestampConverter() final DateTime? startTime,
+    @TimestampConverter() final DateTime? endTime,
     final ScheduleStatus status,
     final String? notes,
   }) = _$ScheduleModelImpl;
@@ -333,14 +357,18 @@ abstract class _ScheduleModel implements ScheduleModel {
   @override
   String? get studentId;
   @override
-  String? get studentName;
-  @override
   String? get instructorId;
   @override
   String? get vehicleId;
   @override
+  String? get studentName;
+  @override
+  String? get instructorName;
+  @override
+  @TimestampConverter()
   DateTime? get startTime;
   @override
+  @TimestampConverter()
   DateTime? get endTime;
   @override
   ScheduleStatus get status;

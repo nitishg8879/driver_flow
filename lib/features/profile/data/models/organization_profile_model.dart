@@ -1,49 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driver_flow_admin/core/models/date_time_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'organization_profile_model.freezed.dart';
 part 'organization_profile_model.g.dart';
-
-class _TimestampConverter implements JsonConverter<DateTime?, dynamic> {
-  const _TimestampConverter();
-
-  @override
-  DateTime? fromJson(dynamic json) {
-    if (json == null) return null;
-    if (json is Timestamp) return json.toDate();
-    if (json is DateTime) return json;
-    if (json is String) return DateTime.tryParse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    return null;
-  }
-
-  @override
-  dynamic toJson(DateTime? object) => object;
-}
-
-// Stores TimeOfDay as {"hour": int, "minute": int} in Firestore.
-class _TimeOfDayConverter implements JsonConverter<TimeOfDay?, dynamic> {
-  const _TimeOfDayConverter();
-
-  @override
-  TimeOfDay? fromJson(dynamic json) {
-    if (json == null) return null;
-    if (json is Map) {
-      return TimeOfDay(
-        hour: (json['hour'] as num).toInt(),
-        minute: (json['minute'] as num).toInt(),
-      );
-    }
-    return null;
-  }
-
-  @override
-  dynamic toJson(TimeOfDay? object) {
-    if (object == null) return null;
-    return {'hour': object.hour, 'minute': object.minute};
-  }
-}
 
 @freezed
 class OrganizationProfileModel with _$OrganizationProfileModel {
@@ -54,12 +15,12 @@ class OrganizationProfileModel with _$OrganizationProfileModel {
     String? phoneNumber,
     String? aboutUs,
     @Default([]) List<OrgWorkingDay>? workingDays,
-    @_TimestampConverter() DateTime? createdAt,
-    @_TimestampConverter() DateTime? updatedAt,
-    @_TimeOfDayConverter() TimeOfDay? officeStartTime,
-    @_TimeOfDayConverter() TimeOfDay? officeEndTime,
-    @_TimeOfDayConverter() TimeOfDay? vechileStartTime,
-    @_TimeOfDayConverter() TimeOfDay? vechileEndTime,
+    @TimestampConverter() DateTime? createdAt,
+    @TimestampConverter() DateTime? updatedAt,
+    @TimeOfDayConverter() TimeOfDay? officeStartTime,
+    @TimeOfDayConverter() TimeOfDay? officeEndTime,
+    @TimeOfDayConverter() TimeOfDay? vechileStartTime,
+    @TimeOfDayConverter() TimeOfDay? vechileEndTime,
   }) = _OrganizationProfileModel;
 
   factory OrganizationProfileModel.fromJson(Map<String, dynamic> json) =>

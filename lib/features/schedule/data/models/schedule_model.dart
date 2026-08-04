@@ -1,3 +1,4 @@
+import 'package:driver_flow_admin/core/models/date_time_converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../utils/constants/app_enums.dart';
 
@@ -9,11 +10,12 @@ class ScheduleModel with _$ScheduleModel {
   const factory ScheduleModel({
     String? id,
     String? studentId,
-    String? studentName,
     String? instructorId,
     String? vehicleId,
-    DateTime? startTime,
-    DateTime? endTime,
+    String? studentName,
+    String? instructorName,
+    @TimestampConverter() DateTime? startTime,
+    @TimestampConverter() DateTime? endTime,
     @Default(ScheduleStatus.scheduled) ScheduleStatus status,
     String? notes,
   }) = _ScheduleModel;
