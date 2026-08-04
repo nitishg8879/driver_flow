@@ -1,7 +1,9 @@
-import 'package:driver_flow_admin/features/profile/data/models/organization_profile_model.dart';
+import 'dart:async';
+
 import 'package:driver_flow_admin/features/profile/data/repositories/profile_repository.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_notifier.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
+import 'package:driver_flow_admin/utils/components/app_loader_button.dart';
 import 'package:driver_flow_admin/utils/components/upload_card.dart';
 import 'package:driver_flow_admin/utils/extensions/string_extension.dart';
 import 'package:driver_flow_admin/utils/helpers/date_helper.dart';
@@ -18,40 +20,44 @@ class DocumentsPaymentStep extends HookConsumerWidget {
     final state = ref.watch(onboardingNotifierProvider);
     final notifier = ref.read(onboardingNotifierProvider.notifier);
 
-    final totalAmount = useMemoized(
-      () =>
-          (state.formData.pricePerSession ?? 0) *
-          (state.formData.sessionsCount ?? 0),
-      [state.formData.pricePerSession, state.formData.sessionsCount],
-    );
+    final totalAmount = state.totalAmount;
 
     final installmentsCount = useState<int>(1);
     final uploadedDocuments = useState<List<String>>([]);
 
-    final sessionDates = useMemoized(() async {
-      // final workingDays = orgProfile?.workingDays ?? [];
-      final orgProfile = await ref.read(profileDataProvider.future);
-      final workingDays = orgProfile?.workingDays ?? [];
-      final today = DateTime.now();
-      final sessionsCount = state.formData.sessionsCount ?? 0;
-      final startDate = DateTime(today.year, today.month, today.day);
-      return DateHelper.getSessionDates(startDate, sessionsCount, workingDays);
-    }, [sessionsCount, orgProfile?.workingDays]);
+    // Loaded async; starts empty and populates after profile fetch.
+    final sessionDates = useState<List<DateTime>>([]);
+
+    useEffect(() {
+      var cancelled = false;
+      ref.read(profileDataProvider.future).then((orgProfile) {
+        if (cancelled) return;
+        final workingDays = orgProfile?.workingDays ?? [];
+        final sessionsCount = state.formData.sessionsCount ?? 0;
+        final today = DateTime.now();
+        final startDate = DateTime(today.year, today.month, today.day);
+        sessionDates.value =
+            DateHelper.getSessionDates(startDate, sessionsCount, workingDays);
+      });
+      return () => cancelled = true;
+    }, [state.formData.sessionsCount]);
 
     final dueDateControllers = useMemoized(() {
       final controllers = <TextEditingController>[];
       for (int i = 0; i < installmentsCount.value; i++) {
         final controller = TextEditingController();
-        final dueDate = DateHelper.getInstallmentDueDate(
-          sessionDates,
-          i,
-          installmentsCount.value,
-        );
-        controller.text = DateFormat('MMM dd, yyyy').format(dueDate);
+        if (sessionDates.value.isNotEmpty) {
+          final dueDate = DateHelper.getInstallmentDueDate(
+            sessionDates.value,
+            i,
+            installmentsCount.value,
+          );
+          controller.text = DateFormat('MMM dd, yyyy').format(dueDate);
+        }
         controllers.add(controller);
       }
       return controllers;
-    }, [installmentsCount.value]);
+    }, [installmentsCount.value, sessionDates.value]);
 
     final amountControllers = useMemoized(() {
       final controllers = <TextEditingController>[];
@@ -83,7 +89,7 @@ class DocumentsPaymentStep extends HookConsumerWidget {
       installmentsCount: installmentsCount.value,
       dueDateControllers: dueDateControllers,
       amountControllers: amountControllers,
-      sessionDates: sessionDates,
+      sessionDates: sessionDates.value,
       uploadedDocuments: uploadedDocuments.value,
       onDocumentUploaded: (docName) {
         uploadedDocuments.value = [...uploadedDocuments.value, docName];
@@ -95,9 +101,9 @@ class DocumentsPaymentStep extends HookConsumerWidget {
         dueDateControllers[index].text = formattedDate;
       },
       onBack: () => notifier.previousStep(),
-      onSubmit: () {
+      onSubmit: () async {
         if (formKey.currentState?.validate() ?? false) {
-          notifier.submit();
+          await notifier.submit();
         }
       },
     );
@@ -597,7 +603,7 @@ class InstallmentRowItem extends StatelessWidget {
 
 class StepNavigationActions extends StatelessWidget {
   final VoidCallback onBack;
-  final VoidCallback onSubmit;
+  final FutureOr<void> Function() onSubmit;
 
   const StepNavigationActions({
     super.key,
@@ -627,21 +633,24 @@ class StepNavigationActions extends StatelessWidget {
             ),
           ),
         ),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue[600],
-            foregroundColor: Colors.white,
+        FilledLoaderButton(
+          onPressed: onSubmit,
+          style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: onSubmit,
-          icon: const Icon(Icons.check_circle_outline, size: 18),
-          label: const Text(
-            'Complete Onboarding',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check_circle_outline, size: 18),
+              SizedBox(width: 8),
+              Text(
+                'Complete Onboarding',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
         ),
       ],

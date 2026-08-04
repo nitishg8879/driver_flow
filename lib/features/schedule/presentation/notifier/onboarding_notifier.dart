@@ -9,16 +9,30 @@ part 'onboarding_notifier.g.dart';
 class OnboardingState {
   final int currentStep;
   final OnboardingFormData formData;
+  final bool isSuccess;
+  final String? error;
 
   const OnboardingState({
     this.currentStep = 0,
     this.formData = const OnboardingFormData(),
+    this.isSuccess = false,
+    this.error,
   });
 
-  OnboardingState copyWith({int? currentStep, OnboardingFormData? formData}) {
+  double get totalAmount =>
+      (formData.pricePerSession ?? 0) * (formData.sessionsCount ?? 0);
+
+  OnboardingState copyWith({
+    int? currentStep,
+    OnboardingFormData? formData,
+    bool? isSuccess,
+    String? error,
+  }) {
     return OnboardingState(
       currentStep: currentStep ?? this.currentStep,
       formData: formData ?? this.formData,
+      isSuccess: isSuccess ?? this.isSuccess,
+      error: error,
     );
   }
 }
@@ -99,7 +113,13 @@ class OnboardingNotifier extends _$OnboardingNotifier {
   }
 
   Future<void> submit() async {
-    // Add repository submission logic here
+    try {
+      // TODO: inject repository via ref.watch in build()
+      await Future.delayed(const Duration(seconds: 1)); // placeholder
+      state = state.copyWith(isSuccess: true);
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+    }
   }
 
   void reset() {

@@ -8,12 +8,22 @@ import 'personal_info_step.dart';
 import 'training_schedule_step.dart';
 
 class OnboardingStudentForm extends ConsumerWidget {
-  const OnboardingStudentForm({super.key});
+  final VoidCallback? onSuccess;
+
+  const OnboardingStudentForm({super.key, this.onSuccess});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(onboardingNotifierProvider);
     final notifier = ref.read(onboardingNotifierProvider.notifier);
+
+    ref.listen<OnboardingState>(onboardingNotifierProvider, (_, next) {
+      if (next.isSuccess) {
+        Navigator.of(context).pop();
+        onSuccess?.call();
+        notifier.reset();
+      }
+    });
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
