@@ -1,83 +1,121 @@
 import 'package:driver_flow_admin/core/di/service_locator.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_cubit.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
 import 'package:driver_flow_admin/features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import 'package:driver_flow_admin/features/vehicle_type/data/models/vehicle_type_model.dart';
 import 'package:driver_flow_admin/utils/components/async_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class TrainingScheduleStep extends StatefulWidget {
-  static final stateKey = GlobalKey<_TrainingScheduleStepState>();
+class TrainingScheduleStep extends HookConsumerWidget {
+  static final stateKey = GlobalKey();
 
   const TrainingScheduleStep({super.key});
 
   @override
-  State<TrainingScheduleStep> createState() => _TrainingScheduleStepState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formData = ref.watch(onboardingFormDataProvider);
+    final notifier = ref.read(onboardingStateProvider.notifier);
 
-class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController sessionsController;
-  late TextEditingController durationController;
-  late TextEditingController priceController;
-  late TextEditingController startDateController;
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final sessionsController = useTextEditingController(
+      text: formData.sessionsCount?.toString() ?? '',
+    );
+    final durationController = useTextEditingController(
+      text: formData.sessionDuration?.toString() ?? '',
+    );
+    final priceController = useTextEditingController(
+      text: formData.pricePerSession?.toString() ?? '',
+    );
+    final startDateController = useTextEditingController(
+      text: formData.courseStartDate != null
+          ? DateFormat('MMM dd, yyyy').format(formData.courseStartDate!)
+          : '',
+    );
 
-  VehicleTypeModel? _selectedVehicleType;
-  DateTime? _courseStartDate;
-  String _recurrence = 'Weekly';
+    final selectedVehicleType = useState<VehicleTypeModel?>(
+      formData.vehicleType,
+    );
+    final courseStartDate = useState<DateTime?>(formData.courseStartDate);
+    final recurrence = useState<String>(formData.recurrence ?? 'Weekly');
 
-  @override
-  void initState() {
-    super.initState();
-    sessionsController = TextEditingController();
-    durationController = TextEditingController();
-    priceController = TextEditingController();
-    startDateController = TextEditingController();
-    reInitalize();
-  }
-
-  @override
-  void dispose() {
-    sessionsController.dispose();
-    durationController.dispose();
-    priceController.dispose();
-    startDateController.dispose();
-    super.dispose();
-  }
-
-  void _onVehicleTypeChanged(VehicleTypeModel? vehicle) {
-    setState(() {
-      _selectedVehicleType = vehicle;
+    void onVehicleTypeChanged(VehicleTypeModel? vehicle) {
+      selectedVehicleType.value = vehicle;
       if (vehicle != null) {
         sessionsController.text = (vehicle.numberOfSessions).toString();
         durationController.text = (vehicle.sessionDurationMinutes).toString();
         priceController.text = (vehicle.pricePerSession).toStringAsFixed(2);
       }
-    });
-  }
-
-  void reInitalize() {
-    final formData = context.read<OnboardingCubit>().state.formData;
-    if (formData.vehicleType != null) {
-      setState(() {
-        _selectedVehicleType = formData.vehicleType;
-        sessionsController.text = formData.sessionsCount.toString();
-        durationController.text = formData.sessionDuration.toString();
-        priceController.text = formData.pricePerSession.toString();
-        _courseStartDate = formData.courseStartDate;
-        startDateController.text = DateFormat(
-          'MMM dd, yyyy',
-        ).format(_courseStartDate ?? DateTime.now());
-        _recurrence = formData.recurrence ?? 'Weekly';
-      });
     }
+
+    return _TrainingScheduleStepContent(
+      formKey: formKey,
+      sessionsController: sessionsController,
+      durationController: durationController,
+      priceController: priceController,
+      startDateController: startDateController,
+      selectedVehicleType: selectedVehicleType.value,
+      courseStartDate: courseStartDate.value,
+      recurrence: recurrence.value,
+      onVehicleTypeChanged: onVehicleTypeChanged,
+      onCourseStartDateChanged: (date) {
+        courseStartDate.value = date;
+        startDateController.text = DateFormat('MMM dd, yyyy').format(date);
+      },
+      onRecurrenceChanged: (value) => recurrence.value = value,
+      onBack: () => notifier.previousStep(),
+      onNext: () {
+        if (formKey.currentState?.validate() ?? false) {
+          notifier.updateTrainingScheduleInfo(
+            vehicleType: selectedVehicleType.value!,
+            sessionsCount: int.tryParse(sessionsController.text) ?? 0,
+            pricePerSession: double.tryParse(priceController.text) ?? 0.0,
+            sessionDuration: int.tryParse(durationController.text) ?? 0,
+            startDate: courseStartDate.value ?? DateTime.now(),
+            recurrence: recurrence.value,
+          );
+        }
+      },
+    );
   }
+}
+
+class _TrainingScheduleStepContent extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController sessionsController;
+  final TextEditingController durationController;
+  final TextEditingController priceController;
+  final TextEditingController startDateController;
+  final VehicleTypeModel? selectedVehicleType;
+  final DateTime? courseStartDate;
+  final String recurrence;
+  final Function(VehicleTypeModel?) onVehicleTypeChanged;
+  final Function(DateTime) onCourseStartDateChanged;
+  final Function(String) onRecurrenceChanged;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+
+  const _TrainingScheduleStepContent({
+    required this.formKey,
+    required this.sessionsController,
+    required this.durationController,
+    required this.priceController,
+    required this.startDateController,
+    required this.selectedVehicleType,
+    required this.courseStartDate,
+    required this.recurrence,
+    required this.onVehicleTypeChanged,
+    required this.onCourseStartDateChanged,
+    required this.onRecurrenceChanged,
+    required this.onBack,
+    required this.onNext,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -109,8 +147,8 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                   fetchItems: () =>
                       sl<VehicleTypeRepository>().getVehicleTypes(),
                   itemLabelBuilder: (vehicle) => vehicle.name,
-                  value: _selectedVehicleType,
-                  onChanged: _onVehicleTypeChanged,
+                  value: selectedVehicleType,
+                  onChanged: onVehicleTypeChanged,
                   labelText: 'Vehicle Type / Course',
                   validator: (value) {
                     if (value == null) {
@@ -221,19 +259,14 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                       onPressed: () async {
                         final selectedDate = await showDatePicker(
                           context: context,
-                          initialDate: _courseStartDate ?? DateTime.now(),
+                          initialDate: courseStartDate ?? DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime.now().add(
                             const Duration(days: 365),
                           ),
                         );
                         if (selectedDate != null) {
-                          setState(() {
-                            _courseStartDate = selectedDate;
-                            startDateController.text = DateFormat(
-                              'MMM dd, yyyy',
-                            ).format(selectedDate);
-                          });
+                          onCourseStartDateChanged(selectedDate);
                         }
                       },
                     ),
@@ -259,18 +292,17 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _recurrence = 'Weekly'),
+                              onTap: () => onRecurrenceChanged('Weekly'),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: _recurrence == 'Weekly'
+                                  color: recurrence == 'Weekly'
                                       ? Colors.blue[50]
                                       : Colors.transparent,
                                   border: Border.all(
-                                    color: _recurrence == 'Weekly'
+                                    color: recurrence == 'Weekly'
                                         ? Colors.blue[400]!
                                         : Colors.grey[300]!,
                                   ),
@@ -280,10 +312,10 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      _recurrence == 'Weekly'
+                                      recurrence == 'Weekly'
                                           ? Icons.check_circle
                                           : Icons.circle_outlined,
-                                      color: _recurrence == 'Weekly'
+                                      color: recurrence == 'Weekly'
                                           ? Colors.blue[600]
                                           : Colors.grey[600],
                                       size: 18,
@@ -298,18 +330,17 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _recurrence = 'One-time'),
+                              onTap: () => onRecurrenceChanged('One-time'),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: _recurrence == 'One-time'
+                                  color: recurrence == 'One-time'
                                       ? Colors.blue[50]
                                       : Colors.transparent,
                                   border: Border.all(
-                                    color: _recurrence == 'One-time'
+                                    color: recurrence == 'One-time'
                                         ? Colors.blue[400]!
                                         : Colors.grey[300]!,
                                   ),
@@ -319,10 +350,10 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      _recurrence == 'One-time'
+                                      recurrence == 'One-time'
                                           ? Icons.check_circle
                                           : Icons.circle_outlined,
-                                      color: _recurrence == 'One-time'
+                                      color: recurrence == 'One-time'
                                           ? Colors.blue[600]
                                           : Colors.grey[600],
                                       size: 18,
@@ -351,26 +382,10 @@ class _TrainingScheduleStepState extends State<TrainingScheduleStep> {
                   backgroundColor: Colors.grey[300],
                   foregroundColor: Colors.black87,
                 ),
-                onPressed: () => context.read<OnboardingCubit>().previousStep(),
+                onPressed: onBack,
                 child: const Text('Back'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.read<OnboardingCubit>().updateTrainingScheduleInfo(
-                      vehicleType: _selectedVehicleType!,
-                      sessionsCount: int.tryParse(sessionsController.text) ?? 0,
-                      pricePerSession:
-                          double.tryParse(priceController.text) ?? 0.0,
-                      sessionDuration:
-                          int.tryParse(durationController.text) ?? 0,
-                      startDate: _courseStartDate ?? DateTime.now(),
-                      recurrence: _recurrence,
-                    );
-                  }
-                },
-                child: const Text('Next'),
-              ),
+              ElevatedButton(onPressed: onNext, child: const Text('Next')),
             ],
           ),
         ],

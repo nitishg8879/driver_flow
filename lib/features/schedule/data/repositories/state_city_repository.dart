@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../utils/helpers/app_logger.dart';
 
@@ -63,3 +64,7 @@ class StateCityRepositoryImpl implements StateCityRepository {
     }
   }
 }
+
+final stateCityRepositoryProvider = Provider<StateCityRepository>(
+  (ref) => StateCityRepositoryImpl(),
+);

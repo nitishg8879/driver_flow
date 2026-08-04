@@ -44,9 +44,12 @@ dependencies:
   data_table_2: ^2.7.2
   syncfusion_flutter_calendar: ^28.1.38
   kalender: ^0.14.3
-  flutter_riverpod: ^2.6.1
+  # flutter_riverpod: ^2.6.1
+  # riverpod: ^2.6.1
   hooks_riverpod: ^2.6.1
   flutter_hooks: ^0.21.3+1
+  riverpod_annotation: ^2.6.1
+  
 
 dev_dependencies:
   flutter_test:
@@ -57,11 +60,7 @@ dev_dependencies:
   build_runner: ^2.4.15
   freezed: ^2.5.7
   json_serializable: ^6.8.0
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
+  riverpod_generator: ^2.6.1
 flutter:
 
   # The following line ensures that the Material Icons font is

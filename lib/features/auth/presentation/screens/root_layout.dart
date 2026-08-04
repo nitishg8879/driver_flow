@@ -1,7 +1,11 @@
+import 'package:driver_flow_admin/core/router/app_pages.dart';
+import 'package:driver_flow_admin/features/auth/data/provider/auth_provider.dart';
+import 'package:driver_flow_admin/features/auth/presentation/models/menu_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class RootLayout extends StatelessWidget {
+class RootLayout extends ConsumerWidget {
   final Widget child;
 
   const RootLayout({Key? key, required this.child}) : super(key: key);
@@ -19,100 +23,65 @@ class RootLayout extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = _calculateSelectedIndex(context);
+    final menuItems = ref.watch(menuItemsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white, // Background for the main app area
+      backgroundColor: Colors.white,
       body: Row(
         children: [
           // 1. FIXED SIDEBAR ON THE LEFT
-          _buildFixedSidebar(context, selectedIndex),
+          _buildFixedSidebar(context, ref, selectedIndex, menuItems),
 
           // 2. MAIN CONTENT AREA ON THE RIGHT
-          Expanded(
-            child: child, // go_router injects the active screen here
-          ),
+          Expanded(child: child),
         ],
       ),
     );
   }
 
-  Widget _buildFixedSidebar(BuildContext context, int selectedIndex) {
+  Widget _buildFixedSidebar(
+    BuildContext context,
+    WidgetRef ref,
+    int selectedIndex,
+    AsyncValue<List<MenuItem>> menuItems,
+  ) {
     return Container(
-      width: 260, // Fixed width for the side menu
-      color: const Color(0xFFF4F5F7), // Sleek grey background
+      width: 260,
+      color: const Color(0xFFF4F5F7),
       child: Column(
         children: [
-          // HEADER
-          // _buildHeader(),
-
           // SCROLLABLE TABS
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              children: [
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.dashboard_rounded,
-                  title: 'Dashboard',
-                  route: '/dashboard',
-                  isSelected: selectedIndex == 0,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.people_alt_rounded,
-                  title: 'Users',
-                  route: '/users',
-                  isSelected: selectedIndex == 1,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.two_wheeler_rounded,
-                  title: 'Vehicle Types',
-                  route: '/vehicle-types',
-                  isSelected: selectedIndex == 2,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.calendar_month_rounded,
-                  title: 'Schedule',
-                  route: '/schedule',
-                  isSelected: selectedIndex == 3,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.label_rounded,
-                  title: 'Tags',
-                  route: '/tags',
-                  isSelected: selectedIndex == 4,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.payment_rounded,
-                  title: 'Payments',
-                  route: '/payments',
-                  isSelected: selectedIndex == 5,
-                ),
-                const SizedBox(height: 8),
-                _buildNavItem(
-                  context: context,
-                  icon: Icons.business_rounded,
-                  title: 'Profile',
-                  route: '/profile',
-                  isSelected: selectedIndex == 6,
-                ),
-              ],
+            child: menuItems.when(
+              data: (items) {
+                return ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 24,
+                  ),
+                  children: [
+                    for (int i = 0; i < items.length; i++) ...[
+                      _buildNavItem(
+                        context: context,
+                        icon: items[i].icon,
+                        title: items[i].title,
+                        route: items[i].route,
+                        isSelected: selectedIndex == items[i].index,
+                      ),
+                      if (i < items.length - 1) const SizedBox(height: 8),
+                    ],
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text('Error: $error')),
             ),
           ),
 
           // FOOTER
-          _buildFooter(context),
+          _buildFooter(context, ref),
         ],
       ),
     );
@@ -147,27 +116,24 @@ class RootLayout extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter(BuildContext context) {
+  Widget _buildFooter(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           _buildNavItem(
             context: context,
-            icon: Icons.settings_rounded,
-            title: 'Settings',
-            route: '/settings',
-            isSelected: false,
-          ),
-          const SizedBox(height: 8),
-          _buildNavItem(
-            context: context,
             icon: Icons.logout_rounded,
             title: 'Logout',
-            route:
-                '/login', // Route to login screen or trigger your logout logic
+            route: Routes.login,
             isSelected: false,
             isDanger: true,
+            onTap: () async {
+              await ref.read(logoutProvider.future);
+              if (context.mounted) {
+                context.go(Routes.login);
+              }
+            },
           ),
         ],
       ),
@@ -181,11 +147,10 @@ class RootLayout extends StatelessWidget {
     required String route,
     required bool isSelected,
     bool isDanger = false,
+    VoidCallback? onTap,
   }) {
     final activeColor = Colors.blueAccent;
-    final defaultColor = const Color(
-      0xFF5A5C69,
-    ); // Dark grey text for unselected
+    final defaultColor = const Color(0xFF5A5C69);
     final dangerColor = Colors.redAccent;
 
     final itemColor = isSelected
@@ -198,14 +163,14 @@ class RootLayout extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12), // Rounded selection effect
-        onTap: () => context.go(route),
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap ?? () => context.go(route),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(12), // Rounded tabs
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [

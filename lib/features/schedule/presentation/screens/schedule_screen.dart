@@ -1,7 +1,4 @@
 import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_student_form.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/widgets/schedule_data_source.dart';
-import 'package:driver_flow_admin/features/user/data/models/user_model.dart';
-import 'package:driver_flow_admin/features/user/data/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,8 +8,6 @@ import '../../../../utils/components/capsule_tab_bar.dart';
 import '../../../../utils/components/date_range_picker_button.dart';
 import '../../../../utils/components/page_header.dart';
 import '../../../../utils/constants/app_enums.dart';
-import '../../data/models/schedule_model.dart';
-import '../cubit/schedule_cubit.dart';
 import '../cubit/onboarding_cubit.dart';
 import '../widgets/schedule_stats_row.dart';
 
@@ -33,17 +28,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ScheduleCubit>().loadAll();
   }
 
-  void _applyFilters() {
-    context.read<ScheduleCubit>().applyFilters(
-      // instructorId: _selectedInstructor?.id,
-      // studentId: _selectedStudent?.id,
-      status: _selectedStatus,
-      dateRange: _dateRange,
-    );
-  }
+  void _applyFilters() {}
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +54,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 children: [
                   _buildFilterBar(context),
                   const SizedBox(height: 24),
-                  const ScheduleStatsRow(),
+                  // const ScheduleStatsRow(),
                   const SizedBox(height: 20),
-                  _buildContent(),
+                  // _buildContent(),
                 ],
               ),
             ),
@@ -80,7 +67,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Widget _buildFilterBar(BuildContext context) {
-    final cubit = context.read<ScheduleCubit>();
+    // final cubit = context.read<ScheduleCubit>();
     return Wrap(
       spacing: 12,
       runSpacing: 12,
@@ -148,7 +135,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 create: (context) => sl<OnboardingCubit>(),
                 child: OnboardingStudentForm(
                   onSuccess: () {
-                    context.read<ScheduleCubit>().loadAll();
+                    // context.read<ScheduleCubit>().loadAll();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Lesson booked successfully!'),
@@ -179,55 +166,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           onChanged: (i) => setState(() => _tabIndex = i),
         ),
       ],
-    );
-  }
-
-  Widget _buildContent() {
-    return SizedBox(
-      height: 700,
-      child: BlocBuilder<ScheduleCubit, ScheduleState>(
-        builder: (context, state) {
-          if (state is ScheduleLoading) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(60),
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-
-          if (state is ScheduleError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(40),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(state.message),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => context.read<ScheduleCubit>().loadAll(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (state is ScheduleLoaded) {
-            // return Expanded(child: StudentsSessionTable());
-          }
-
-          return const SizedBox.shrink();
-        },
-      ),
     );
   }
 }

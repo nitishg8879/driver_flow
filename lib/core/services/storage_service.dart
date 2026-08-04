@@ -1,4 +1,6 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../utils/helpers/app_logger.dart';
 
 /// Singleton service for local storage
@@ -9,9 +11,16 @@ class StorageService {
 
   StorageService._();
 
-  static Future<StorageService> getInstance() async {
+  static Future<StorageService> init() async {
     _instance ??= StorageService._();
     _preferences ??= await SharedPreferences.getInstance();
+    return _instance!;
+  }
+
+  static StorageService getInstance() {
+    if (_instance == null || _preferences == null) {
+      throw Exception('StorageService not initialized. Call init() first.');
+    }
     return _instance!;
   }
 
@@ -56,9 +65,14 @@ class StorageService {
   Future<void> clearAll() async {
     try {
       await _preferences?.clear();
+      await clearLoginState();
       _logger.info('All storage data cleared');
     } catch (e, stackTrace) {
       _logger.error('Failed to clear storage', e, stackTrace);
     }
   }
 }
+
+final storageServiceProvider = Provider<StorageService>((ref) {
+  return StorageService.getInstance();
+});

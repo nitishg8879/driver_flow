@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/attachment_model.dart';
 import '../../../../core/services/attachment_service.dart';
-import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../../core/services/storage_service.dart';
 import '../../../../utils/components/attachment_picker_field.dart';
 import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
@@ -81,11 +80,9 @@ class _UserFormDialogState extends State<UserFormDialog> {
     if (_selectedRole == null) return;
 
     setState(() => _isSaving = true);
-    final authState = context.read<AuthBloc>().state;
-    final currentUserId = authState.maybeWhen(
-      authenticated: (user) => user.id,
-      orElse: () => null,
-    );
+    // Get current user ID from storage service
+    final storageService = sl<StorageService>();
+    final currentUserId = storageService.userId;
 
     final model = (widget.existing ?? const UserModel()).copyWith(
       name: _nameController.text.trim(),

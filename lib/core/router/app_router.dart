@@ -76,12 +76,7 @@ class AppRouter {
             path: Routes.schedule,
             name: 'schedule',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
-                child: BlocProvider(
-                  create: (context) => sl<ScheduleCubit>(),
-                  child: const ScheduleScreen(),
-                ),
-              );
+              return NoTransitionPage(child: const ScheduleScreen());
             },
           ),
           GoRoute(

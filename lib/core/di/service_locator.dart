@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import '../../features/auth/data/repositories/auth_repository.dart';
 import '../../features/user/data/repositories/user_repository.dart';
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/schedule/data/repositories/schedule_repository.dart';
 import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
 import '../../features/vehicle_type/data/repositories/vehicle_type_repository.dart';
@@ -66,9 +65,8 @@ Future<void> setupServiceLocator() async {
   );
 
   // Blocs / Cubits
-  sl.registerFactory(() => AuthBloc(authRepository: sl()));
+  // AuthBloc removed - using Riverpod providers instead
   sl.registerFactory(() => VehicleTypeCubit(repository: sl()));
-  sl.registerFactory(() => ScheduleCubit(repository: sl()));
   sl.registerFactory(() => PaymentCubit(repository: sl()));
   sl.registerFactory(() => ProfileCubit(repository: sl()));
   sl.registerFactory(() => OnboardingCubit(repository: sl()));

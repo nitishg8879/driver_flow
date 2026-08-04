@@ -1,71 +1,100 @@
 import 'package:driver_flow_admin/core/di/service_locator.dart';
 import 'package:driver_flow_admin/features/schedule/data/repositories/state_city_repository.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_cubit.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
 import 'package:driver_flow_admin/utils/components/async_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class PersonalInfoStep extends StatefulWidget {
-  static final stateKey = GlobalKey<_PersonalInfoStepState>();
+class PersonalInfoStep extends HookConsumerWidget {
+  static final stateKey = GlobalKey();
 
   const PersonalInfoStep({super.key});
 
   @override
-  State<PersonalInfoStep> createState() => _PersonalInfoStepState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formData = ref.watch(onboardingFormDataProvider);
+    final notifier = ref.read(onboardingStateProvider.notifier);
+
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final fullNameController = useTextEditingController(
+      text: formData.fullName ?? '',
+    );
+    final phoneController = useTextEditingController(
+      text: formData.phoneNumber ?? '',
+    );
+    final emailController = useTextEditingController(
+      text: formData.email ?? '',
+    );
+    final streetController = useTextEditingController(
+      text: formData.streetAddress ?? '',
+    );
+    final zipController = useTextEditingController(
+      text: formData.zipCode ?? '',
+    );
+
+    final selectedState = useState<String?>(formData.state);
+    final selectedCity = useState<String?>(formData.city);
+
+    return _PersonalInfoStepContent(
+      formKey: formKey,
+      fullNameController: fullNameController,
+      phoneController: phoneController,
+      emailController: emailController,
+      streetController: streetController,
+      zipController: zipController,
+      selectedState: selectedState.value,
+      selectedCity: selectedCity.value,
+      onStateChanged: (value) => selectedState.value = value,
+      onCityChanged: (value) => selectedCity.value = value,
+      onNext: () {
+        if (formKey.currentState?.validate() ?? false) {
+          notifier.updatePersonalInfo(
+            fullName: fullNameController.text,
+            phoneNumber: phoneController.text,
+            email: emailController.text,
+            streetAddress: streetController.text,
+            states: selectedState.value ?? '',
+            city: selectedCity.value ?? '',
+            zipCode: zipController.text,
+          );
+        }
+      },
+    );
+  }
 }
 
-class _PersonalInfoStepState extends State<PersonalInfoStep> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController fullNameController;
-  late TextEditingController phoneController;
-  late TextEditingController emailController;
-  late TextEditingController streetController;
-  late TextEditingController zipController;
-  String? _selectedState;
-  String? _selectedCities;
+class _PersonalInfoStepContent extends ConsumerWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController fullNameController;
+  final TextEditingController phoneController;
+  final TextEditingController emailController;
+  final TextEditingController streetController;
+  final TextEditingController zipController;
+  final String? selectedState;
+  final String? selectedCity;
+  final Function(String?) onStateChanged;
+  final Function(String?) onCityChanged;
+  final VoidCallback onNext;
+
+  const _PersonalInfoStepContent({
+    required this.formKey,
+    required this.fullNameController,
+    required this.phoneController,
+    required this.emailController,
+    required this.streetController,
+    required this.zipController,
+    required this.selectedState,
+    required this.selectedCity,
+    required this.onStateChanged,
+    required this.onCityChanged,
+    required this.onNext,
+  });
 
   @override
-  void initState() {
-    super.initState();
-    fullNameController = TextEditingController();
-    phoneController = TextEditingController();
-    emailController = TextEditingController();
-    streetController = TextEditingController();
-    zipController = TextEditingController();
-    reInitalize();
-  }
-
-  void reInitalize() {
-    final formData = context.read<OnboardingCubit>().state.formData;
-    fullNameController.text = formData.fullName ?? '';
-    phoneController.text = formData.phoneNumber ?? '';
-    emailController.text = formData.email ?? '';
-    streetController.text = formData.streetAddress ?? '';
-    zipController.text = formData.zipCode ?? '';
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _selectedState = formData.state;
-        _selectedCities = formData.city;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    fullNameController.dispose();
-    phoneController.dispose();
-    emailController.dispose();
-    streetController.dispose();
-    // cityController.dispose();
-    // stateController.dispose();
-    zipController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Form(
-      key: _formKey,
+      key: formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -152,15 +181,14 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
                       children: [
                         Expanded(
                           child: AsyncDropdown<String>(
-                            fetchItems: () =>
-                                sl<StateCityRepository>().getStates(),
+                            fetchItems: () => ref
+                                .read(stateCityRepositoryProvider)
+                                .getStates(),
                             itemLabelBuilder: (state) => state,
-                            value: _selectedState,
+                            value: selectedState,
                             onChanged: (value) {
-                              setState(() {
-                                _selectedState = value;
-                                _selectedCities = null;
-                              });
+                              onStateChanged(value);
+                              onCityChanged(null);
                             },
                             labelText: 'State',
                             validator: (value) {
@@ -173,7 +201,7 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: _selectedState == null
+                          child: selectedState == null
                               ? DropdownButtonFormField<String>(
                                   decoration: const InputDecoration(
                                     labelText: 'City',
@@ -190,14 +218,10 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
                                 )
                               : AsyncDropdown<String>(
                                   fetchItems: () => sl<StateCityRepository>()
-                                      .getCities(_selectedState!),
+                                      .getCities(selectedState!),
                                   itemLabelBuilder: (city) => city,
-                                  value: _selectedCities,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedCities = value;
-                                    });
-                                  },
+                                  value: selectedCity,
+                                  onChanged: onCityChanged,
                                   labelText: 'City',
                                   validator: (value) {
                                     if (value?.isEmpty ?? true) {
@@ -290,22 +314,7 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancel'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.read<OnboardingCubit>().updatePersonalInfo(
-                      fullName: fullNameController.text,
-                      phoneNumber: phoneController.text,
-                      email: emailController.text,
-                      streetAddress: streetController.text,
-                      states: _selectedState ?? '',
-                      city: _selectedCities ?? '',
-                      zipCode: zipController.text,
-                    );
-                  }
-                },
-                child: const Text('Next'),
-              ),
+              ElevatedButton(onPressed: onNext, child: const Text('Next')),
             ],
           ),
         ],
