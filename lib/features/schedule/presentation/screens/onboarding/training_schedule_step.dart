@@ -1,8 +1,9 @@
-import 'package:driver_flow_admin/core/di/service_locator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
-import 'package:driver_flow_admin/features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import 'package:driver_flow_admin/features/vehicle_type/data/models/vehicle_type_model.dart';
+import 'package:driver_flow_admin/features/vehicle_type/data/repositories/vehicle_type_repository.dart';
 import 'package:driver_flow_admin/utils/components/async_dropdown.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -144,8 +145,13 @@ class _TrainingScheduleStepContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 AsyncDropdown<VehicleTypeModel>(
-                  fetchItems: () =>
-                      sl<VehicleTypeRepository>().getVehicleTypes(),
+                  fetchItems: () async {
+                    final _data = await VehicleTypeRepositoryImpl(
+                      firestore: FirebaseFirestore.instance,
+                      storage: FirebaseStorage.instance,
+                    ).getVehicleTypes();
+                    return _data.items;
+                  },
                   itemLabelBuilder: (vehicle) => vehicle.name,
                   value: selectedVehicleType,
                   onChanged: onVehicleTypeChanged,

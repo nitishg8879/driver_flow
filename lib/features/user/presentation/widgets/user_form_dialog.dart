@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../core/di/service_locator.dart';
-import '../../../../core/models/attachment_model.dart';
-import '../../../../core/services/attachment_service.dart';
-import '../../../../core/services/storage_service.dart';
-import '../../../../utils/components/attachment_picker_field.dart';
-import '../../../../utils/components/custom_button.dart';
+import '../../../../utils/components/app_loader_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/helpers/app_logger.dart';
@@ -13,26 +9,20 @@ import '../../../../utils/helpers/validators.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/user_repository.dart';
 
-class UserFormDialog extends StatefulWidget {
+class UserFormDialog extends ConsumerStatefulWidget {
   final UserModel? existing;
 
   const UserFormDialog({super.key, this.existing});
 
   @override
-  State<UserFormDialog> createState() => _UserFormDialogState();
+  ConsumerState<UserFormDialog> createState() => _UserFormDialogState();
 }
 
-class _UserFormDialogState extends State<UserFormDialog> {
+class _UserFormDialogState extends ConsumerState<UserFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
-  // late final TextEditingController _licenseController;
-  // VehicleTypeModel? _selectedVehicleType;
   UserRole? _selectedRole;
-  List<AttachmentModel> _initialAttachments = [];
-  List<AttachmentModel> _existingAttachments = [];
-  List<PendingAttachment> _pendingAttachments = [];
-  bool _isSaving = false;
   final _logger = AppLogger('UserFormDialog');
 
   bool get _isEditMode => widget.existing != null;
@@ -41,31 +31,8 @@ class _UserFormDialogState extends State<UserFormDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.existing?.name);
-    _phoneController = TextEditingController(
-      text: widget.existing?.phoneNumber,
-    );
+    _phoneController = TextEditingController(text: widget.existing?.phoneNumber);
     _selectedRole = widget.existing?.role ?? UserRole.student;
-
-    if (_selectedRole == UserRole.student && _isEditMode) {
-      _loadExistingAttachments();
-    }
-  }
-
-  Future<void> _loadExistingAttachments() async {
-    try {
-      final attachments = await sl<AttachmentService>().getAttachmentsByOwner(
-        ownerId: widget.existing!.id!,
-        source: AttachmentSource.student,
-      );
-      if (mounted) {
-        setState(() {
-          _initialAttachments = attachments;
-          _existingAttachments = attachments;
-        });
-      }
-    } catch (e, stackTrace) {
-      _logger.error('Failed to load user attachments', e, stackTrace);
-    }
   }
 
   @override
@@ -79,67 +46,28 @@ class _UserFormDialogState extends State<UserFormDialog> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRole == null) return;
 
-    setState(() => _isSaving = true);
-    // Get current user ID from storage service
-    final storageService = sl<StorageService>();
-    final currentUserId = storageService.userId;
-
     final model = (widget.existing ?? const UserModel()).copyWith(
       name: _nameController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
       role: _selectedRole,
     );
 
-    final repository = sl<UserRepository>();
-    UserModel? savedUser;
     try {
-      savedUser = _isEditMode
-          ? await repository.updateUser(model)
-          : await repository.createUser(model);
+      final repo = ref.read(userRepositoryProvider);
+      _isEditMode
+          ? await repo.updateUser(model)
+          : await repo.createUser(model);
     } catch (e, stackTrace) {
       _logger.error('Failed to save user', e, stackTrace);
-      if (mounted) setState(() => _isSaving = false);
-      return;
-    }
-
-    if (savedUser?.id == null) {
-      if (mounted) setState(() => _isSaving = false);
-      return;
-    }
-
-    final userId = savedUser!.id!;
-    if (_selectedRole == UserRole.student && currentUserId != null) {
-      final attachmentService = sl<AttachmentService>();
-
-      for (final pending in _pendingAttachments) {
-        try {
-          await attachmentService.uploadAttachment(
-            bytes: pending.bytes,
-            fileName: pending.fileName,
-            fileType: pending.fileType,
-            source: AttachmentSource.student,
-            ownerId: userId,
-            uploadedBy: currentUserId,
-          );
-        } catch (e, stackTrace) {
-          _logger.error('Failed to upload user attachment', e, stackTrace);
-        }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
       }
-
-      final removed = _initialAttachments.where(
-        (initial) => !_existingAttachments.any((a) => a.id == initial.id),
-      );
-      for (final attachment in removed) {
-        try {
-          await attachmentService.deleteAttachment(attachment);
-        } catch (e, stackTrace) {
-          _logger.error('Failed to delete user attachment', e, stackTrace);
-        }
-      }
+      return;
     }
 
     if (!mounted) return;
-    setState(() => _isSaving = false);
     Navigator.of(context).pop(true);
   }
 
@@ -196,14 +124,6 @@ class _UserFormDialogState extends State<UserFormDialog> {
                       value == null ? 'Please select a role' : null,
                 ),
 
-                const SizedBox(height: 16),
-                AttachmentPickerField(
-                  initialAttachments: _existingAttachments,
-                  onChanged: (existing, pending) {
-                    _existingAttachments = existing;
-                    _pendingAttachments = pending;
-                  },
-                ),
               ],
             ),
           ),
@@ -211,14 +131,12 @@ class _UserFormDialogState extends State<UserFormDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
+          onPressed: () => Navigator.of(context).pop(false),
           child: const Text('Cancel'),
         ),
-        CustomButton(
-          text: 'Save',
-          isLoading: _isSaving,
-          onPressed: _isSaving ? null : _submit,
-          width: 100,
+        FilledLoaderButton(
+          onPressed: _submit,
+          child: const Text('Save'),
         ),
       ],
     );

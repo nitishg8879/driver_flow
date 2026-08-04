@@ -1,12 +1,11 @@
-import 'package:driver_flow_admin/core/di/service_locator.dart';
-import 'package:driver_flow_admin/features/schedule/data/repositories/onboarding_repository.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_notifier.dart';
-import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_state.dart';
 import 'package:driver_flow_admin/features/schedule/data/models/onboarding_form_data.dart';
+import 'package:driver_flow_admin/features/schedule/data/repositories/onboarding_repository.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/cubit/onboarding_state.dart';
+import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
-  return sl<OnboardingRepository>();
+  return OnboardingRepositoryImpl();
 });
 
 final onboardingStateProvider =

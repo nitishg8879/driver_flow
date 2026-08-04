@@ -27,12 +27,7 @@ mixin _$UserModel {
   String? get nameLower => throw _privateConstructorUsedError;
   UserRole? get role => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
-  String? get profileImageUrl =>
-      throw _privateConstructorUsedError; // Student-specific fields
-  // String? vehicleTypeId,
-  // String? vehicleTypeName,
-  // Instructor-specific fields
-  // String? licenseNumber,
+  String? get profileImageUrl => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
@@ -268,11 +263,6 @@ class _$UserModelImpl implements _UserModel {
   final String? phoneNumber;
   @override
   final String? profileImageUrl;
-  // Student-specific fields
-  // String? vehicleTypeId,
-  // String? vehicleTypeName,
-  // Instructor-specific fields
-  // String? licenseNumber,
   @override
   @JsonKey()
   final bool isActive;
@@ -369,11 +359,7 @@ abstract class _UserModel implements UserModel {
   @override
   String? get phoneNumber;
   @override
-  String? get profileImageUrl; // Student-specific fields
-  // String? vehicleTypeId,
-  // String? vehicleTypeName,
-  // Instructor-specific fields
-  // String? licenseNumber,
+  String? get profileImageUrl;
   @override
   bool get isActive;
   @override

@@ -1,15 +1,14 @@
+import 'package:driver_flow_admin/features/schedule/data/repositories/onboarding_repository.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_student_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/service_locator.dart';
 import '../../../../utils/components/async_dropdown.dart';
 import '../../../../utils/components/capsule_tab_bar.dart';
 import '../../../../utils/components/date_range_picker_button.dart';
 import '../../../../utils/components/page_header.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../cubit/onboarding_cubit.dart';
-import '../widgets/schedule_stats_row.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -132,7 +131,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               context: context,
               barrierDismissible: false,
               builder: (context) => BlocProvider(
-                create: (context) => sl<OnboardingCubit>(),
+                create: (context) =>
+                    OnboardingCubit(repository: OnboardingRepositoryImpl()),
                 child: OnboardingStudentForm(
                   onSuccess: () {
                     // context.read<ScheduleCubit>().loadAll();

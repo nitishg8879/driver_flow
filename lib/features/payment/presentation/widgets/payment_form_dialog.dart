@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/attachment_model.dart';
-import '../../../../core/services/attachment_service.dart';
-import '../../../../utils/components/attachment_picker_field.dart';
 import '../../../../utils/components/async_dropdown.dart';
+import '../../../../utils/components/attachment_picker_field.dart';
 import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
 import '../../../../utils/components/searchable_async_dropdown.dart';
 import '../../../../utils/constants/app_enums.dart';
 import '../../../user/data/models/user_model.dart';
-import '../../../user/data/repositories/user_repository.dart';
 import '../../data/models/payment_model.dart';
-import '../cubit/payment_cubit.dart';
 
 class PaymentFormDialog extends StatefulWidget {
   final PaymentModel? existing;
@@ -90,96 +85,96 @@ class _PaymentFormDialogState extends State<PaymentFormDialog> {
   }
 
   Future<void> _submit() async {
-    if (_selectedStudent == null) {
-      setState(() => _errorMessage = 'Please select a student');
-      return;
-    }
+    // if (_selectedStudent == null) {
+    //   setState(() => _errorMessage = 'Please select a student');
+    //   return;
+    // }
 
-    if (_txnIdController.text.trim().isEmpty) {
-      setState(() => _errorMessage = 'TXN ID cannot be empty');
-      return;
-    }
+    // if (_txnIdController.text.trim().isEmpty) {
+    //   setState(() => _errorMessage = 'TXN ID cannot be empty');
+    //   return;
+    // }
 
-    if (_amountController.text.trim().isEmpty) {
-      setState(() => _errorMessage = 'Please enter an amount');
-      return;
-    }
+    // if (_amountController.text.trim().isEmpty) {
+    //   setState(() => _errorMessage = 'Please enter an amount');
+    //   return;
+    // }
 
-    final amount = double.tryParse(_amountController.text.trim());
-    if (amount == null || amount <= 0) {
-      setState(() => _errorMessage = 'Please enter a valid amount');
-      return;
-    }
+    // final amount = double.tryParse(_amountController.text.trim());
+    // if (amount == null || amount <= 0) {
+    //   setState(() => _errorMessage = 'Please enter a valid amount');
+    //   return;
+    // }
 
-    setState(() {
-      _isSaving = true;
-      _errorMessage = null;
-    });
+    // setState(() {
+    //   _isSaving = true;
+    //   _errorMessage = null;
+    // });
 
-    try {
-      // Upload pending attachments using AttachmentService
-      final attachmentService = sl<AttachmentService>();
-      final uploadedAttachments = <AttachmentModel>[];
+    // try {
+    //   // Upload pending attachments using AttachmentService
+    //   final attachmentService = sl<AttachmentService>();
+    //   final uploadedAttachments = <AttachmentModel>[];
 
-      for (final pending in _pendingAttachments) {
-        final uploaded = await attachmentService.uploadAttachment(
-          bytes: pending.bytes,
-          fileName: pending.fileName,
-          fileType: pending.fileType,
-          source: AttachmentSource.payment,
-          ownerId: _selectedStudent!.id!,
-          uploadedBy: 'admin', // TODO: Get from auth user
-        );
-        uploadedAttachments.add(uploaded);
-      }
+    //   for (final pending in _pendingAttachments) {
+    //     final uploaded = await attachmentService.uploadAttachment(
+    //       bytes: pending.bytes,
+    //       fileName: pending.fileName,
+    //       fileType: pending.fileType,
+    //       source: AttachmentSource.payment,
+    //       ownerId: _selectedStudent!.id!,
+    //       uploadedBy: 'admin', // TODO: Get from auth user
+    //     );
+    //     uploadedAttachments.add(uploaded);
+    //   }
 
-      final cubit = context.read<PaymentCubit>();
-      final allAttachmentUrls = [
-        ..._existingAttachments.map((a) => a.url),
-        ...uploadedAttachments.map((a) => a.url),
-      ];
+    //   final cubit = context.read<PaymentCubit>();
+    //   final allAttachmentUrls = [
+    //     ..._existingAttachments.map((a) => a.url),
+    //     ...uploadedAttachments.map((a) => a.url),
+    //   ];
 
-      final model =
-          (widget.existing ??
-                  PaymentModel(
-                    txnId: '',
-                    studentId: '',
-                    studentName: '',
-                    amount: 0,
-                    txnDate: _txnDate,
-                  ))
-              .copyWith(
-                txnId: _txnIdController.text.trim(),
-                studentId: _selectedStudent!.id!,
-                studentName: _selectedStudent!.name ?? '',
-                amount: amount,
-                txnType: _txnType,
-                txnDate: _txnDate,
-                tags: _selectedTagIds,
-                attachments: allAttachmentUrls,
-              );
+    //   final model =
+    //       (widget.existing ??
+    //               PaymentModel(
+    //                 txnId: '',
+    //                 studentId: '',
+    //                 studentName: '',
+    //                 amount: 0,
+    //                 txnDate: _txnDate,
+    //               ))
+    //           .copyWith(
+    //             txnId: _txnIdController.text.trim(),
+    //             studentId: _selectedStudent!.id!,
+    //             studentName: _selectedStudent!.name ?? '',
+    //             amount: amount,
+    //             txnType: _txnType,
+    //             txnDate: _txnDate,
+    //             tags: _selectedTagIds,
+    //             attachments: allAttachmentUrls,
+    //           );
 
-      final error = _isEditMode
-          ? await cubit.updatePayment(model)
-          : await cubit.createPayment(model);
+    //   final error = _isEditMode
+    //       ? await cubit.updatePayment(model)
+    //       : await cubit.createPayment(model);
 
-      if (!mounted) return;
+    //   if (!mounted) return;
 
-      if (error != null) {
-        setState(() {
-          _errorMessage = error;
-          _isSaving = false;
-        });
-      } else {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = 'Failed to upload attachments: $e';
-        _isSaving = false;
-      });
-    }
+    //   if (error != null) {
+    //     setState(() {
+    //       _errorMessage = error;
+    //       _isSaving = false;
+    //     });
+    //   } else {
+    //     Navigator.pop(context);
+    //   }
+    // } catch (e) {
+    //   if (!mounted) return;
+    //   setState(() {
+    //     _errorMessage = 'Failed to upload attachments: $e';
+    //     _isSaving = false;
+    //   });
+    // }
   }
 
   @override
@@ -222,10 +217,15 @@ class _PaymentFormDialogState extends State<PaymentFormDialog> {
                   }
                 });
               },
-              searchItems: (query) => sl<UserRepository>().searchActiveByRole(
-                role: UserRole.student,
-                query: query,
-              ),
+              searchItems: (query) {
+                //   return sl<UserRepository>().searchActiveByRole(
+                //   role: UserRole.student,
+                //   query: query,
+                // );
+                return Future.value(
+                  [],
+                ); // Placeholder for actual search implementation
+              },
               itemLabelBuilder: (user) => user.name ?? 'Unknown',
             ),
             const SizedBox(height: 16),

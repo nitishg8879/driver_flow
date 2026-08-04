@@ -2,26 +2,28 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../utils/components/custom_button.dart';
+import '../../../../utils/components/app_loader_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
+import '../../../../utils/helpers/app_logger.dart';
 import '../../../../utils/helpers/validators.dart';
 import '../../data/models/vehicle_type_model.dart';
-import '../cubit/vehicle_type_cubit.dart';
+import '../../data/repositories/vehicle_type_repository.dart';
 
-/// Dialog used both for creating and editing a [VehicleTypeModel].
-/// Pass [existing] to pre-fill the form for edit mode.
-class VehicleTypeFormDialog extends StatefulWidget {
+class VehicleTypeFormDialog extends ConsumerStatefulWidget {
   final VehicleTypeModel? existing;
+  final VoidCallback? onSaved;
 
-  const VehicleTypeFormDialog({super.key, this.existing});
+  const VehicleTypeFormDialog({super.key, this.existing, this.onSaved});
 
   @override
-  State<VehicleTypeFormDialog> createState() => _VehicleTypeFormDialogState();
+  ConsumerState<VehicleTypeFormDialog> createState() =>
+      _VehicleTypeFormDialogState();
 }
 
-class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
+class _VehicleTypeFormDialogState
+    extends ConsumerState<VehicleTypeFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _sessionsController;
@@ -29,7 +31,7 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
   late final TextEditingController _priceController;
   Uint8List? _imageBytes;
   String? _imageFileName;
-  bool _isSaving = false;
+  final _logger = AppLogger('VehicleTypeFormDialog');
 
   bool get _isEditMode => widget.existing != null;
 
@@ -65,7 +67,6 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
     if (result == null || result.files.isEmpty) return;
     final picked = result.files.single;
     if (picked.bytes == null) return;
-
     setState(() {
       _imageBytes = picked.bytes;
       _imageFileName = picked.name;
@@ -75,40 +76,32 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isSaving = true);
+    final model = (widget.existing ?? const VehicleTypeModel(name: '')).copyWith(
+      name: _nameController.text.trim(),
+      numberOfSessions: int.tryParse(_sessionsController.text.trim()) ?? 0,
+      sessionDurationMinutes: int.tryParse(_durationController.text.trim()) ?? 0,
+      pricePerSession: num.tryParse(_priceController.text.trim()) ?? 0,
+    );
 
-    final numberOfSessions = int.tryParse(_sessionsController.text.trim()) ?? 0;
-    final sessionDuration = int.tryParse(_durationController.text.trim()) ?? 0;
-    final pricePerSession = num.tryParse(_priceController.text.trim()) ?? 0;
-
-    final cubit = context.read<VehicleTypeCubit>();
-    final model = (widget.existing ?? const VehicleTypeModel(name: ''))
-        .copyWith(
-          name: _nameController.text.trim(),
-          numberOfSessions: numberOfSessions,
-          sessionDurationMinutes: sessionDuration,
-          pricePerSession: pricePerSession,
-        );
-
-    final success = _isEditMode
-        ? await cubit.updateVehicleType(
-            model,
-            imageBytes: _imageBytes,
-            imageFileName: _imageFileName,
-          )
-        : await cubit.createVehicleType(
-            model,
-            imageBytes: _imageBytes,
-            imageFileName: _imageFileName,
-          );
+    try {
+      final repo = ref.read(vehicleTypeRepositoryProvider);
+      _isEditMode
+          ? await repo.updateVehicleType(model,
+              imageBytes: _imageBytes, imageFileName: _imageFileName)
+          : await repo.createVehicleType(model,
+              imageBytes: _imageBytes, imageFileName: _imageFileName);
+    } catch (e, st) {
+      _logger.error('Failed to save vehicle type', e, st);
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+      return;
+    }
 
     if (!mounted) return;
-
-    setState(() => _isSaving = false);
-
-    if (success) {
-      Navigator.of(context).pop(true);
-    }
+    widget.onSaved?.call();
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -232,14 +225,12 @@ class _VehicleTypeFormDialogState extends State<VehicleTypeFormDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
+          onPressed: () => Navigator.of(context).pop(false),
           child: const Text('Cancel'),
         ),
-        CustomButton(
-          text: 'Save',
-          isLoading: _isSaving,
-          onPressed: _isSaving ? null : _submit,
-          width: 100,
+        FilledLoaderButton(
+          onPressed: _submit,
+          child: const Text('Save'),
         ),
       ],
     );

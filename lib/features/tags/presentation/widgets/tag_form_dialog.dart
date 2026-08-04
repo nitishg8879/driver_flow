@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../core/di/service_locator.dart';
 import '../../../../utils/components/custom_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
 import '../../data/models/tag_model.dart';
@@ -23,7 +22,7 @@ class TagFormDialog extends HookConsumerWidget {
     final errorMessage = useState<String?>(null);
 
     final isEditMode = existing != null;
-    final repository = sl<TagRepository>();
+    // final repository = TagRepositoryImpl();
 
     Future<void> submit() async {
       if (nameController.text.trim().isEmpty) {
@@ -43,9 +42,9 @@ class TagFormDialog extends HookConsumerWidget {
         );
 
         if (isEditMode) {
-          await repository.updateTag(model);
+          await ref.read(tagRepositoryProvider).updateTag(model);
         } else {
-          await repository.createTag(model);
+          await ref.read(tagRepositoryProvider).createTag(model);
         }
 
         if (context.mounted) {

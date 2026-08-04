@@ -40,7 +40,7 @@ final menuItemsProvider = AutoDisposeFutureProvider<List<MenuItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef MenuItemsRef = AutoDisposeFutureProviderRef<List<MenuItem>>;
-String _$logoutHash() => r'516abbf566e65363dc92a1b1f672596e43409494';
+String _$logoutHash() => r'53124ee9188514cfdf5898ec734e51f190d489e0';
 
 /// See also [logout].
 @ProviderFor(logout)

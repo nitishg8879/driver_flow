@@ -79,9 +79,9 @@ class LoginScreen extends HookConsumerWidget {
 
                   // Login Button
                   FilledLoaderButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (formKey.currentState?.validate() ?? false) {
-                        ref.read(
+                        await ref.watch(
                           loginProvider(
                             email: emailController.text.trim(),
                             password: passwordController.text.trim(),

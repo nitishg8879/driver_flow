@@ -1,4 +1,3 @@
-import 'package:driver_flow_admin/core/di/service_locator.dart';
 import 'package:driver_flow_admin/features/schedule/data/repositories/state_city_repository.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/notifier/onboarding_providers.dart';
 import 'package:driver_flow_admin/utils/components/async_dropdown.dart';
@@ -217,7 +216,7 @@ class _PersonalInfoStepContent extends ConsumerWidget {
                                   },
                                 )
                               : AsyncDropdown<String>(
-                                  fetchItems: () => sl<StateCityRepository>()
+                                  fetchItems: () => StateCityRepositoryImpl()
                                       .getCities(selectedState!),
                                   itemLabelBuilder: (city) => city,
                                   value: selectedCity,

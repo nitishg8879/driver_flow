@@ -2,14 +2,20 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/models/paginated_result.dart';
 import '../../../../utils/constants/app_constants.dart';
 import '../../../../utils/helpers/app_logger.dart';
 import '../models/vehicle_type_model.dart';
 
 abstract class VehicleTypeRepository {
-  Future<List<VehicleTypeModel>> getVehicleTypes({bool activeOnly = true});
+  Future<PaginatedResult<VehicleTypeModel>> getVehicleTypes({
+    bool activeOnly = true,
+    int pageSize = 20,
+    DocumentSnapshot? lastDocument,
+  });
   Future<VehicleTypeModel?> getVehicleTypeById(String id);
   Future<VehicleTypeModel> createVehicleType(
     VehicleTypeModel vehicleType, {
@@ -50,20 +56,43 @@ class VehicleTypeRepositoryImpl implements VehicleTypeRepository {
   }
 
   @override
-  Future<List<VehicleTypeModel>> getVehicleTypes({
+  Future<PaginatedResult<VehicleTypeModel>> getVehicleTypes({
     bool activeOnly = true,
+    int pageSize = 20,
+    DocumentSnapshot? lastDocument,
   }) async {
     try {
-      Query<Map<String, dynamic>> query = _collection;
+      Query<Map<String, dynamic>> query = _collection.orderBy(
+        'createdAt',
+        descending: true,
+      );
       if (activeOnly) {
         query = query.where('isActive', isEqualTo: true);
       }
-      final snapshot = await query.get();
-      return snapshot.docs
-          .map(
-            (doc) => VehicleTypeModel.fromJson({'id': doc.id, ...doc.data()}),
-          )
+
+      final countFuture = query.count().get();
+
+      Query<Map<String, dynamic>> paginatedQuery = query.limit(pageSize);
+      if (lastDocument != null) {
+        paginatedQuery = paginatedQuery.startAfterDocument(lastDocument);
+      }
+
+      final results = await Future.wait([countFuture, paginatedQuery.get()]);
+      final totalCount = (results[0] as AggregateQuerySnapshot).count;
+      final snapshot = results[1] as QuerySnapshot<Map<String, dynamic>>;
+
+      final items = snapshot.docs
+          .map((doc) => VehicleTypeModel.fromJson({'id': doc.id, ...doc.data()}))
           .toList();
+
+      _logger.info('Fetched ${items.length} vehicle types (total: $totalCount)');
+
+      return PaginatedResult<VehicleTypeModel>(
+        items: items,
+        totalCount: totalCount ?? 0,
+        lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : lastDocument,
+        hasMore: items.length == pageSize,
+      );
     } catch (e, stackTrace) {
       _logger.error('Failed to fetch vehicle types', e, stackTrace);
       rethrow;
@@ -150,3 +179,10 @@ class VehicleTypeRepositoryImpl implements VehicleTypeRepository {
     }
   }
 }
+
+final vehicleTypeRepositoryProvider = Provider<VehicleTypeRepository>(
+  (ref) => VehicleTypeRepositoryImpl(
+    firestore: FirebaseFirestore.instance,
+    storage: FirebaseStorage.instance,
+  ),
+);
