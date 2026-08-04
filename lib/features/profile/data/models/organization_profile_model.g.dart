@@ -13,11 +13,6 @@ _$OrganizationProfileModelImpl _$$OrganizationProfileModelImplFromJson(
   email: json['email'] as String?,
   organizationName: json['organizationName'] as String?,
   phoneNumber: json['phoneNumber'] as String?,
-  websiteUrls:
-      (json['websiteUrls'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
   aboutUs: json['aboutUs'] as String?,
   workingDays:
       (json['workingDays'] as List<dynamic>?)
@@ -26,12 +21,14 @@ _$OrganizationProfileModelImpl _$$OrganizationProfileModelImplFromJson(
       const [],
   createdAt: const _TimestampConverter().fromJson(json['createdAt']),
   updatedAt: const _TimestampConverter().fromJson(json['updatedAt']),
-  workingHoursStart: const _TimestampConverter().fromJson(
-    json['workingHoursStart'],
+  officeStartTime: const _TimeOfDayConverter().fromJson(
+    json['officeStartTime'],
   ),
-  workingHoursEnd: const _TimestampConverter().fromJson(
-    json['workingHoursEnd'],
+  officeEndTime: const _TimeOfDayConverter().fromJson(json['officeEndTime']),
+  vechileStartTime: const _TimeOfDayConverter().fromJson(
+    json['vechileStartTime'],
   ),
+  vechileEndTime: const _TimeOfDayConverter().fromJson(json['vechileEndTime']),
 );
 
 Map<String, dynamic> _$$OrganizationProfileModelImplToJson(
@@ -41,19 +38,20 @@ Map<String, dynamic> _$$OrganizationProfileModelImplToJson(
   'email': instance.email,
   'organizationName': instance.organizationName,
   'phoneNumber': instance.phoneNumber,
-  'websiteUrls': instance.websiteUrls,
   'aboutUs': instance.aboutUs,
   'workingDays': instance.workingDays
       ?.map((e) => _$OrgWorkingDayEnumMap[e]!)
       .toList(),
   'createdAt': const _TimestampConverter().toJson(instance.createdAt),
   'updatedAt': const _TimestampConverter().toJson(instance.updatedAt),
-  'workingHoursStart': const _TimestampConverter().toJson(
-    instance.workingHoursStart,
+  'officeStartTime': const _TimeOfDayConverter().toJson(
+    instance.officeStartTime,
   ),
-  'workingHoursEnd': const _TimestampConverter().toJson(
-    instance.workingHoursEnd,
+  'officeEndTime': const _TimeOfDayConverter().toJson(instance.officeEndTime),
+  'vechileStartTime': const _TimeOfDayConverter().toJson(
+    instance.vechileStartTime,
   ),
+  'vechileEndTime': const _TimeOfDayConverter().toJson(instance.vechileEndTime),
 };
 
 const _$OrgWorkingDayEnumMap = {

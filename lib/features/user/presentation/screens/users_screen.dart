@@ -1,12 +1,12 @@
 import 'package:data_table_2/data_table_2.dart';
+import 'package:driver_flow_admin/features/user/data/models/user_model.dart';
+import 'package:driver_flow_admin/features/user/presentation/widgets/user_data_source.dart';
+import 'package:driver_flow_admin/utils/components/app_data_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../../../../utils/components/app_data_table.dart';
-import '../../../../utils/constants/app_enums.dart';
 import '../../../../utils/extensions/context_extensions.dart';
-import '../widgets/user_data_source.dart';
+import '../../../../utils/constants/app_enums.dart';
 import '../widgets/user_form_dialog.dart';
 
 class UsersScreen extends HookConsumerWidget {
@@ -14,21 +14,31 @@ class UsersScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Filter state
-    final selectedRole = useState<UserRole?>(null);
     final activeOnly = useState(true);
     final searchQuery = useState('');
+    final selectedRole = useState<UserRole?>(null);
 
-    // Memoized data source based on filter changes
-    final dataSource = useMemoized(() {
-      return UserDataSource(
+    final dataSource = useMemoized(
+      () => UserDataSource(
         ref: ref,
         context: context,
-        role: selectedRole.value,
         activeOnly: activeOnly.value,
         searchQuery: searchQuery.value,
+        role: selectedRole.value,
+      ),
+      [activeOnly.value, searchQuery.value, selectedRole.value],
+    );
+
+    Future<void> openForm({UserModel? existing}) async {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (_) => UserFormDialog(existing: existing),
       );
-    }, [selectedRole.value, activeOnly.value, searchQuery.value]);
+      if (result == true && context.mounted) {
+        context.showSuccessSnackBar('User saved successfully');
+        dataSource.refreshDatasource();
+      }
+    }
 
     return Scaffold(
       body: Padding(
@@ -46,15 +56,7 @@ class UsersScreen extends HookConsumerWidget {
                 ),
                 const Spacer(),
                 FilledButton.icon(
-                  onPressed: () async {
-                    final result = await showDialog<bool>(
-                      context: context,
-                      builder: (_) => const UserFormDialog(),
-                    );
-                    if (result == true) {
-                      context.showSuccessSnackBar('User saved successfully');
-                    }
-                  },
+                  onPressed: () => openForm(),
                   icon: const Icon(Icons.add),
                   label: const Text('Add User'),
                 ),
@@ -66,9 +68,7 @@ class UsersScreen extends HookConsumerWidget {
                 Expanded(
                   flex: 2,
                   child: TextField(
-                    onChanged: (value) {
-                      searchQuery.value = value;
-                    },
+                    onChanged: (v) => searchQuery.value = v,
                     decoration: InputDecoration(
                       hintText: 'Search by name...',
                       prefixIcon: const Icon(Icons.search),
@@ -86,9 +86,7 @@ class UsersScreen extends HookConsumerWidget {
                 Expanded(
                   child: DropdownMenu<UserRole?>(
                     initialSelection: selectedRole.value,
-                    onSelected: (role) {
-                      selectedRole.value = role;
-                    },
+                    onSelected: (role) => selectedRole.value = role,
                     dropdownMenuEntries: [
                       const DropdownMenuEntry<UserRole?>(
                         value: null,
@@ -113,9 +111,7 @@ class UsersScreen extends HookConsumerWidget {
                 ButtonSegment(value: false, label: Text('Inactive')),
               ],
               selected: {activeOnly.value},
-              onSelectionChanged: (selection) {
-                activeOnly.value = selection.first;
-              },
+              onSelectionChanged: (s) => activeOnly.value = s.first,
             ),
             const SizedBox(height: 16),
             Expanded(

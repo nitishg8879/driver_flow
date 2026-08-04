@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'organization_profile_model.freezed.dart';
@@ -21,6 +22,29 @@ class _TimestampConverter implements JsonConverter<DateTime?, dynamic> {
   dynamic toJson(DateTime? object) => object;
 }
 
+// Stores TimeOfDay as {"hour": int, "minute": int} in Firestore.
+class _TimeOfDayConverter implements JsonConverter<TimeOfDay?, dynamic> {
+  const _TimeOfDayConverter();
+
+  @override
+  TimeOfDay? fromJson(dynamic json) {
+    if (json == null) return null;
+    if (json is Map) {
+      return TimeOfDay(
+        hour: (json['hour'] as num).toInt(),
+        minute: (json['minute'] as num).toInt(),
+      );
+    }
+    return null;
+  }
+
+  @override
+  dynamic toJson(TimeOfDay? object) {
+    if (object == null) return null;
+    return {'hour': object.hour, 'minute': object.minute};
+  }
+}
+
 @freezed
 class OrganizationProfileModel with _$OrganizationProfileModel {
   const factory OrganizationProfileModel({
@@ -28,15 +52,14 @@ class OrganizationProfileModel with _$OrganizationProfileModel {
     String? email,
     String? organizationName,
     String? phoneNumber,
-    @Default([]) List<String>? websiteUrls,
     String? aboutUs,
     @Default([]) List<OrgWorkingDay>? workingDays,
-    // @Default(false) bool? isHolidayToday,
-    // @Default(false) bool? isHalfDayToday,
     @_TimestampConverter() DateTime? createdAt,
     @_TimestampConverter() DateTime? updatedAt,
-    @_TimestampConverter() DateTime? workingHoursStart,
-    @_TimestampConverter() DateTime? workingHoursEnd,
+    @_TimeOfDayConverter() TimeOfDay? officeStartTime,
+    @_TimeOfDayConverter() TimeOfDay? officeEndTime,
+    @_TimeOfDayConverter() TimeOfDay? vechileStartTime,
+    @_TimeOfDayConverter() TimeOfDay? vechileEndTime,
   }) = _OrganizationProfileModel;
 
   factory OrganizationProfileModel.fromJson(Map<String, dynamic> json) =>

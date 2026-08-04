@@ -1,42 +1,37 @@
-import 'package:driver_flow_admin/features/profile/data/models/holiday_model.dart';
 import 'package:driver_flow_admin/features/profile/data/models/organization_profile_model.dart';
-import 'package:driver_flow_admin/utils/extensions/context_extensions.dart';
+import 'package:driver_flow_admin/features/profile/data/repositories/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../cubit/profile_cubit.dart';
-import '../cubit/profile_state.dart';
-import '../widgets/holiday_dialog.dart';
 import '../widgets/profile_form_dialog.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(profileDataProvider);
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ProfileCubit>().loadProfile();
-  }
+    void showProfileDialog([OrganizationProfileModel? profile]) {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final profileWithEmail =
+          profile ?? OrganizationProfileModel(email: currentUser?.email);
+      showDialog(
+        context: context,
+        builder: (_) => ProfileFormDialog(
+          existing: profileWithEmail,
+          onSaved: () => ref.invalidate(profileDataProvider),
+        ),
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Organization Profile'),
         actions: [
           ElevatedButton.icon(
-            onPressed: () => _showProfileDialog(
-              context.read<ProfileCubit>().state.maybeWhen(
-                loaded: (profile, _) => profile,
-                orElse: () => null,
-              ),
-            ),
+            onPressed: () => showProfileDialog(profileAsync.valueOrNull),
             icon: const Icon(Icons.edit),
             label: const Text('Edit Profile'),
           ),
@@ -44,79 +39,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        child: BlocBuilder<ProfileCubit, ProfileState>(
-          bloc: context.read<ProfileCubit>(),
-          builder: (context, state) {
-            return state.maybeWhen(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (profile, holidays) {
-                if (profile == null) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'No profile created yet',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: _showProfileDialog,
-                          icon: const Icon(Icons.add),
-                          label: const Text('Create Profile'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildProfileCard(profile),
-                    const SizedBox(height: 32),
-                    _buildHolidaysList(context, holidays),
-                  ],
-                );
-              },
-              error: (message) => Center(
+        child: profileAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text(e.toString()),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(profileDataProvider),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+          data: (profile) {
+            if (profile == null) {
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error, color: Colors.red, size: 48),
+                    const Text(
+                      'No profile created yet',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    ),
                     const SizedBox(height: 16),
-                    Text(message),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () =>
-                          context.read<ProfileCubit>().loadProfile(),
-                      child: const Text('Retry'),
+                    ElevatedButton.icon(
+                      onPressed: () => showProfileDialog(),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Create Profile'),
                     ),
                   ],
                 ),
-              ),
-              orElse: () => const Center(child: CircularProgressIndicator()),
-            );
+              );
+            }
+
+            return _buildProfileCard(context, profile);
           },
         ),
       ),
     );
   }
 
-  Widget _buildProfileCard(OrganizationProfileModel profile) {
+  Widget _buildProfileCard(BuildContext context, OrganizationProfileModel profile) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Profile Information',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Profile Information', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 20),
             _buildInfoRow('Organization Name', profile.organizationName ?? ''),
             const SizedBox(height: 12),
@@ -124,31 +99,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 12),
             _buildInfoRow('About Us', profile.aboutUs ?? ''),
             const SizedBox(height: 12),
-            if ((profile.websiteUrls ?? []).isNotEmpty) ...[
-              const Text(
-                'Website URLs',
-                style: TextStyle(fontWeight: FontWeight.w600),
+            if (profile.officeStartTime != null || profile.officeEndTime != null) ...[
+              _buildInfoRow(
+                'Office Hours',
+                '${_formatTime(profile.officeStartTime)} – ${_formatTime(profile.officeEndTime)}',
               ),
-              const SizedBox(height: 8),
-              ...(profile.websiteUrls ?? []).map(
-                (url) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    '• $url',
-                    style: TextStyle(
-                      color: Colors.blue[700],
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
+              const SizedBox(height: 12),
+            ],
+            if (profile.vechileStartTime != null || profile.vechileEndTime != null) ...[
+              _buildInfoRow(
+                'Vehicle Hours',
+                '${_formatTime(profile.vechileStartTime)} – ${_formatTime(profile.vechileEndTime)}',
               ),
               const SizedBox(height: 12),
             ],
             if ((profile.workingDays ?? []).isNotEmpty) ...[
-              const Text(
-                'Working Days',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
+              const Text('Working Days', style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -163,6 +129,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  String _formatTime(TimeOfDay? t) {
+    if (t == null) return 'N/A';
+    return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+  }
+
   Widget _buildInfoRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,88 +145,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHolidaysList(BuildContext context, List<HolidayModel> holidays) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Holidays (${holidays.length})',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            ElevatedButton.icon(
-              onPressed: _showHolidayDialog,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Holiday'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        if (holidays.isEmpty)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(40),
-              child: Text('No holidays added yet'),
-            ),
-          )
-        else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: holidays.length,
-            itemBuilder: (context, index) {
-              final holiday = holidays[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  title: Text(holiday.label ?? 'N/A'),
-                  subtitle: Text(holiday.date.toFormattedDate),
-                  trailing: PopupMenuButton(
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        child: const Text('Edit'),
-                        onTap: () => _showHolidayDialog(holiday),
-                      ),
-                      PopupMenuItem(
-                        child: const Text('Delete'),
-                        onTap: () {
-                          context.read<ProfileCubit>().deleteHoliday(
-                            holiday.id!,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-      ],
-    );
-  }
-
-  void _showProfileDialog([OrganizationProfileModel? profile]) {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final profileWithEmail =
-        profile ?? OrganizationProfileModel(email: currentUser?.email);
-    showDialog(
-      context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<ProfileCubit>(),
-        child: ProfileFormDialog(existing: profileWithEmail),
-      ),
-    );
-  }
-
-  void _showHolidayDialog([HolidayModel? holiday]) {
-    showDialog(
-      context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<ProfileCubit>(),
-        child: HolidayDialog(existing: holiday),
-      ),
-    );
-  }
 }

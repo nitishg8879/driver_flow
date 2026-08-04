@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../utils/components/custom_button.dart';
+import '../../../../utils/components/app_loader_button.dart';
 import '../../../../utils/components/custom_text_field.dart';
 import '../../../../utils/helpers/validators.dart';
 import '../../data/models/organization_profile_model.dart';
-import '../cubit/profile_cubit.dart';
+import '../../data/repositories/profile_repository.dart';
 
-class ProfileFormDialog extends StatefulWidget {
+class ProfileFormDialog extends ConsumerStatefulWidget {
   final OrganizationProfileModel? existing;
+  final VoidCallback? onSaved;
 
-  const ProfileFormDialog({super.key, this.existing});
+  const ProfileFormDialog({super.key, this.existing, this.onSaved});
 
   @override
-  State<ProfileFormDialog> createState() => _ProfileFormDialogState();
+  ConsumerState<ProfileFormDialog> createState() => _ProfileFormDialogState();
 }
 
-class _ProfileFormDialogState extends State<ProfileFormDialog> {
+class _ProfileFormDialogState extends ConsumerState<ProfileFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
   late final TextEditingController _aboutController;
-  late final TextEditingController _urlController;
-  List<String> _websiteUrls = [];
   List<OrgWorkingDay> _selectedWorkingDays = [];
-  bool _isSaving = false;
+  TimeOfDay? _officeStartTime;
+  TimeOfDay? _officeEndTime;
+  TimeOfDay? _vechileStartTime;
+  TimeOfDay? _vechileEndTime;
 
   @override
   void initState() {
@@ -33,9 +35,11 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
     _nameController = TextEditingController(text: existing?.organizationName);
     _phoneController = TextEditingController(text: existing?.phoneNumber);
     _aboutController = TextEditingController(text: existing?.aboutUs);
-    _urlController = TextEditingController();
-    _websiteUrls = List.from(existing?.websiteUrls ?? []);
     _selectedWorkingDays = List.from(existing?.workingDays ?? []);
+    _officeStartTime = existing?.officeStartTime;
+    _officeEndTime = existing?.officeEndTime;
+    _vechileStartTime = existing?.vechileStartTime;
+    _vechileEndTime = existing?.vechileEndTime;
   }
 
   @override
@@ -43,22 +47,7 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
     _nameController.dispose();
     _phoneController.dispose();
     _aboutController.dispose();
-    _urlController.dispose();
     super.dispose();
-  }
-
-  void _addUrl() {
-    final url = _urlController.text.trim();
-    if (url.isNotEmpty && !_websiteUrls.contains(url)) {
-      setState(() {
-        _websiteUrls.add(url);
-        _urlController.clear();
-      });
-    }
-  }
-
-  void _removeUrl(String url) {
-    setState(() => _websiteUrls.remove(url));
   }
 
   Future<void> _submit() async {
@@ -70,30 +59,25 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
       return;
     }
 
-    setState(() => _isSaving = true);
-
     try {
       final model = OrganizationProfileModel(
         email: widget.existing?.email,
         organizationName: _nameController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
         aboutUs: _aboutController.text.trim(),
-        websiteUrls: _websiteUrls,
         workingDays: _selectedWorkingDays,
+        officeStartTime: _officeStartTime,
+        officeEndTime: _officeEndTime,
+        vechileStartTime: _vechileStartTime,
+        vechileEndTime: _vechileEndTime,
       );
-
+      await ref.read(profileRepositoryProvider).updateOrganizationProfile(model);
       if (!mounted) return;
-      context.read<ProfileCubit>().updateProfile(model);
+      widget.onSaved?.call();
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -144,8 +128,8 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
                     validator: (value) =>
                         Validators.validateRequired(value, 'About Us'),
                   ),
-                  const SizedBox(height: 24),
-                  _buildWebsiteUrlsSection(),
+                  const SizedBox(height: 16),
+                  _buildTimePickers(),
                   const SizedBox(height: 24),
                   _buildWorkingDaysSection(),
                 ],
@@ -156,14 +140,13 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: _isSaving ? null : () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel'),
                 ),
                 const SizedBox(width: 8),
-                CustomButton(
-                  text: 'Save',
-                  onPressed: _isSaving ? null : _submit,
-                  isLoading: _isSaving,
+                FilledLoaderButton(
+                  onPressed: _submit,
+                  child: const Text('Save'),
                 ),
               ],
             ),
@@ -173,40 +156,98 @@ class _ProfileFormDialogState extends State<ProfileFormDialog> {
     );
   }
 
-  Widget _buildWebsiteUrlsSection() {
+  Widget _buildTimePickers() {
+    String fmt(TimeOfDay? t) => t != null ? t.format(context) : 'Not set';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Website URLs',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
+        const Text('Office Hours', style: TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-              child: CustomTextField(
-                controller: _urlController,
-                labelText: 'Add URL',
-                hintText: 'https://example.com',
+              child: _buildTimeField(
+                label: 'Office Start',
+                value: fmt(_officeStartTime),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: _officeStartTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => _officeStartTime = picked);
+                },
               ),
             ),
-            const SizedBox(width: 8),
-            ElevatedButton(onPressed: _addUrl, child: const Text('Add')),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildTimeField(
+                label: 'Office End',
+                value: fmt(_officeEndTime),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: _officeEndTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => _officeEndTime = picked);
+                },
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 12),
-        if (_websiteUrls.isNotEmpty)
-          Wrap(
-            spacing: 8,
-            children: _websiteUrls.map((url) {
-              return Chip(
-                label: Text(url, overflow: TextOverflow.ellipsis),
-                onDeleted: () => _removeUrl(url),
-              );
-            }).toList(),
-          ),
+        const SizedBox(height: 16),
+        const Text('Vehicle Hours', style: TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _buildTimeField(
+                label: 'Vehicle Start',
+                value: fmt(_vechileStartTime),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: _vechileStartTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => _vechileStartTime = picked);
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildTimeField(
+                label: 'Vehicle End',
+                value: fmt(_vechileEndTime),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: _vechileEndTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => _vechileEndTime = picked);
+                },
+              ),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  Widget _buildTimeField({
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          suffixIcon: const Icon(Icons.access_time),
+        ),
+        child: Text(value),
+      ),
     );
   }
 

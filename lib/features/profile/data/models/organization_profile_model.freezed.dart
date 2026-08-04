@@ -27,19 +27,20 @@ mixin _$OrganizationProfileModel {
   String? get email => throw _privateConstructorUsedError;
   String? get organizationName => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
-  List<String>? get websiteUrls => throw _privateConstructorUsedError;
   String? get aboutUs => throw _privateConstructorUsedError;
-  List<OrgWorkingDay>? get workingDays =>
-      throw _privateConstructorUsedError; // @Default(false) bool? isHolidayToday,
-  // @Default(false) bool? isHalfDayToday,
+  List<OrgWorkingDay>? get workingDays => throw _privateConstructorUsedError;
   @_TimestampConverter()
   DateTime? get createdAt => throw _privateConstructorUsedError;
   @_TimestampConverter()
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  @_TimestampConverter()
-  DateTime? get workingHoursStart => throw _privateConstructorUsedError;
-  @_TimestampConverter()
-  DateTime? get workingHoursEnd => throw _privateConstructorUsedError;
+  @_TimeOfDayConverter()
+  TimeOfDay? get officeStartTime => throw _privateConstructorUsedError;
+  @_TimeOfDayConverter()
+  TimeOfDay? get officeEndTime => throw _privateConstructorUsedError;
+  @_TimeOfDayConverter()
+  TimeOfDay? get vechileStartTime => throw _privateConstructorUsedError;
+  @_TimeOfDayConverter()
+  TimeOfDay? get vechileEndTime => throw _privateConstructorUsedError;
 
   /// Serializes this OrganizationProfileModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -63,13 +64,14 @@ abstract class $OrganizationProfileModelCopyWith<$Res> {
     String? email,
     String? organizationName,
     String? phoneNumber,
-    List<String>? websiteUrls,
     String? aboutUs,
     List<OrgWorkingDay>? workingDays,
     @_TimestampConverter() DateTime? createdAt,
     @_TimestampConverter() DateTime? updatedAt,
-    @_TimestampConverter() DateTime? workingHoursStart,
-    @_TimestampConverter() DateTime? workingHoursEnd,
+    @_TimeOfDayConverter() TimeOfDay? officeStartTime,
+    @_TimeOfDayConverter() TimeOfDay? officeEndTime,
+    @_TimeOfDayConverter() TimeOfDay? vechileStartTime,
+    @_TimeOfDayConverter() TimeOfDay? vechileEndTime,
   });
 }
 
@@ -95,13 +97,14 @@ class _$OrganizationProfileModelCopyWithImpl<
     Object? email = freezed,
     Object? organizationName = freezed,
     Object? phoneNumber = freezed,
-    Object? websiteUrls = freezed,
     Object? aboutUs = freezed,
     Object? workingDays = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? workingHoursStart = freezed,
-    Object? workingHoursEnd = freezed,
+    Object? officeStartTime = freezed,
+    Object? officeEndTime = freezed,
+    Object? vechileStartTime = freezed,
+    Object? vechileEndTime = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -121,10 +124,6 @@ class _$OrganizationProfileModelCopyWithImpl<
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
-            websiteUrls: freezed == websiteUrls
-                ? _value.websiteUrls
-                : websiteUrls // ignore: cast_nullable_to_non_nullable
-                      as List<String>?,
             aboutUs: freezed == aboutUs
                 ? _value.aboutUs
                 : aboutUs // ignore: cast_nullable_to_non_nullable
@@ -141,14 +140,22 @@ class _$OrganizationProfileModelCopyWithImpl<
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            workingHoursStart: freezed == workingHoursStart
-                ? _value.workingHoursStart
-                : workingHoursStart // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            workingHoursEnd: freezed == workingHoursEnd
-                ? _value.workingHoursEnd
-                : workingHoursEnd // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
+            officeStartTime: freezed == officeStartTime
+                ? _value.officeStartTime
+                : officeStartTime // ignore: cast_nullable_to_non_nullable
+                      as TimeOfDay?,
+            officeEndTime: freezed == officeEndTime
+                ? _value.officeEndTime
+                : officeEndTime // ignore: cast_nullable_to_non_nullable
+                      as TimeOfDay?,
+            vechileStartTime: freezed == vechileStartTime
+                ? _value.vechileStartTime
+                : vechileStartTime // ignore: cast_nullable_to_non_nullable
+                      as TimeOfDay?,
+            vechileEndTime: freezed == vechileEndTime
+                ? _value.vechileEndTime
+                : vechileEndTime // ignore: cast_nullable_to_non_nullable
+                      as TimeOfDay?,
           )
           as $Val,
     );
@@ -169,13 +176,14 @@ abstract class _$$OrganizationProfileModelImplCopyWith<$Res>
     String? email,
     String? organizationName,
     String? phoneNumber,
-    List<String>? websiteUrls,
     String? aboutUs,
     List<OrgWorkingDay>? workingDays,
     @_TimestampConverter() DateTime? createdAt,
     @_TimestampConverter() DateTime? updatedAt,
-    @_TimestampConverter() DateTime? workingHoursStart,
-    @_TimestampConverter() DateTime? workingHoursEnd,
+    @_TimeOfDayConverter() TimeOfDay? officeStartTime,
+    @_TimeOfDayConverter() TimeOfDay? officeEndTime,
+    @_TimeOfDayConverter() TimeOfDay? vechileStartTime,
+    @_TimeOfDayConverter() TimeOfDay? vechileEndTime,
   });
 }
 
@@ -201,13 +209,14 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
     Object? email = freezed,
     Object? organizationName = freezed,
     Object? phoneNumber = freezed,
-    Object? websiteUrls = freezed,
     Object? aboutUs = freezed,
     Object? workingDays = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? workingHoursStart = freezed,
-    Object? workingHoursEnd = freezed,
+    Object? officeStartTime = freezed,
+    Object? officeEndTime = freezed,
+    Object? vechileStartTime = freezed,
+    Object? vechileEndTime = freezed,
   }) {
     return _then(
       _$OrganizationProfileModelImpl(
@@ -227,10 +236,6 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
-        websiteUrls: freezed == websiteUrls
-            ? _value._websiteUrls
-            : websiteUrls // ignore: cast_nullable_to_non_nullable
-                  as List<String>?,
         aboutUs: freezed == aboutUs
             ? _value.aboutUs
             : aboutUs // ignore: cast_nullable_to_non_nullable
@@ -247,14 +252,22 @@ class __$$OrganizationProfileModelImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        workingHoursStart: freezed == workingHoursStart
-            ? _value.workingHoursStart
-            : workingHoursStart // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        workingHoursEnd: freezed == workingHoursEnd
-            ? _value.workingHoursEnd
-            : workingHoursEnd // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
+        officeStartTime: freezed == officeStartTime
+            ? _value.officeStartTime
+            : officeStartTime // ignore: cast_nullable_to_non_nullable
+                  as TimeOfDay?,
+        officeEndTime: freezed == officeEndTime
+            ? _value.officeEndTime
+            : officeEndTime // ignore: cast_nullable_to_non_nullable
+                  as TimeOfDay?,
+        vechileStartTime: freezed == vechileStartTime
+            ? _value.vechileStartTime
+            : vechileStartTime // ignore: cast_nullable_to_non_nullable
+                  as TimeOfDay?,
+        vechileEndTime: freezed == vechileEndTime
+            ? _value.vechileEndTime
+            : vechileEndTime // ignore: cast_nullable_to_non_nullable
+                  as TimeOfDay?,
       ),
     );
   }
@@ -268,15 +281,15 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     this.email,
     this.organizationName,
     this.phoneNumber,
-    final List<String>? websiteUrls = const [],
     this.aboutUs,
     final List<OrgWorkingDay>? workingDays = const [],
     @_TimestampConverter() this.createdAt,
     @_TimestampConverter() this.updatedAt,
-    @_TimestampConverter() this.workingHoursStart,
-    @_TimestampConverter() this.workingHoursEnd,
-  }) : _websiteUrls = websiteUrls,
-       _workingDays = workingDays;
+    @_TimeOfDayConverter() this.officeStartTime,
+    @_TimeOfDayConverter() this.officeEndTime,
+    @_TimeOfDayConverter() this.vechileStartTime,
+    @_TimeOfDayConverter() this.vechileEndTime,
+  }) : _workingDays = workingDays;
 
   factory _$OrganizationProfileModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrganizationProfileModelImplFromJson(json);
@@ -289,17 +302,6 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
   final String? organizationName;
   @override
   final String? phoneNumber;
-  final List<String>? _websiteUrls;
-  @override
-  @JsonKey()
-  List<String>? get websiteUrls {
-    final value = _websiteUrls;
-    if (value == null) return null;
-    if (_websiteUrls is EqualUnmodifiableListView) return _websiteUrls;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
   @override
   final String? aboutUs;
   final List<OrgWorkingDay>? _workingDays;
@@ -313,8 +315,6 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     return EqualUnmodifiableListView(value);
   }
 
-  // @Default(false) bool? isHolidayToday,
-  // @Default(false) bool? isHalfDayToday,
   @override
   @_TimestampConverter()
   final DateTime? createdAt;
@@ -322,15 +322,21 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
   @_TimestampConverter()
   final DateTime? updatedAt;
   @override
-  @_TimestampConverter()
-  final DateTime? workingHoursStart;
+  @_TimeOfDayConverter()
+  final TimeOfDay? officeStartTime;
   @override
-  @_TimestampConverter()
-  final DateTime? workingHoursEnd;
+  @_TimeOfDayConverter()
+  final TimeOfDay? officeEndTime;
+  @override
+  @_TimeOfDayConverter()
+  final TimeOfDay? vechileStartTime;
+  @override
+  @_TimeOfDayConverter()
+  final TimeOfDay? vechileEndTime;
 
   @override
   String toString() {
-    return 'OrganizationProfileModel(id: $id, email: $email, organizationName: $organizationName, phoneNumber: $phoneNumber, websiteUrls: $websiteUrls, aboutUs: $aboutUs, workingDays: $workingDays, createdAt: $createdAt, updatedAt: $updatedAt, workingHoursStart: $workingHoursStart, workingHoursEnd: $workingHoursEnd)';
+    return 'OrganizationProfileModel(id: $id, email: $email, organizationName: $organizationName, phoneNumber: $phoneNumber, aboutUs: $aboutUs, workingDays: $workingDays, createdAt: $createdAt, updatedAt: $updatedAt, officeStartTime: $officeStartTime, officeEndTime: $officeEndTime, vechileStartTime: $vechileStartTime, vechileEndTime: $vechileEndTime)';
   }
 
   @override
@@ -344,10 +350,6 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
                 other.organizationName == organizationName) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
-            const DeepCollectionEquality().equals(
-              other._websiteUrls,
-              _websiteUrls,
-            ) &&
             (identical(other.aboutUs, aboutUs) || other.aboutUs == aboutUs) &&
             const DeepCollectionEquality().equals(
               other._workingDays,
@@ -357,10 +359,14 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.workingHoursStart, workingHoursStart) ||
-                other.workingHoursStart == workingHoursStart) &&
-            (identical(other.workingHoursEnd, workingHoursEnd) ||
-                other.workingHoursEnd == workingHoursEnd));
+            (identical(other.officeStartTime, officeStartTime) ||
+                other.officeStartTime == officeStartTime) &&
+            (identical(other.officeEndTime, officeEndTime) ||
+                other.officeEndTime == officeEndTime) &&
+            (identical(other.vechileStartTime, vechileStartTime) ||
+                other.vechileStartTime == vechileStartTime) &&
+            (identical(other.vechileEndTime, vechileEndTime) ||
+                other.vechileEndTime == vechileEndTime));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -371,13 +377,14 @@ class _$OrganizationProfileModelImpl implements _OrganizationProfileModel {
     email,
     organizationName,
     phoneNumber,
-    const DeepCollectionEquality().hash(_websiteUrls),
     aboutUs,
     const DeepCollectionEquality().hash(_workingDays),
     createdAt,
     updatedAt,
-    workingHoursStart,
-    workingHoursEnd,
+    officeStartTime,
+    officeEndTime,
+    vechileStartTime,
+    vechileEndTime,
   );
 
   /// Create a copy of OrganizationProfileModel
@@ -403,13 +410,14 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
     final String? email,
     final String? organizationName,
     final String? phoneNumber,
-    final List<String>? websiteUrls,
     final String? aboutUs,
     final List<OrgWorkingDay>? workingDays,
     @_TimestampConverter() final DateTime? createdAt,
     @_TimestampConverter() final DateTime? updatedAt,
-    @_TimestampConverter() final DateTime? workingHoursStart,
-    @_TimestampConverter() final DateTime? workingHoursEnd,
+    @_TimeOfDayConverter() final TimeOfDay? officeStartTime,
+    @_TimeOfDayConverter() final TimeOfDay? officeEndTime,
+    @_TimeOfDayConverter() final TimeOfDay? vechileStartTime,
+    @_TimeOfDayConverter() final TimeOfDay? vechileEndTime,
   }) = _$OrganizationProfileModelImpl;
 
   factory _OrganizationProfileModel.fromJson(Map<String, dynamic> json) =
@@ -424,12 +432,9 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
   @override
   String? get phoneNumber;
   @override
-  List<String>? get websiteUrls;
-  @override
   String? get aboutUs;
   @override
-  List<OrgWorkingDay>? get workingDays; // @Default(false) bool? isHolidayToday,
-  // @Default(false) bool? isHalfDayToday,
+  List<OrgWorkingDay>? get workingDays;
   @override
   @_TimestampConverter()
   DateTime? get createdAt;
@@ -437,11 +442,17 @@ abstract class _OrganizationProfileModel implements OrganizationProfileModel {
   @_TimestampConverter()
   DateTime? get updatedAt;
   @override
-  @_TimestampConverter()
-  DateTime? get workingHoursStart;
+  @_TimeOfDayConverter()
+  TimeOfDay? get officeStartTime;
   @override
-  @_TimestampConverter()
-  DateTime? get workingHoursEnd;
+  @_TimeOfDayConverter()
+  TimeOfDay? get officeEndTime;
+  @override
+  @_TimeOfDayConverter()
+  TimeOfDay? get vechileStartTime;
+  @override
+  @_TimeOfDayConverter()
+  TimeOfDay? get vechileEndTime;
 
   /// Create a copy of OrganizationProfileModel
   /// with the given fields replaced by the non-null parameter values.
