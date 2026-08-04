@@ -143,20 +143,6 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       if (studentId != null && s.studentId != studentId) return false;
       if (status != null && s.status != status) return false;
       if (dateRange != null) {
-        final start = DateTime(
-          dateRange.start.year,
-          dateRange.start.month,
-          dateRange.start.day,
-        );
-        final end = DateTime(
-          dateRange.end.year,
-          dateRange.end.month,
-          dateRange.end.day,
-          23,
-          59,
-          59,
-        );
-        // if (s.startTime.isBefore(start) || s.startTime.isAfter(end))
         return false;
       }
       return true;

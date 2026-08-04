@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:kalender/kalender.dart';
 
-import '../../../data/models/lesson_event.dart';
+import '../../../data/models/lesson_event.dart'; // ScheduleCalendarEvent
 import 'event_detail_card.dart';
 
 class EventDetailOverlay extends StatefulWidget {
@@ -18,7 +18,7 @@ class EventDetailOverlay extends StatefulWidget {
     required this.calendarController,
   });
 
-  static void show(BuildContext context, LessonEvent event, RenderBox renderBox) {
+  static void show(BuildContext context, ScheduleCalendarEvent event, RenderBox renderBox) {
     context.findAncestorStateOfType<_EventDetailOverlayState>()?.show(event, renderBox);
   }
 
@@ -48,7 +48,7 @@ class _EventDetailOverlayState extends State<EventDetailOverlay> with SingleTick
     super.dispose();
   }
 
-  void show(LessonEvent event, RenderBox renderBox) {
+  void show(ScheduleCalendarEvent event, RenderBox renderBox) {
     _event = event;
     _renderBox = renderBox;
     _overlayController.show();
@@ -98,7 +98,7 @@ class _EventDetailOverlayState extends State<EventDetailOverlay> with SingleTick
                 scale: _scale,
                 alignment: Alignment.topLeft,
                 child: EventDetailCard(
-                  event: _event as LessonEvent,
+                  event: _event as ScheduleCalendarEvent,
                   width: min(width, size.width - 16),
                   height: height,
                   onDismiss: _dismiss,

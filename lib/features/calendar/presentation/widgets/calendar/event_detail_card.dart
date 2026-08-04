@@ -4,7 +4,7 @@ import 'package:kalender/kalender.dart';
 import '../../../data/models/lesson_event.dart';
 
 class EventDetailCard extends StatefulWidget {
-  final LessonEvent event;
+  final ScheduleCalendarEvent event;
   final double height;
   final double width;
   final VoidCallback onDismiss;
@@ -26,14 +26,14 @@ class EventDetailCard extends StatefulWidget {
 }
 
 class _EventDetailCardState extends State<EventDetailCard> {
-  late LessonEvent event = widget.event;
+  late ScheduleCalendarEvent event = widget.event;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final loc = MaterialLocalizations.of(context);
     final use24 = MediaQuery.alwaysUse24HourFormatOf(context);
-    final color = event.color ?? LessonEvent.defaultColor;
+    final color = event.color;
 
     return Card(
       elevation: 8,
@@ -63,22 +63,9 @@ class _EventDetailCardState extends State<EventDetailCard> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: TextFormField(
-                              initialValue: event.title,
+                            child: Text(
+                              event.schedule.studentName ?? 'Lesson',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: cs.primary)),
-                                hintText: 'Event title',
-                                contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                                isDense: true,
-                              ),
-                              onChanged: (value) {
-                                final updated = event.copyWith(title: value);
-                                widget.eventsController.updateEvent(event: event, updatedEvent: updated);
-                                setState(() => event = updated);
-                              },
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -183,7 +170,7 @@ class _EventDetailCardState extends State<EventDetailCard> {
   }
 
   void _update(DateTimeRange range) {
-    final updated = event.copyWith(dateTimeRange: range);
+    final updated = event.copyWith(dateTimeRange: range) as ScheduleCalendarEvent;
     widget.eventsController.updateEvent(event: event, updatedEvent: updated);
     setState(() => event = updated);
   }

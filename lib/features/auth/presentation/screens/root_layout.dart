@@ -87,35 +87,6 @@ class RootLayout extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.only(top: 40, bottom: 20, left: 24, right: 24),
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.local_shipping, color: Colors.white),
-          ),
-          const SizedBox(width: 12),
-          const Text(
-            'Driver Flow',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E1E2C),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildFooter(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(16),

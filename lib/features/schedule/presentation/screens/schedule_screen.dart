@@ -1,6 +1,7 @@
 import 'package:driver_flow_admin/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:driver_flow_admin/features/calendar/presentation/widgets/calendar/calendar_widget.dart';
 import 'package:driver_flow_admin/features/profile/data/repositories/profile_repository.dart';
+import 'package:driver_flow_admin/features/schedule/data/models/schedule_model.dart';
+import 'package:driver_flow_admin/features/schedule/data/repositories/schedule_repository.dart';
 import 'package:driver_flow_admin/features/schedule/presentation/screens/onboarding/onboarding_student_form.dart';
 import 'package:driver_flow_admin/features/user/data/models/user_model.dart';
 import 'package:driver_flow_admin/features/user/data/repositories/user_repository.dart';
@@ -26,6 +27,28 @@ class ScheduleScreen extends HookConsumerWidget {
     final selectedStatus = useState<ScheduleStatus?>(null);
     final selectedDateRange = useState<DateTimeRange?>(null);
     final tabIndex = useState<int>(0);
+
+    // Profile — loaded once for working-days/holiday marking.
+    final profileAsync = ref.watch(profileDataProvider);
+    final profile = profileAsync.valueOrNull;
+
+    // Schedules — loaded for today on first build, refreshed on range change.
+    final schedules = useState<List<ScheduleModel>>([]);
+    final repo = ref.read(scheduleRepositoryProvider);
+
+    useEffect(() {
+      final today = DateTime.now();
+      final todayRange = DateTimeRange(start: today, end: today);
+      repo.getSchedules(dateRange: todayRange).then((v) => schedules.value = v);
+      return null;
+    }, const []);
+
+    Future<List<ScheduleModel>> onRangeChanged(DateTimeRange range) async {
+      final result = await repo.getSchedules(dateRange: range);
+      schedules.value = result;
+      return result;
+    }
+
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: Column(
@@ -144,20 +167,10 @@ class ScheduleScreen extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Expanded(
-                    child: Consumer(
-                      builder: (context, ref, child) {
-                        return ref
-                            .watch(profileDataProvider)
-                            .when(
-                              data: (profileData) {
-                                return CalendarScreen();
-                              },
-                              error: (error, stackTrace) =>
-                                  Center(child: Text(error.toString())),
-                              loading: () =>
-                                  Center(child: CircularProgressIndicator()),
-                            );
-                      },
+                    child: CalendarScreen(
+                      profile: profile,
+                      schedules: schedules.value,
+                      onRangeChanged: onRangeChanged,
                     ),
                   ),
                 ],

@@ -25,8 +25,10 @@ class _PaymentFormDialogState extends State<PaymentFormDialog> {
   UserModel? _selectedStudent;
   late DateTime _txnDate;
   TransactionType _txnType = TransactionType.credit;
+  // ignore: unused_field
   List<String> _selectedTagIds = [];
   List<AttachmentModel> _existingAttachments = [];
+  // ignore: unused_field
   List<PendingAttachment> _pendingAttachments = [];
   bool _isSaving = false;
   String? _errorMessage;

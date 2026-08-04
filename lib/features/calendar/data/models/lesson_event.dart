@@ -1,52 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:kalender/kalender.dart';
 
+import 'package:driver_flow_admin/features/schedule/data/models/schedule_model.dart';
+import 'package:driver_flow_admin/utils/constants/app_enums.dart';
 
-class LessonEvent extends CalendarEvent {
-  final String title;
-  final String? description;
-  final Color? color;
+/// Calendar event backed by a real [ScheduleModel].
+class ScheduleCalendarEvent extends CalendarEvent {
+  final ScheduleModel schedule;
 
-  LessonEvent({
+  ScheduleCalendarEvent({
     super.id,
+    required this.schedule,
     required super.dateTimeRange,
-    required this.title,
-    this.description,
-    this.color,
     super.interaction,
     super.multiDayRule,
   });
 
-  static const defaultColor = Color(0xFF6366F1);
+  Color get color => _colorOf(schedule.status);
 
-  @override
-  LessonEvent copyWith({
-    DateTimeRange? dateTimeRange,
-    EventInteraction? interaction,
-    String? title,
-    String? description,
-    Color? color,
-  }) =>
-      LessonEvent(
-        id: id,
-        dateTimeRange: dateTimeRange ?? this.dateTimeRange,
-        interaction: interaction ?? this.interaction,
-        multiDayRule: multiDayRule,
-        title: title ?? this.title,
-        description: description ?? this.description,
-        color: color ?? this.color,
+  static Color _colorOf(ScheduleStatus s) => switch (s) {
+        ScheduleStatus.scheduled => const Color(0xFF6366F1),
+        ScheduleStatus.completed => const Color(0xFF10B981),
+        ScheduleStatus.cancelledByStudent ||
+        ScheduleStatus.cancelledByInstructor ||
+        ScheduleStatus.adminCancelled =>
+          const Color(0xFFEF4444),
+      };
+
+  factory ScheduleCalendarEvent.from(ScheduleModel s) => ScheduleCalendarEvent(
+        schedule: s,
+        dateTimeRange: DateTimeRange(
+          start: s.startTime ?? DateTime.now(),
+          end: s.endTime ?? DateTime.now().add(const Duration(hours: 1)),
+        ),
       );
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return super == other &&
-        other is LessonEvent &&
-        other.title == title &&
-        other.description == description &&
-        other.color == color;
-  }
+  CalendarEvent copyWith({DateTimeRange? dateTimeRange, EventInteraction? interaction}) =>
+      ScheduleCalendarEvent(
+        id: id,
+        schedule: schedule,
+        dateTimeRange: dateTimeRange ?? this.dateTimeRange,
+        interaction: interaction ?? this.interaction,
+        multiDayRule: multiDayRule,
+      );
+}
+
+/// All-day marker for non-working days — read-only, no interaction.
+class ClosedDayEvent extends CalendarEvent {
+  ClosedDayEvent({required super.dateTimeRange})
+      : super(interaction: EventInteraction.allowNone());
 
   @override
-  int get hashCode => Object.hash(super.hashCode, title, description, color);
+  CalendarEvent copyWith({DateTimeRange? dateTimeRange, EventInteraction? interaction}) =>
+      ClosedDayEvent(dateTimeRange: dateTimeRange ?? this.dateTimeRange);
 }
+
+
