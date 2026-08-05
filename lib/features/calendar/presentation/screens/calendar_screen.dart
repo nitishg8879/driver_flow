@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../../features/profile/data/models/organization_profile_model.dart';
-import '../../../../../features/schedule/data/models/schedule_model.dart';
+import '../notifier/calendar_data_notifier.dart';
 import '../widgets/calendar/calendar_widget.dart';
 
-class CalendarScreen extends StatelessWidget {
-  final OrganizationProfileModel? profile;
-  final List<ScheduleModel> schedules;
-  final Future<List<ScheduleModel>> Function(DateTimeRange range)? onRangeChanged;
-
-  const CalendarScreen({
-    super.key,
-    this.profile,
-    this.schedules = const [],
-    this.onRangeChanged,
-  });
+class CalendarScreen extends ConsumerWidget {
+  const CalendarScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return CalendarWidget(
-      profile: profile,
-      schedules: schedules,
-      onRangeChanged: onRangeChanged,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dataAsync = ref.watch(calendarDataNotifierProvider);
+    final notifier = ref.read(calendarDataNotifierProvider.notifier);
+
+    return dataAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 12),
+            Text(e.toString()),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () => ref.invalidate(calendarDataNotifierProvider),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+      data: (data) => CalendarWidget(
+        profile: data.profile,
+        schedules: data.schedules,
+        onRangeChanged: notifier.onRangeChanged,
+      ),
     );
   }
 }

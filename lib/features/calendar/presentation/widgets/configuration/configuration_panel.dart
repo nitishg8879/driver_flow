@@ -52,6 +52,15 @@ class CalendarConfigPanel extends ConsumerWidget {
               title: const Text('Show Header'),
               dense: true,
             ),
+            _DropdownRow<int>(
+              label: 'Snap Interval',
+              value: config.snapping.snapIntervalMinutes,
+              items: const [5, 10, 15, 20, 30, 60],
+              labelOf: (v) => '$v min',
+              onChanged: (v) => notifier.setSnapping(
+                config.snapping.copyWith(snapIntervalMinutes: v),
+              ),
+            ),
             if (config.viewConfiguration is MultiDayViewConfiguration) ...[
               _SectionTitle('Body'),
               SwitchListTile.adaptive(
